@@ -1,0 +1,7 @@
+de.dnpm.dip.model.GuidelineTreatmentStatus$ProviderSPI
+de.dnpm.dip.model.Relationship$ProviderSPI
+de.dnpm.dip.model.Gender$ProviderSPI
+de.dnpm.dip.model.VitalStatus$ProviderSPI
+de.dnpm.dip.model.Episode$Status$ProviderSPI
+de.dnpm.dip.model.Therapy$Status$ProviderSPI
+de.dnpm.dip.model.TherapyRecommendation$Priority$ProviderSPI
