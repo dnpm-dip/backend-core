@@ -18,7 +18,6 @@ import de.dnpm.dip.util.Completer
 
 
 
-//final case class Coding[S]
 final case class Coding[+S]
 (
   code: Code[S],
@@ -224,21 +223,21 @@ object Coding
   ): Completer[Coding[S]] = 
     Completer.of[Coding[S]](
       coding => 
-        vs.concept(coding.code)
+        vs.coding(coding.code)
           .map(
-            concept =>
+            c =>
               coding.copy(
-                display = concept.display,
-                version = concept.version
+                display = c.display,
+                version = c.version
               )   
           )
           .getOrElse(coding)
     )
 
-/*
+
   import scala.language.implicitConversions
 
-  implicit def fromConcept[S: System](
+  implicit def convertfromConcept[S: System](
     concept: CodeSystem.Concept[S]
   ): Coding[S] =
     Coding(
@@ -247,7 +246,7 @@ object Coding
       System[S].uri,
       concept.version
     )
-*/
+
 
   import play.api.libs.functional.syntax._
   

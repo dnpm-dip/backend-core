@@ -4,11 +4,13 @@ package de.dnpm.dip.coding
 import java.net.URI
 import java.time.LocalDateTime
 import scala.util.matching.Regex
+import cats.Applicative
 import play.api.libs.json.{
   Json, Writes, Reads, Format
 }
 
 
+//final case class ValueSet[+S]
 final case class ValueSet[S]
 (
   uri: URI,
@@ -16,23 +18,31 @@ final case class ValueSet[S]
   title: Option[String],
   date: Option[LocalDateTime],
   version: Option[String],
-  concepts: Seq[Coding[S]]
+  codings: Seq[Coding[S]]
 )
 {
 
-  def concept(c: Code[S]): Option[Coding[S]] =
-    this.concepts.find(_.code == c)
+/*
+  def coding[Spr >: S](c: Code[Spr]): Option[Coding[Spr]] =
+    this.codings.find(_.code == c)
+
+  def displayOf[Spr >: S](c: Code[Spr]): Option[String] =
+    this.coding(c).flatMap(_.display)
+*/
+
+  def coding(c: Code[S]): Option[Coding[S]] =
+    this.codings.find(_.code == c)
 
   def displayOf(c: Code[S]): Option[String] =
-    this.concept(c).flatMap(_.display)
+    this.coding(c).flatMap(_.display)
 
   def include[T >: S,U >: T](
     cs: Seq[Coding[T]]
   ): ValueSet[U] =
     this.copy(
       date = Some(LocalDateTime.now),
-      concepts =
-        concepts.asInstanceOf[Seq[Coding[U]]] ++
+      codings =
+        codings.asInstanceOf[Seq[Coding[U]]] ++
           cs.asInstanceOf[Seq[Coding[U]]]
     )
 
@@ -44,7 +54,7 @@ object ValueSet
 
   final case class Info
   (
-//    name: String,
+    name: String,
     title: Option[String],
     uri: URI,
     version: Option[String]
@@ -55,13 +65,23 @@ object ValueSet
   {
     self =>
 
+    val uri: URI
+
+    val name: String
+
+    val title: Option[String]
+
+    def include[S](
+     codings: Coding[S]*,
+    ): Composer
+
     def include(
       system: URI,
-      filter: CodeSystem.Concept[_] => Boolean
+      filter: CodeSystem.Concept[Any] => Boolean
     ): Composer
 
     def include[S](
-      filter: CodeSystem.Concept[_] => Boolean
+      filter: CodeSystem.Concept[Any] => Boolean
     )(
       implicit sys: Coding.System[S]
     ): Composer =
@@ -69,6 +89,15 @@ object ValueSet
         sys.uri,
         filter
       )
+
+    def includeAll[S](
+      implicit sys: Coding.System[S]
+    ): Composer =
+      self.include(
+        sys.uri,
+        (c: CodeSystem.Concept[Any]) => true
+      )
+
 
     def include(
       system: URI,
@@ -101,11 +130,11 @@ object ValueSet
 
     def exclude(
       system: URI,
-      filter: CodeSystem.Concept[_] => Boolean
+      filter: CodeSystem.Concept[Any] => Boolean
     ): Composer
 
     def exclude[S](
-      filter: CodeSystem.Concept[_] => Boolean
+      filter: CodeSystem.Concept[Any] => Boolean
     )(
       implicit sys: Coding.System[S]
     ): Composer =
@@ -142,31 +171,25 @@ object ValueSet
         c => regex.matches(c.code.value)
       )
 
-    def expand[S](
-      uri: URI,
-      name: String,
-      title: Option[String], 
-      version: Option[String],
-      css: CodeSystem[_]*
-    ): ValueSet[S]
+
+    def expand(
+      css: CodeSystem[Any]*
+    ): ValueSet[Any]
 
 
     def expand[CS <: Product](
-      uri: URI,
-      name: String,
-      title: Option[String], 
-      version: Option[String],
-    )(
       implicit
       cs: CodeSystems[CS]
     ): ValueSet[Any] =
       self.expand(
-        uri,
-        name,
-        title,
-        version,
         cs.values: _*
       )
+
+    def expand[S](
+      csp: CodeSystemProvider[S,cats.Id,Applicative[cats.Id]]
+    ): ValueSetProvider[Any,cats.Id,Applicative[cats.Id]] = {
+      new LazyValueSetProvider[Any,cats.Id](csp,self)
+    }
 
   }
 
@@ -181,52 +204,57 @@ object ValueSet
   }
 
 
-  import scala.collection.mutable.Map
-
-  private class ComposerImpl private [coding] (
-    val incls: Map[URI,CodeSystem.Concept[_] => Boolean],
-    val excls: Map[URI,CodeSystem.Concept[_] => Boolean]
+  private case class ComposerImpl private [coding] (
+    uri: URI,
+    name: String,
+    title: Option[String],
+    codings: Seq[Coding[Any]],
+    incls: Map[URI,CodeSystem.Concept[Any] => Boolean],
+    excls: Map[URI,CodeSystem.Concept[Any] => Boolean]
   )
   extends Composer
   {
 
+    override def include[S](
+//     cdng: Coding[S],
+     cdngs: Coding[S]*,
+    ): Composer =
+      this.copy(
+        codings = codings :++ cdngs
+      )
+      
+
     override def include(
       system: URI,
-      filter: CodeSystem.Concept[_] => Boolean
-    ): Composer = {
-      val incl =
-        incls.get(system)
-          .map(_ or filter)
-          .getOrElse(filter)
-
-      incls.update(system, incl)
-      this 
-    }
+      filter: CodeSystem.Concept[Any] => Boolean
+    ): Composer =
+      this.copy(
+        incls =
+          incls.updatedWith(system){
+            case Some(f) => Some(f or filter)
+            case None    => Some(filter)
+          }
+      )
 
     override def exclude(
       system: URI,
-      filter: CodeSystem.Concept[_] => Boolean
-    ): Composer = {
-      val excl =
-        excls.get(system)
-          .map(_ or filter)
-          .getOrElse(filter)
+      filter: CodeSystem.Concept[Any] => Boolean
+    ): Composer =
+      this.copy(
+        excls =
+          excls.updatedWith(system){
+            case Some(f) => Some(f or filter)
+            case None    => Some(filter)
+          }
+      )
 
-      excls.update(system, excl)
-      this 
-    }
 
-
-    override def expand[S](
-      uri: URI,
-      name: String,
-      title: Option[String], 
-      version: Option[String],
-      css: CodeSystem[_]*
-    ): ValueSet[S] = {
-      val codings =
+    override def expand(
+      css: CodeSystem[Any]*
+    ): ValueSet[Any] = {
+      val cdngs =
         incls.foldLeft(
-          Seq.empty[Coding[S]]
+          Seq.empty[Coding[Any]]
         ){
           case (acc,(sys,incl)) =>
             val cs =
@@ -234,10 +262,10 @@ object ValueSet
               
             acc ++
               cs.concepts
-                .filter(incl)
+                .withFilter(incl)
                 .map( c =>
-                  Coding[S](
-                    Code[S](c.code.value),
+                  Coding[Any](
+                    Code[Any](c.code.value),
                     Some(c.display),
                     cs.uri,
                     cs.version
@@ -246,7 +274,7 @@ object ValueSet
 
         } ++
         excls.foldLeft(
-          Seq.empty[Coding[S]]
+          Seq.empty[Coding[Any]]
         ){
           case (acc,(sys,excl)) =>
             val cs =
@@ -256,30 +284,42 @@ object ValueSet
               cs.concepts
                 .filterNot(excl)
                 .map( c =>
-                  Coding[S](
-                    Code[S](c.code.value),
+                  Coding[Any](
+                    Code[Any](c.code.value),
                     Some(c.display),
                     cs.uri,
                     cs.version
                   )
                 )
-        }
+        } ++ codings
 
       ValueSet(
         uri,
         name,
         title,
         Some(LocalDateTime.now),
-        version,
-        codings.distinctBy(_.code)
+//        version,
+        None,
+        cdngs.distinctBy(_.code)
       )
     }
 
   }
 
 
-  def compose: Composer =
-    new ComposerImpl(Map.empty,Map.empty)
+  def compose(
+    uri: URI,
+    name: String,
+    title: Option[String]
+  ): Composer =
+    new ComposerImpl(
+      uri,
+      name,
+      title,
+      Seq.empty,
+      Map.empty,
+      Map.empty
+    )
 
 
 
