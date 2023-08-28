@@ -15,7 +15,7 @@ import de.dnpm.dip.coding.{
 class ValueSetTests extends AnyFlatSpec
 {
 
-  "Loading Enum CodeSystems dynamically via CodeSystemProvider" must "have worked" in {
+  "ValueSet composition" must "have worked" in {
 
     val composer =
       ValueSet.compose(
@@ -27,10 +27,10 @@ class ValueSetTests extends AnyFlatSpec
       .includeAll[Gender.Value]
 
 
-    val vs =
+    val valueSet =
       composer.expand[(VitalStatus.Value,Gender.Value)]
       
-    vs.codings.size must equal (
+    valueSet.codings.size must equal (
       CodeSystems[(VitalStatus.Value,Gender.Value)].values.flatMap(_.concepts).size
     )
 

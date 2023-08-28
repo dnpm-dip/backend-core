@@ -216,7 +216,6 @@ object ValueSet
   {
 
     override def include[S](
-//     cdng: Coding[S],
      cdngs: Coding[S]*,
     ): Composer =
       this.copy(
@@ -321,7 +320,19 @@ object ValueSet
       Map.empty
     )
 
-
+/*
+  implicit def fromCodeSystem[S](
+    implicit cs: CodeSystem[S]
+  ): ValueSet[S] =
+    ValueSet
+      .compose(
+        cs.uri,
+        cs.name,
+        cs.title
+      )
+      .expand(cs)
+      .asInstanceOf[ValueSet[S]]
+*/
 
   implicit def formatValueSet[S] = Json.format[ValueSet[S]]
 

@@ -36,8 +36,11 @@ final case class Patient
       .map(_ => VitalStatus.Alive)
       .getOrElse(VitalStatus.Deceased)
       .pipe(Coding(_).complete)
+}
 
 
-  implicit val format = Json.format[Patient]
-
+object Patient
+{
+  implicit val format = 
+    Json.format[Patient]
 }

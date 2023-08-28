@@ -19,8 +19,8 @@ trait Diagnosis
   val id: Id[Diagnosis]
   val patient: Reference[Patient]
   val recordedOn: Option[LocalDate]
-  val code: Coding[ICD10GM]
-  val guidelineTreatmentStatus: Option[Coding[GuidelineTreatmentStatus.Value]]
+//  val code: Coding[ICD10GM]
+//  val guidelineTreatmentStatus: Option[Coding[GuidelineTreatmentStatus.Value]]
 }
 
 

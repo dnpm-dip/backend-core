@@ -237,7 +237,7 @@ object Coding
 
   import scala.language.implicitConversions
 
-  implicit def convertfromConcept[S: System](
+  implicit def fromConcept[S: System](
     concept: CodeSystem.Concept[S]
   ): Coding[S] =
     Coding(

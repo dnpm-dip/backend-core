@@ -59,7 +59,7 @@ extends Reference[T]
 
 final case class ExternalReference[+T]
 (
-  extId: ExternalId,
+  extId: ExternalId[T],
   display: Option[String]
 )
 extends Reference[T]
@@ -75,15 +75,23 @@ object Reference
   def apply[T](id: Id[T], display: Option[String]): Reference[T] =
     IdReference(id,display)
 
-  def apply[T](extId: ExternalId, display: Option[String]): Reference[T] =
+  def apply[T](extId: ExternalId[T], display: Option[String]): Reference[T] =
     ExternalReference(extId,display)
 
   def uri[T](uri: String, display: Option[String] = None): Reference[T] =
     UriReference(URI.create(uri),display)
 
-  def id[T](id: String, display: Option[String]): Reference[T] =
+  def id[T](id: String, display: Option[String] = None): Reference[T] =
     IdReference(Id(id),display)
 
+  
+  def apply[T <: AnyRef { val id: Id[T]}](t: T): Reference[T] = {
+    import scala.language.reflectiveCalls
+
+    // Cast id value to String instead of Id[T] here
+    // because Id extends AnyVal and is thus a String at runtime
+    Reference.id[T](t.asInstanceOf[{ val id: String }].id)
+  }
 
 
   implicit def formatUriRef[T]          = Json.format[UriReference[T]]

@@ -18,7 +18,7 @@ object Id
 }
 
 
-final case class ExternalId
+final case class ExternalId[+T]
 (
   value: String,
   system: Option[URI]
@@ -27,15 +27,15 @@ final case class ExternalId
 object ExternalId
 {
 
-  def apply(
+  def apply[T](
     value: String,
     system: String
-  ): ExternalId =
+  ): ExternalId[T] =
     ExternalId(
       value,
       Some(URI.create(system))
     )
 
-  implicit val format = Json.format[ExternalId]
+  implicit def format[T] = Json.format[ExternalId[T]]
 
 }

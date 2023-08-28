@@ -63,7 +63,7 @@ abstract class BasicCodeSystemProvider[S: Coding.System](
 
 // For use e.g. with Enum CodeSystem
 abstract class SingleCodeSystemProvider[S: Coding.System](
-  codeSystem: CodeSystem[S],
+  codeSystem: CodeSystem[S]
 )
 {
 
