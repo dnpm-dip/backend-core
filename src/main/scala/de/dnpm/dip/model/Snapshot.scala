@@ -10,15 +10,19 @@ import play.api.libs.json.{
 }
 
 
-final case class Snapshot[T]
-(
-  id: Id[Snapshot[T]],
+final case class Snapshot[T] private (
+//  id: Id[Snapshot[T]],
   data: T,
-  timestamp: Long = Instant.now.toEpochMilli
+  id: Long// = Instant.now.toEpochMilli
+//  timestamp: Long = Instant.now.toEpochMilli
 )
 
 object Snapshot
 {
+
+  def apply[T](data: T): Snapshot[T] =
+    Snapshot(data,Instant.now.toEpochMilli)
+
 
   implicit def format[T: Format] =
     Json.format[Snapshot[T]]

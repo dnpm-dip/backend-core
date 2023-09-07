@@ -37,6 +37,53 @@ sealed trait FSBackedRepository[F[_],T,Id]
 object FSBackedRepository
 {
 
+  // Ensure only one Repository instance is created for a given data dir and type
+  private val repos: Map[(File,Class[_]),Any] =
+    TrieMap.empty[(File,Class[_]),Any]
+
+  def apply[F[_],T,Id](
+    dataDir: File,
+    prefix: String,
+    cached: Boolean,
+    idOf: T => Id,
+    id2str: Id => String
+  )(
+    implicit
+    f: Format[T],
+    cl: scala.reflect.ClassTag[T]
+  ): FSBackedRepository[F,T,Id] = {
+
+    if (!dataDir.exists) dataDir.mkdirs
+
+    val cache =
+      if (cached)
+        Some(
+          dataDir.list
+            .to(LazyList)
+            .map(new File(dataDir,_))
+            .map(toFileInputStream)
+            .map(Json.parse)
+            .map(Json.fromJson[T](_))
+            .map(_.get)
+            .map(t => idOf(t) -> t)
+        )
+      else None
+
+    repos.getOrElseUpdate(
+      (dataDir -> cl.runtimeClass),
+      new Impl[F,T,Id](
+        dataDir,
+        prefix,
+        idOf,
+        id2str,
+        cache.map(TrieMap.from)
+      )
+    )
+    .asInstanceOf[FSBackedRepository[F,T,Id]]
+
+  }
+
+/*
   // Ensure only one Repository instance is created for a given data dir
   private val repos: Map[File,Any] =
     TrieMap.empty[File,Any]
@@ -81,7 +128,7 @@ object FSBackedRepository
     .asInstanceOf[FSBackedRepository[F,T,Id]]
 
   }
-
+*/
 
   private class Impl[F[_],T: Format,Id]
   (
