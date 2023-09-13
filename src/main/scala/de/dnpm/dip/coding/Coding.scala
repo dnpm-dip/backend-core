@@ -260,7 +260,8 @@ object Coding
       (code,display,system,version) => Coding[S](code,display,system,version)
     )
 
-  implicit def writesCoding[S] = Json.writes[Coding[S]]
+  implicit def writesCoding[S]: Writes[Coding[S]] = 
+    Json.writes[Coding[S]]
 
 }
 

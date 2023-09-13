@@ -76,7 +76,7 @@ object Therapy
 
   object StatusReason
   {
-    implicit val codingSystem =
+    implicit val codingSystem: Coding.System[StatusReason] =
       Coding.System[StatusReason]("therapy/status-reason")
   }
 

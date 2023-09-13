@@ -8,6 +8,11 @@ import de.dnpm.dip.coding.{
   CodeSystemProvider,
   CodeSystemProviderSPI
 }
+import play.api.libs.json.{
+  Json,
+  Format
+}
+
 
 
 object VitalStatus 
@@ -28,4 +33,6 @@ with DefaultCodeSystem
       new Provider.Facade[F]
   }
 
+  implicit val format: Format[VitalStatus.Value] =
+    Json.formatEnum(this)
 }

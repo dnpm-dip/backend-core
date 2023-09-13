@@ -25,7 +25,7 @@ sealed trait ATC
 object ATC extends CodeSystem.Publisher[ATC]
 {
 
-  implicit val codingSystem =
+  implicit val codingSystem: Coding.System[ATC] =
     Coding.System[ATC]("http://fhir.de/CodeSystem/bfarm/atc")
 
 

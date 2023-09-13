@@ -6,7 +6,10 @@ import java.time.LocalDateTime
 import scala.util.matching.Regex
 import cats.Applicative
 import play.api.libs.json.{
-  Json, Writes, Reads, Format
+  Json,
+  Writes,
+  Reads,
+  Format
 }
 
 
@@ -334,7 +337,8 @@ object ValueSet
       .asInstanceOf[ValueSet[S]]
 */
 
-  implicit def formatValueSet[S] = Json.format[ValueSet[S]]
+  implicit def formatValueSet[S]: Format[ValueSet[S]] = 
+    Json.format[ValueSet[S]]
 
 }
 

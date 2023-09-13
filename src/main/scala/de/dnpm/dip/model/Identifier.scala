@@ -3,7 +3,10 @@ package de.dnpm.dip.model
 
 import java.net.URI
 import java.util.UUID
-import play.api.libs.json.Json
+import play.api.libs.json.{
+  Json,
+  Format
+}
 
 
 
@@ -14,7 +17,8 @@ final case class Id[+T](value: String) extends AnyVal
 
 object Id
 {
-  implicit def format[T] = Json.valueFormat[Id[T]]
+  implicit def format[T]: Format[Id[T]] =
+    Json.valueFormat[Id[T]]
 }
 
 
@@ -36,6 +40,8 @@ object ExternalId
       Some(URI.create(system))
     )
 
-  implicit def format[T] = Json.format[ExternalId[T]]
+
+  implicit def format[T]: Format[ExternalId[T]] =
+    Json.format[ExternalId[T]]
 
 }

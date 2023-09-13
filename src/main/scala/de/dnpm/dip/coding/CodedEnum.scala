@@ -13,7 +13,7 @@ extends Enumeration
 {
   self =>
 
-  implicit val system =
+  implicit val system: Coding.System[Value] =
     Coding.System[Value](uri)
 
   implicit val codeSystem: CodeSystem[Value]

@@ -6,7 +6,10 @@ import java.time.temporal.ChronoUnit
 import ChronoUnit.YEARS
 import scala.util.chaining._
 import de.dnpm.dip.coding.Coding
-import play.api.libs.json.Json
+import play.api.libs.json.{
+  Json,
+  Format
+}
 import de.dnpm.dip.util.Completer.syntax._
 
 
@@ -41,6 +44,6 @@ final case class Patient
 
 object Patient
 {
-  implicit val format = 
+  implicit val format: Format[Patient] = 
     Json.format[Patient]
 }

@@ -4,17 +4,13 @@ package de.dnpm.dip.model
 import java.time.Instant
 import play.api.libs.json.{
   Json,
-  Format,
-  Reads,
-  Writes
+  Format
 }
 
 
 final case class Snapshot[T] private (
-//  id: Id[Snapshot[T]],
   data: T,
-  id: Long// = Instant.now.toEpochMilli
-//  timestamp: Long = Instant.now.toEpochMilli
+  id: Long
 )
 
 object Snapshot
@@ -24,7 +20,7 @@ object Snapshot
     Snapshot(data,Instant.now.toEpochMilli)
 
 
-  implicit def format[T: Format] =
+  implicit def format[T: Format]: Format[Snapshot[T]] =
     Json.format[Snapshot[T]]
 
 }

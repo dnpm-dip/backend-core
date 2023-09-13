@@ -24,31 +24,31 @@ object Observation
 
     def apply[T](implicit v: ValidValue[T]) = v
 
-    implicit val intValue =
+    implicit val intValue: ValidValue[Int] =
       new ValidValue[Int]{}
 
-    implicit val longValue =
+    implicit val longValue: ValidValue[Long] =
       new ValidValue[Long]{}
 
-    implicit val floatValue =
+    implicit val floatValue: ValidValue[Float] =
       new ValidValue[Float]{}
 
-    implicit val doubleValue =
+    implicit val doubleValue: ValidValue[Double] =
       new ValidValue[Double]{}
 
-    implicit val boolValue =
+    implicit val boolValue: ValidValue[Boolean] =
       new ValidValue[Boolean]{}
 
-    implicit val stringValue =
+    implicit val stringValue: ValidValue[String] =
       new ValidValue[String]{}
 
-    implicit def quantityValue[T <: Quantity] =
+    implicit def quantityValue[T <: Quantity]: ValidValue[T] =
       new ValidValue[T]{}
 
-    implicit def codingValue[T <: Coding[_]] =
+    implicit def codingValue[T <: Coding[_]]: ValidValue[T] =
       new ValidValue[T]{}
 
-    implicit def intervalValue[T <: Interval[_]] =
+    implicit def intervalValue[T <: Interval[_]]: ValidValue[T] =
       new ValidValue[T]{}
 
 

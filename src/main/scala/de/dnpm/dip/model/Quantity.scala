@@ -17,7 +17,7 @@ abstract class UnitOfMeasure
 
 object UnitOfMeasure
 {
-  implicit val uri =
+  implicit val uri: Coding.System[UnitOfMeasure] =
     Coding.System[UnitOfMeasure]("http://unitsofmeasure.org")
 
   def apply(

@@ -27,7 +27,7 @@ object OpenInterval
   def apply[T: Ordering](minMax: (T,T)): OpenInterval[T] =
     OpenInterval(minMax._1,minMax._2)
 
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[OpenInterval[T]] =
     Json.format[OpenInterval[T]]
 }
 
@@ -43,7 +43,7 @@ object ClosedInterval
   def apply[T: Ordering](minMax: (T,T)): ClosedInterval[T] =
     ClosedInterval(minMax._1,minMax._2)
 
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[ClosedInterval[T]] =
     Json.format[ClosedInterval[T]]
 }
 
@@ -58,7 +58,7 @@ object LeftOpenRightClosedInterval
   def apply[T: Ordering](minMax: (T,T)): LeftOpenRightClosedInterval[T] =
     LeftOpenRightClosedInterval(minMax._1,minMax._2)
 
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[LeftOpenRightClosedInterval[T]] =
     Json.format[LeftOpenRightClosedInterval[T]]
 }
 
@@ -73,7 +73,7 @@ object LeftClosedRightOpenInterval
   def apply[T: Ordering](minMax: (T,T)): LeftClosedRightOpenInterval[T] =
     LeftClosedRightOpenInterval(minMax._1,minMax._2)
 
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[LeftClosedRightOpenInterval[T]] =
     Json.format[LeftClosedRightOpenInterval[T]]
 }
 
@@ -85,7 +85,7 @@ case class LeftOpenInterval[T: Ordering](min: T) extends Interval[T]
 }
 object LeftOpenInterval
 {
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[LeftOpenInterval[T]] =
     Json.format[LeftOpenInterval[T]]
 }
 
@@ -97,7 +97,7 @@ case class LeftClosedInterval[T: Ordering](min: T) extends Interval[T]
 }
 object LeftClosedInterval
 {
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[LeftClosedInterval[T]] =
     Json.format[LeftClosedInterval[T]]
 }
 
@@ -109,7 +109,7 @@ case class RightOpenInterval[T: Ordering](max: T) extends Interval[T]
 }
 object RightOpenInterval
 {
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[RightOpenInterval[T]] =
     Json.format[RightOpenInterval[T]]
 }
 
@@ -121,7 +121,7 @@ case class RightClosedInterval[T: Ordering](max: T) extends Interval[T]
 }
 object RightClosedInterval
 {
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[RightClosedInterval[T]] =
     Json.format[RightClosedInterval[T]]
 }
 
@@ -133,9 +133,9 @@ case class UnboundedInterval[T: Ordering]() extends Interval[T]
 }
 object UnboundedInterval
 {
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[UnboundedInterval[T]] =
     Format[UnboundedInterval[T]](
-      Reads(js => JsSuccess(UnboundedInterval[T]() )),
+      Reads(js => JsSuccess(UnboundedInterval[T]())),
       Writes(_ => JsObject.empty)
     )
 }
@@ -154,13 +154,6 @@ object Interval
     def >=(u: T)(implicit o: Ordering[T]) = o.gteq(t,u)
   }
 
-/*
-  implicit class PlusMinusOps[T](val t: T) extends AnyVal
-  {
-    def +-(m: T)(implicit num: Ordering[T]) =
-      ClosedInterval(num.minus(t,m),num.plus(t,m))
-  }
-*/
 
   implicit class IntervalOps[T](val t: T) extends AnyVal
   {
@@ -169,7 +162,7 @@ object Interval
   }
 
 
-  implicit def format[T: Ordering: Format] =
+  implicit def format[T: Ordering: Format]: Format[Interval[T]] =
     Format[Interval[T]](
       Reads(
         js =>

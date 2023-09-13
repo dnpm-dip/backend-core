@@ -94,9 +94,14 @@ object Reference
   }
 
 
-  implicit def formatUriRef[T]          = Json.format[UriReference[T]]
-  implicit def formatIdRef[T]           = Json.format[IdReference[T]]
-  implicit def formatExternalRef[T]     = Json.format[ExternalReference[T]]
+  implicit def formatUriRef[T]: Format[UriReference[T]] =
+    Json.format[UriReference[T]]
+
+  implicit def formatIdRef[T]: Format[IdReference[T]] =
+    Json.format[IdReference[T]]
+
+  implicit def formatExternalRef[T]: Format[ExternalReference[T]] =
+    Json.format[ExternalReference[T]]
 
 
   implicit def formatReference[T]: Format[Reference[T]] =

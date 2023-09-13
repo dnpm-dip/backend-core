@@ -8,7 +8,7 @@ import de.dnpm.dip.coding.Coding
 sealed trait Site
 object Site
 {
-  implicit val codingSystem =
+  implicit val codingSystem: Coding.System[Site] =
     Coding.System[Site]("dnpm/site")
 }
 

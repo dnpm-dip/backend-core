@@ -18,7 +18,7 @@ sealed trait Ensembl
 object Ensembl
 {
 
-  implicit val codingSystem =
+  implicit val codingSystem: Coding.System[Ensembl] =
     Coding.System[Ensembl]("https://www.ensembl.org/index.html")
 }
 
@@ -28,7 +28,7 @@ sealed trait HGNC
 object HGNC extends CodeSystem.Publisher[HGNC]
 {
 
-  implicit val codingSystem =
+  implicit val codingSystem: Coding.System[HGNC] =
     Coding.System[HGNC]("https://www.genenames.org/")
 
 

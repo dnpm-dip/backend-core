@@ -28,7 +28,7 @@ object ICDO3 extends ICDSystem[ICDO3]
   type M = Morphology
 
 
-  implicit val codingSystem =
+  implicit val codingSystem: Coding.System[ICDO3] =
     Coding.System[ICDO3]("urn:oid:2.16.840.1.113883.6.43.1")
 
 

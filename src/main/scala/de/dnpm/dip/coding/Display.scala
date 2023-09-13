@@ -1,7 +1,10 @@
 package de.dnpm.dip.coding
 
     
-import play.api.libs.json.Json
+import play.api.libs.json.{
+  Json,
+  Format
+}
 
 
 final case class Display[S](value: String) extends AnyVal
@@ -45,7 +48,7 @@ object Display
       .get
 
 
-  implicit def format[S] =
+  implicit def format[S]: Format[Display[S]] =
     Json.valueFormat[Display[S]]
 
 

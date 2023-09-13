@@ -2,15 +2,16 @@ package de.dnpm.dip.coding
 
 
 import java.time.Year
-import play.api.libs.json.Json
+import play.api.libs.json.{
+  Json,
+  Format
+}
 
 
 final case class Version[S](value: String) extends AnyVal
 
 object Version
 {
-  implicit def format[S] = Json.valueFormat[Version[S]]
-
 
   val OrderedByYear =
     Ordering.by((v: String) => Year.of(v.toInt))
@@ -19,5 +20,9 @@ object Version
     new Ordering[String]{
       override def compare(x: String, y: String) = 0
     }
+
+
+  implicit def format[S]: Format[Version[S]] =
+    Json.valueFormat[Version[S]]
 
 }

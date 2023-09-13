@@ -9,6 +9,10 @@ import de.dnpm.dip.coding.{
   CodeSystemProvider,
   CodeSystemProviderSPI
 }
+import play.api.libs.json.{
+  Json,
+  Format
+}
 
 
 object Gender
@@ -36,4 +40,7 @@ with DefaultCodeSystem
       new Provider.Facade[F]
   }
 
+
+  implicit val format: Format[Gender.Value] =
+    Json.formatEnum(this)
 }

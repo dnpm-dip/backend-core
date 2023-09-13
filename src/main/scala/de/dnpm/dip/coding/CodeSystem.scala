@@ -4,8 +4,13 @@ package de.dnpm.dip.coding
 import java.net.URI
 import java.time.LocalDateTime
 import cats.Eval
-import play.api.libs.json.Json
-import scala.collection.{WithFilter => StdWithFilter}
+import play.api.libs.json.{
+  Json,
+  Format
+}
+import scala.collection.{
+  WithFilter => StdWithFilter
+}
 
 
 final case class CodeSystem[S]
@@ -110,16 +115,16 @@ object CodeSystem
       private def apply[T](n: String): Type[T] =
         new Type[T]{ val name = n }
 
-      implicit val integer =
+      implicit val integer: Type[Int] =
         Type[Int]("integer")
 
-      implicit val decimal =
+      implicit val decimal: Type[Double] =
         Type[Double]("decimal")
 
-      implicit val boolean =
+      implicit val boolean: Type[Boolean] =
         Type[Boolean]("boolean")
 
-      implicit val string =
+      implicit val string: Type[String] =
         Type[String]("string")
 
     }
@@ -281,6 +286,33 @@ object CodeSystem
     )
 
 
+  def apply[T: Coding.System](
+    name: String,
+    title: Option[String],
+    version: Option[String],
+    concepts: (String,String)*
+  ): CodeSystem[T] =
+    CodeSystem(
+      Coding.System[T].uri,
+      name,
+      title,
+      None,
+      None,
+      List.empty,
+      concepts.toSeq.map {
+        case (c,display) =>
+          Concept[T]( 
+            Code[T](c),
+            display,
+            version,
+            Map.empty,
+            None,
+            None
+        )
+      }
+    )
+
+
   trait Publisher[T]
   {
 
@@ -293,9 +325,14 @@ object CodeSystem
 
 
 
-  implicit val formatProperty      = Json.format[Property]
-  implicit def formatConcept[S]    = Json.format[Concept[S]]
-  implicit def formatCodeSystem[S] = Json.format[CodeSystem[S]]
+  implicit val formatProperty: Format[Property] =
+    Json.format[Property]
+
+  implicit def formatConcept[S]: Format[Concept[S]] =
+    Json.format[Concept[S]]
+
+  implicit def formatCodeSystem[S]: Format[CodeSystem[S]] =
+    Json.format[CodeSystem[S]]
 
 
   import scala.language.implicitConversions
