@@ -39,9 +39,20 @@ final case class CodeSystem[S]
       new WithFilter(wf.withFilter(f2))
   }
 
-  
   def concept(c: Code[S]): Option[CodeSystem.Concept[S]] =
     this.concepts.find(_.code == c)
+
+  def conceptWithCode(c: String): Option[CodeSystem.Concept[S]] =
+    this.concept(Code[S](c))
+
+
+  def coding(c: Code[S]): Option[Coding[S]] =
+    this.concept(c)
+      .map(_.toCoding(this.uri))
+
+  def codingWithCode(c:String): Option[Coding[S]] =
+    this.conceptWithCode(c)
+      .map(_.toCoding(this.uri))
 
 
   def parentOf(c: Code[S]): Option[CodeSystem.Concept[S]] =
@@ -171,6 +182,19 @@ object CodeSystem
   {
     def get(p: Property): Option[Set[String]] =
       properties.get(p.name)
+
+    def toCoding(uri: URI): Coding[S] =
+      Coding[S](
+        code,
+        Some(display),
+        uri,
+        version
+      )
+
+    def toCoding(implicit cs: Coding.System[S]): Coding[S] =
+      this.toCoding(cs.uri)
+
+
   }
 
 

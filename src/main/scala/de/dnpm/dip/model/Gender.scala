@@ -25,13 +25,22 @@ with DefaultCodeSystem
   val Other   = Value("other")
   val Unknown = Value("unknown")
 
-
+/*
   override val display = {
     case Male    => "Männlich" 
     case Female  => "Weiblich" 
     case Other   => "Divers"
     case Unknown => "Unbekannt"
   }
+*/
+
+  override val display =
+    Map(
+      Male    -> "Männlich",
+      Female  -> "Weiblich", 
+      Other   -> "Divers",
+      Unknown -> "Unbekannt"
+    )
 
 
   final class ProviderSPI extends CodeSystemProviderSPI

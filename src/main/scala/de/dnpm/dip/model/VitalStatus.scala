@@ -16,7 +16,7 @@ import play.api.libs.json.{
 
 
 object VitalStatus 
-extends CodedEnum("patient/vital-status")
+extends CodedEnum("dnpm-dip/patient/vital-status")
 with DefaultCodeSystem
 {
   val Alive    = Value("alive")

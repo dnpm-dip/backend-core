@@ -30,11 +30,11 @@ final case class Patient
       dateOfDeath.getOrElse(LocalDate.now)
     )
 
-  def age: Long =
+  lazy val age: Long =
     ageIn(YEARS)
 
 
-  def vitalStatus: Coding[VitalStatus.Value] =
+  lazy val vitalStatus: Coding[VitalStatus.Value] =
     dateOfDeath
       .map(_ => VitalStatus.Alive)
       .getOrElse(VitalStatus.Deceased)
