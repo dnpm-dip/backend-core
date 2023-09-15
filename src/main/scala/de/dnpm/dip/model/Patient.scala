@@ -36,8 +36,8 @@ final case class Patient
 
   lazy val vitalStatus: Coding[VitalStatus.Value] =
     dateOfDeath
-      .map(_ => VitalStatus.Alive)
-      .getOrElse(VitalStatus.Deceased)
+      .map(_ => VitalStatus.Deceased)
+      .getOrElse(VitalStatus.Alive)
       .pipe(Coding(_).complete)
 }
 
