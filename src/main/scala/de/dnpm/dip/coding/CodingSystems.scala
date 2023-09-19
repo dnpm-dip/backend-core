@@ -9,6 +9,7 @@ object LOINC
     Coding.System[LOINC]("http://loinc.org")
 }
 
+
 sealed trait SNOMEDCT
 object SNOMEDCT
 {

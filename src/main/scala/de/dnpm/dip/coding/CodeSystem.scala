@@ -39,6 +39,7 @@ final case class CodeSystem[S]
       new WithFilter(wf.withFilter(f2))
   }
 
+
   def concept(c: Code[S]): Option[CodeSystem.Concept[S]] =
     this.concepts.find(_.code == c)
 
@@ -98,7 +99,7 @@ object CodeSystem
 
   final case class Info
   (
-//    name: String,
+    name: String,
     title: Option[String],
     uri: URI,
     version: Option[String]
@@ -349,6 +350,9 @@ object CodeSystem
 
 
 
+  implicit val formatInfo: Format[Info] =
+    Json.format[Info]
+
   implicit val formatProperty: Format[Property] =
     Json.format[Property]
 
@@ -364,6 +368,13 @@ object CodeSystem
   implicit def toAnyCodeSystem[S,T >: S](cs: CodeSystem[S]): CodeSystem[T] =
     cs.asInstanceOf[CodeSystem[T]]
 
+  implicit def toInfo[S](cs: CodeSystem[S]): Info =
+    Info(
+      cs.name,
+      cs.title,
+      cs.uri,
+      cs.version
+    )
 
 }
 

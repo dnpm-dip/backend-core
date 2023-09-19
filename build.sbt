@@ -16,11 +16,12 @@ lazy val root =
     .settings(settings)
     .settings(
       libraryDependencies ++= Seq(
-        "org.scalatest"      %% "scalatest"   % "3.1.1" % Test,
-        "org.slf4j"          %  "slf4j-api"   % "1.7.32",
+        "org.scalatest"      %% "scalatest"   % "3.2.17" % Test,
+        "org.slf4j"          %  "slf4j-api"   % "2.0.9",
         "com.chuusai"        %% "shapeless"   % "2.3.10",
         "org.typelevel"      %% "cats-core"   % "2.9.0",
-        "com.typesafe.play"  %% "play-json"   % "2.9.2",
+        "com.typesafe.play"  %% "play-json"   % "2.9.4",
+//        "com.typesafe.play"  %% "play-json"   % "2.10.0",
      )
   )
 
