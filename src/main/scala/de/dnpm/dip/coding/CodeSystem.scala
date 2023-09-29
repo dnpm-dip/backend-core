@@ -46,14 +46,28 @@ final case class CodeSystem[S]
   def conceptWithCode(c: String): Option[CodeSystem.Concept[S]] =
     this.concept(Code[S](c))
 
+  def concept[E <: Enumeration](
+    c: S
+  )(
+    implicit isEnum: S =:= E#Value
+  ): CodeSystem.Concept[S] =
+    this.conceptWithCode(c.toString).get
+
 
   def coding(c: Code[S]): Option[Coding[S]] =
     this.concept(c)
       .map(_.toCoding(this.uri))
 
-  def codingWithCode(c:String): Option[Coding[S]] =
+  def codingWithCode(c: String): Option[Coding[S]] =
     this.conceptWithCode(c)
       .map(_.toCoding(this.uri))
+
+  def coding[E <: Enumeration](
+    c: S
+  )(
+    implicit isEnum: S =:= E#Value
+  ): Coding[S] =
+    this.codingWithCode(c.toString).get
 
 
   def parentOf(c: Code[S]): Option[CodeSystem.Concept[S]] =

@@ -71,7 +71,7 @@ import shapeless.ops.hlist
   }
 
 
-  def deriveMapping[A,B](implicit f: Mapping[A,B]) = f
+  def deriveFor[A,B](implicit f: Mapping[A,B]) = f
 
 
 }

@@ -247,9 +247,38 @@ object Coding
       concept.version
     )
 
+  implicit def readsCoding[S: Coding.System]: Reads[Coding[S]] =
+    Reads(
+      js =>
+        for {
+          code    <- (js \ "code").validate[Code[S]]
+          display <- (js \ "display").validateOpt[String]
+          system  <- (js \ "system").validateOpt[URI]
+          version <- (js \ "version").validateOpt[String]
+        } yield Coding[S](
+          code,
+          display,
+          system.getOrElse(Coding.System[S].uri),
+          version
+        )
+    )
 
   import play.api.libs.functional.syntax._
-  
+
+  implicit val readsAnyCoding: Reads[Coding[Any]] =
+    (
+      (JsPath \ "code").read[Code[Any]] and
+      (JsPath \ "display").readNullable[String] and
+      (JsPath \ "system").read[URI] and
+      (JsPath \ "version").readNullable[String]
+    )(
+      (code,display,system,version) => Coding[Any](code,display,system,version)
+    )
+
+
+/*
+  import play.api.libs.functional.syntax._
+
   implicit def readsCoding[S]: Reads[Coding[S]] =
     (
       (JsPath \ "code").read[Code[S]] and
@@ -259,6 +288,8 @@ object Coding
     )(
       (code,display,system,version) => Coding[S](code,display,system,version)
     )
+*/
+
 
   implicit def writesCoding[S]: Writes[Coding[S]] = 
     Json.writes[Coding[S]]

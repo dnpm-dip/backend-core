@@ -337,8 +337,11 @@ object ValueSet
       .asInstanceOf[ValueSet[S]]
 */
 
-  implicit def formatValueSet[S]: Format[ValueSet[S]] = 
-    Json.format[ValueSet[S]]
+//  implicit def formatValueSet[S]: Format[ValueSet[S]] = 
+//    Json.format[ValueSet[S]]
+
+  implicit def writesValueSet[S]: Writes[ValueSet[S]] = 
+    Json.writes[ValueSet[S]]
 
 }
 
