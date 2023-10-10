@@ -1,0 +1,57 @@
+package de.dnpm.dip.model
+
+
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers._
+import de.dnpm.dip.util.Completer
+import de.dnpm.dip.coding.Coding
+import java.time.LocalDate
+import java.util.UUID.randomUUID
+
+
+
+class CompleterTests extends AnyFlatSpec
+{
+
+  import Completer.syntax._
+
+  implicit val completer: Completer[Patient] =
+    Completer.of(
+      pat => pat.copy(gender = pat.gender.complete)
+    )
+
+/*
+  implicit val completer: Completer[Patient] = {
+
+    import shapeless.{=:!=}
+    import Completer.derivation._
+
+    implicit def defaultCompleter[T](
+      implicit notCoding: T =:!= Coding[Any]
+    ): Completer[T] =
+      Completer.of(identity)
+
+    Completer[Patient]  
+  }
+*/
+
+
+  "Completer[Patient]" must "have worked correctly" in {
+
+    val patient =
+      Patient(
+        Id[Patient]("1234567890"),
+        Coding(Gender.Unknown).copy(display = None),
+        LocalDate.now,
+        None,
+        None,
+        None,
+      )
+      
+
+    patient.complete.gender.display mustBe defined
+
+  }
+
+
+}

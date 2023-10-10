@@ -247,7 +247,18 @@ object Coding
       concept.version
     )
 
+
+  import play.api.libs.functional.syntax._
+
   implicit def readsCoding[S: Coding.System]: Reads[Coding[S]] =
+    (
+      (JsPath \ "code").read[Code[S]] and
+      (JsPath \ "display").readNullable[String] and
+      (JsPath \ "version").readNullable[String]
+    )(
+      (code,display,version) => Coding[S](code,display,Coding.System[S].uri,version)
+    )
+/*
     Reads(
       js =>
         for {
@@ -262,8 +273,7 @@ object Coding
           version
         )
     )
-
-  import play.api.libs.functional.syntax._
+*/
 
   implicit val readsAnyCoding: Reads[Coding[Any]] =
     (
