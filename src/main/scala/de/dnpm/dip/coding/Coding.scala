@@ -3,6 +3,7 @@ package de.dnpm.dip.coding
 
 import java.net.URI
 import cats.{
+  Eq,
   Id,
   Applicative
 }
@@ -27,6 +28,29 @@ final case class Coding[+S]
 )
 {
 
+  override def canEqual(that: Any): Boolean =
+    that.isInstanceOf[Coding[_]]
+
+
+  // Override equals() methods generated for case class, which checks for deep equality
+  // because 2 Codings should be considered equal when their code, system and version are equal,
+  // irrespective of whether the display value is also defined
+  override def equals(that: Any): Boolean =
+    that match {
+
+      case that: Coding[_] if that.canEqual(this) =>
+
+        val cdng = that.asInstanceOf[Coding[_]]
+
+        this.system  == cdng.system && 
+        this.code    == cdng.code && 
+        this.version == cdng.version
+
+      case _ => false
+
+    }
+
+  
   def parent[Spr >: S](
    implicit
    csp: CodeSystemProvider[Spr,cats.Id,Applicative[cats.Id]],
@@ -258,22 +282,6 @@ object Coding
     )(
       (code,display,version) => Coding[S](code,display,Coding.System[S].uri,version)
     )
-/*
-    Reads(
-      js =>
-        for {
-          code    <- (js \ "code").validate[Code[S]]
-          display <- (js \ "display").validateOpt[String]
-          system  <- (js \ "system").validateOpt[URI]
-          version <- (js \ "version").validateOpt[String]
-        } yield Coding[S](
-          code,
-          display,
-          system.getOrElse(Coding.System[S].uri),
-          version
-        )
-    )
-*/
 
   implicit val readsAnyCoding: Reads[Coding[Any]] =
     (
@@ -286,24 +294,17 @@ object Coding
     )
 
 
-/*
-  import play.api.libs.functional.syntax._
-
-  implicit def readsCoding[S]: Reads[Coding[S]] =
-    (
-      (JsPath \ "code").read[Code[S]] and
-      (JsPath \ "display").readNullable[String] and
-      (JsPath \ "system").read[URI] and
-      (JsPath \ "version").readNullable[String]
-    )(
-      (code,display,system,version) => Coding[S](code,display,system,version)
-    )
-*/
-
-
   implicit def writesCoding[S]: Writes[Coding[S]] = 
     Json.writes[Coding[S]]
 
+
+
+  implicit def eqForCoding[S]: Eq[Coding[S]] =
+    Eq.instance(
+      (c1,c2) =>
+        c1.system  == c2.system && 
+        c1.code    == c2.code && 
+        c1.version == c2.version 
+    )
+
 }
-
-
