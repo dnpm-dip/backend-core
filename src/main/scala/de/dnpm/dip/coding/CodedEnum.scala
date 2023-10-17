@@ -25,7 +25,7 @@ extends Enumeration
     self.unapply(coding.code.value)
 
 
-  object Provider extends SingleCodeSystemProvider[Value](codeSystem)
+  object Provider extends SingleCodeSystemProvider[Value]
 
   /*
    NOTE: each sub-class should have an inner class

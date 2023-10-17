@@ -3,6 +3,14 @@ package de.dnpm.dip.model
 
 
 import java.net.URI
+import play.api.libs.json.{
+  Json,
+  JsString,
+  JsError,
+  JsSuccess,
+  Writes,
+  Reads,
+}
 import de.dnpm.dip.coding.Coding
 
 
@@ -28,7 +36,10 @@ object UnitOfMeasure
       override val name   = n
       override val symbol = s
     }
-    
+
+  implicit def writesUnitOrMeasure[U <: UnitOfMeasure]: Writes[U] =
+    Writes { u => JsString(u.toString) }
+
 }
 
 sealed abstract class UnitOfTime
@@ -45,9 +56,21 @@ object UnitOfTime
   final case object Minutes extends UnitOfTime("Minutes","min")
   final case object Hours   extends UnitOfTime("Hours","h")
   final case object Days    extends UnitOfTime("Days","d")
+  final case object Months  extends UnitOfTime("Months","m")
   final case object Years   extends UnitOfTime("Years","a")
 
   import java.time.temporal.ChronoUnit
+
+  val values =
+    Set(
+      Seconds,
+      Minutes,
+      Hours,
+      Days,   
+      Months,
+      Years  
+    )
+
 
   val of: PartialFunction[ChronoUnit,UnitOfTime] = {
 
@@ -58,10 +81,24 @@ object UnitOfTime
       MINUTES -> Minutes,
       HOURS   -> Hours,
       DAYS    -> Days,  
+      MONTHS  -> Months,  
       YEARS   -> Years
     )
   }
 
+
+  implicit val readsUnitOfTime: Reads[UnitOfTime] =
+    Reads {
+      _.validate[String]
+       .flatMap {
+         u => 
+           values.find(_.toString == u) match {
+             case Some(t) => JsSuccess(t)
+             case None    => JsError(s"Invalid unit of time '$u'")
+           }
+
+       }
+    }
 }
 
 // Dimensionless unit of measure
@@ -87,6 +124,14 @@ object Quantity
   implicit def ordering[Q <: Quantity]: Ordering[Q] =
     Ordering[Double].on(_.value)
 
+  implicit def quantityWrites[Q <: Quantity]: Writes[Q] =
+    Writes {
+      q => 
+        Json.obj(
+          "value" -> q.value,
+          "unit" -> q.unit.toString
+        )
+    }
 }
 
 
@@ -101,14 +146,14 @@ extends Quantity
 
 final case class Age
 (
-  value: Double 
+  value: Double,
+  unit: UnitOfTime = UnitOfTime.Years
 )
 extends Quantity
+
+object Age
 {
-  override val unit: UnitOfMeasure =
-    UnitOfTime.Years
+  implicit val readsAge: Reads[Age] =
+    Json.reads[Age]
 }
-
-
-
 

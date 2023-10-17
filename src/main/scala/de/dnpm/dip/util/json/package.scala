@@ -17,16 +17,21 @@ package object json
 {
 
 
-  implicit def formatNel[T: Reads: Writes](
+  implicit def writesNel[T: Writes](
     implicit
     reads: Reads[List[T]],
     writes: Writes[List[T]]
-  ): Format[NonEmptyList[T]] =
-    Format[NonEmptyList[T]](
-      reads
-        .filterNot(JsonValidationError("Found empty list where non-empty list expected"))(_.isEmpty)
-        .map(NonEmptyList.fromListUnsafe),
-      writes.contramap(_.toList)
-    )
+  ): Writes[NonEmptyList[T]] =
+    writes.contramap(_.toList)
+
+
+  implicit def readsNel[T: Reads](
+    implicit
+    reads: Reads[List[T]],
+    writes: Writes[List[T]]
+  ): Reads[NonEmptyList[T]] =
+    reads
+      .filterNot(JsonValidationError("Found empty list where non-empty list expected"))(_.isEmpty)
+      .map(NonEmptyList.fromListUnsafe)
 
 }

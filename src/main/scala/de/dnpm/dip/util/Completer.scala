@@ -1,6 +1,7 @@
 package de.dnpm.dip.util
 
 
+import cats.data.NonEmptyList
 import shapeless.{
   HList,
   ::,
@@ -56,6 +57,13 @@ object Completer
   ): Completer[C[T]] =
     Completer.of(
       ts => ts.map(_.complete).to(fac)
+    )
+
+  implicit def nonEmptyListCompleter[
+    T: Completer
+  ]: Completer[NonEmptyList[T]] =
+    Completer.of(
+      ts => ts.map(_.complete)
     )
 
 
