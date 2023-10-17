@@ -71,13 +71,16 @@ final case class CodeSystem[S]
 
 
   def parentOf(c: Code[S]): Option[CodeSystem.Concept[S]] =
-    this.concept(c)
+    concept(c)
       .flatMap(_.parent)
-      .flatMap(p => this.concepts.find(_.code == p))
+      .flatMap(concept)
 
 
   def childrenOf(p: Code[S]): Seq[CodeSystem.Concept[S]] =
-    concepts.filter(_.parent.exists(_ == p))
+    concept(p)
+      .flatMap(_.children)
+      .map(_.flatMap(concept))
+      .getOrElse(Seq.empty)
 
 
   def childrenOf(p: CodeSystem.Concept[S]): Seq[CodeSystem.Concept[S]] =

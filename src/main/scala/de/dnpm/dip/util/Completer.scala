@@ -16,7 +16,6 @@ import shapeless.{
 trait Completer[T] extends (T => T)
 
 
-
 object Completer
 {
 
@@ -31,7 +30,6 @@ object Completer
     }
 
   }
-
 
 
   def of[T](f: T => T): Completer[T] =

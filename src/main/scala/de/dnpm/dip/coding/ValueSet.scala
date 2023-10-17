@@ -323,9 +323,9 @@ object ValueSet
       Map.empty
     )
 
-/*
-  implicit def fromCodeSystem[S](
-    implicit cs: CodeSystem[S]
+
+  def from[S](
+    cs: CodeSystem[S]
   ): ValueSet[S] =
     ValueSet
       .compose(
@@ -333,12 +333,13 @@ object ValueSet
         cs.name,
         cs.title
       )
+      .include(
+        cs.uri,
+        _ => true
+      )
       .expand(cs)
       .asInstanceOf[ValueSet[S]]
-*/
 
-//  implicit def formatValueSet[S]: Format[ValueSet[S]] = 
-//    Json.format[ValueSet[S]]
 
   implicit def writesValueSet[S]: Writes[ValueSet[S]] = 
     Json.writes[ValueSet[S]]
