@@ -21,7 +21,6 @@ object ICD10GM extends ICDSystem[ICD10GM]
   implicit val codingSystem: Coding.System[ICD10GM] =
     Coding.System[ICD10GM]("http://fhir.de/CodeSystem/bfarm/icd-10-gm")
 
-
 }
 
 

@@ -24,13 +24,17 @@ final case class Patient
 )
 {
 
-  def ageIn(ch: ChronoUnit): Long =
-    ch.between(
-      birthDate,
-      dateOfDeath.getOrElse(LocalDate.now)
+  def ageIn(ch: ChronoUnit): Age =
+    Age(
+      ch.between(
+        birthDate,
+        dateOfDeath.getOrElse(LocalDate.now)
+      )
+      .toDouble,
+      UnitOfTime.of(ch)
     )
 
-  lazy val age: Long =
+  lazy val age: Age =
     ageIn(YEARS)
 
 

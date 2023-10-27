@@ -56,7 +56,8 @@ object UnitOfTime
   final case object Minutes extends UnitOfTime("Minutes","min")
   final case object Hours   extends UnitOfTime("Hours","h")
   final case object Days    extends UnitOfTime("Days","d")
-  final case object Months  extends UnitOfTime("Months","m")
+  final case object Weeks   extends UnitOfTime("Weeks","wk")
+  final case object Months  extends UnitOfTime("Months","mo")
   final case object Years   extends UnitOfTime("Years","a")
 
   import java.time.temporal.ChronoUnit
@@ -66,7 +67,8 @@ object UnitOfTime
       Seconds,
       Minutes,
       Hours,
-      Days,   
+      Days,  
+      Weeks,
       Months,
       Years  
     )
@@ -81,6 +83,7 @@ object UnitOfTime
       MINUTES -> Minutes,
       HOURS   -> Hours,
       DAYS    -> Days,  
+      WEEKS   -> Weeks,
       MONTHS  -> Months,  
       YEARS   -> Years
     )
@@ -91,11 +94,15 @@ object UnitOfTime
     Reads {
       _.validate[String]
        .flatMap {
-         u => 
-           values.find(_.toString == u) match {
-             case Some(t) => JsSuccess(t)
-             case None    => JsError(s"Invalid unit of time '$u'")
-           }
+         unit => 
+           values
+             .find(_.symbol == unit)
+             .orElse(
+               values.find(_.name.toLowerCase == unit.toLowerCase)
+             ) match {
+               case Some(t) => JsSuccess(t)
+               case None    => JsError(s"Invalid unit of time '$unit'")
+             }
 
        }
     }
@@ -129,7 +136,7 @@ object Quantity
       q => 
         Json.obj(
           "value" -> q.value,
-          "unit" -> q.unit.toString
+          "unit" ->  q.unit.symbol
         )
     }
 }

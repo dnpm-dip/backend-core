@@ -365,6 +365,13 @@ object CodeSystem
     val filters: List[Filter[T]]
   }
 
+  object Publisher
+  {
+    implicit def apply[T](
+      implicit csp: Publisher[T]
+    ): Publisher[T] =
+      csp
+  }
 
 
   implicit val formatInfo: Format[Info] =
