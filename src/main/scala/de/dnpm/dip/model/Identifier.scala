@@ -5,7 +5,8 @@ import java.net.URI
 import java.util.UUID
 import play.api.libs.json.{
   Json,
-  Format
+  Format,
+  OFormat
 }
 
 
@@ -41,7 +42,7 @@ object ExternalId
     )
 
 
-  implicit def format[T]: Format[ExternalId[T]] =
+  implicit def format[T]: OFormat[ExternalId[T]] =
     Json.format[ExternalId[T]]
 
 }

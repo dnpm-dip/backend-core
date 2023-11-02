@@ -7,9 +7,9 @@ import scala.util.matching.Regex
 import cats.Applicative
 import play.api.libs.json.{
   Json,
-  Writes,
+  OWrites,
   Reads,
-  Format
+  OFormat
 }
 
 
@@ -341,7 +341,7 @@ object ValueSet
       .asInstanceOf[ValueSet[S]]
 
 
-  implicit def writesValueSet[S]: Writes[ValueSet[S]] = 
+  implicit def writesValueSet[S]: OWrites[ValueSet[S]] = 
     Json.writes[ValueSet[S]]
 
 }

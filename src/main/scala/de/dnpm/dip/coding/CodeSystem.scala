@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 import cats.Eval
 import play.api.libs.json.{
   Json,
-  Format
+  OFormat
 }
 import scala.collection.{
   WithFilter => StdWithFilter
@@ -374,16 +374,16 @@ object CodeSystem
   }
 
 
-  implicit val formatInfo: Format[Info] =
+  implicit val formatInfo: OFormat[Info] =
     Json.format[Info]
 
-  implicit val formatProperty: Format[Property] =
+  implicit val formatProperty: OFormat[Property] =
     Json.format[Property]
 
-  implicit def formatConcept[S]: Format[Concept[S]] =
+  implicit def formatConcept[S]: OFormat[Concept[S]] =
     Json.format[Concept[S]]
 
-  implicit def formatCodeSystem[S]: Format[CodeSystem[S]] =
+  implicit def formatCodeSystem[S]: OFormat[CodeSystem[S]] =
     Json.format[CodeSystem[S]]
 
 

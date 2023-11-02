@@ -8,7 +8,7 @@ import scala.util.chaining._
 import de.dnpm.dip.coding.Coding
 import play.api.libs.json.{
   Json,
-  Format
+  OFormat
 }
 import de.dnpm.dip.util.Completer.syntax._
 
@@ -48,6 +48,6 @@ final case class Patient
 
 object Patient
 {
-  implicit val format: Format[Patient] = 
+  implicit val format: OFormat[Patient] = 
     Json.format[Patient]
 }

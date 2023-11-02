@@ -3,7 +3,13 @@ package de.dnpm.dip.model
 
 
 import play.api.libs.json.{
-  Format,Json,Reads,Writes,JsObject,JsSuccess
+  Json,
+  Format,
+  OFormat,
+  Reads,
+  OWrites,
+  JsObject,
+  JsSuccess
 }
 
 
@@ -27,7 +33,7 @@ object OpenInterval
   def apply[T: Ordering](minMax: (T,T)): OpenInterval[T] =
     OpenInterval(minMax._1,minMax._2)
 
-  implicit def format[T: Ordering: Format]: Format[OpenInterval[T]] =
+  implicit def format[T: Ordering: Format]: OFormat[OpenInterval[T]] =
     Json.format[OpenInterval[T]]
 }
 
@@ -43,7 +49,7 @@ object ClosedInterval
   def apply[T: Ordering](minMax: (T,T)): ClosedInterval[T] =
     ClosedInterval(minMax._1,minMax._2)
 
-  implicit def format[T: Ordering: Format]: Format[ClosedInterval[T]] =
+  implicit def format[T: Ordering: Format]: OFormat[ClosedInterval[T]] =
     Json.format[ClosedInterval[T]]
 }
 
@@ -58,7 +64,7 @@ object LeftOpenRightClosedInterval
   def apply[T: Ordering](minMax: (T,T)): LeftOpenRightClosedInterval[T] =
     LeftOpenRightClosedInterval(minMax._1,minMax._2)
 
-  implicit def format[T: Ordering: Format]: Format[LeftOpenRightClosedInterval[T]] =
+  implicit def format[T: Ordering: Format]: OFormat[LeftOpenRightClosedInterval[T]] =
     Json.format[LeftOpenRightClosedInterval[T]]
 }
 
@@ -73,7 +79,7 @@ object LeftClosedRightOpenInterval
   def apply[T: Ordering](minMax: (T,T)): LeftClosedRightOpenInterval[T] =
     LeftClosedRightOpenInterval(minMax._1,minMax._2)
 
-  implicit def format[T: Ordering: Format]: Format[LeftClosedRightOpenInterval[T]] =
+  implicit def format[T: Ordering: Format]: OFormat[LeftClosedRightOpenInterval[T]] =
     Json.format[LeftClosedRightOpenInterval[T]]
 }
 
@@ -85,7 +91,7 @@ case class LeftOpenInterval[T: Ordering](min: T) extends Interval[T]
 }
 object LeftOpenInterval
 {
-  implicit def format[T: Ordering: Format]: Format[LeftOpenInterval[T]] =
+  implicit def format[T: Ordering: Format]: OFormat[LeftOpenInterval[T]] =
     Json.format[LeftOpenInterval[T]]
 }
 
@@ -97,7 +103,7 @@ case class LeftClosedInterval[T: Ordering](min: T) extends Interval[T]
 }
 object LeftClosedInterval
 {
-  implicit def format[T: Ordering: Format]: Format[LeftClosedInterval[T]] =
+  implicit def format[T: Ordering: Format]: OFormat[LeftClosedInterval[T]] =
     Json.format[LeftClosedInterval[T]]
 }
 
@@ -109,7 +115,7 @@ case class RightOpenInterval[T: Ordering](max: T) extends Interval[T]
 }
 object RightOpenInterval
 {
-  implicit def format[T: Ordering: Format]: Format[RightOpenInterval[T]] =
+  implicit def format[T: Ordering: Format]: OFormat[RightOpenInterval[T]] =
     Json.format[RightOpenInterval[T]]
 }
 
@@ -121,7 +127,7 @@ case class RightClosedInterval[T: Ordering](max: T) extends Interval[T]
 }
 object RightClosedInterval
 {
-  implicit def format[T: Ordering: Format]: Format[RightClosedInterval[T]] =
+  implicit def format[T: Ordering: Format]: OFormat[RightClosedInterval[T]] =
     Json.format[RightClosedInterval[T]]
 }
 
@@ -133,10 +139,10 @@ case class UnboundedInterval[T: Ordering]() extends Interval[T]
 }
 object UnboundedInterval
 {
-  implicit def format[T: Ordering: Format]: Format[UnboundedInterval[T]] =
-    Format[UnboundedInterval[T]](
+  implicit def format[T: Ordering: Format]: OFormat[UnboundedInterval[T]] =
+    OFormat[UnboundedInterval[T]](
       Reads(js => JsSuccess(UnboundedInterval[T]())),
-      Writes(_ => JsObject.empty)
+      OWrites(_ => JsObject.empty)
     )
 }
 
@@ -162,8 +168,8 @@ object Interval
   }
 
 
-  implicit def format[T: Ordering: Format]: Format[Interval[T]] =
-    Format[Interval[T]](
+  implicit def format[T: Ordering: Format]: OFormat[Interval[T]] =
+    OFormat[Interval[T]](
       Reads(
         js =>
           for {
@@ -178,16 +184,16 @@ object Interval
             } 
           }
       ),
-      Writes {
-        case rng: OpenInterval[T]                => Json.toJson(rng)
-        case rng: ClosedInterval[T]              => Json.toJson(rng)
-        case rng: LeftClosedRightOpenInterval[T] => Json.toJson(rng)
-        case rng: LeftOpenRightClosedInterval[T] => Json.toJson(rng)
-        case rng: LeftOpenInterval[T]            => Json.toJson(rng)
-        case rng: LeftClosedInterval[T]          => Json.toJson(rng)
-        case rng: RightOpenInterval[T]           => Json.toJson(rng)
-        case rng: RightClosedInterval[T]         => Json.toJson(rng)
-        case rng: UnboundedInterval[T]           => Json.toJson(rng)
+      OWrites {
+        case rng: OpenInterval[T]                => Json.toJsObject(rng)
+        case rng: ClosedInterval[T]              => Json.toJsObject(rng)
+        case rng: LeftClosedRightOpenInterval[T] => Json.toJsObject(rng)
+        case rng: LeftOpenRightClosedInterval[T] => Json.toJsObject(rng)
+        case rng: LeftOpenInterval[T]            => Json.toJsObject(rng)
+        case rng: LeftClosedInterval[T]          => Json.toJsObject(rng)
+        case rng: RightOpenInterval[T]           => Json.toJsObject(rng)
+        case rng: RightClosedInterval[T]         => Json.toJsObject(rng)
+        case rng: UnboundedInterval[T]           => Json.toJsObject(rng)
       }
     )
 

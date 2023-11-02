@@ -11,8 +11,8 @@ import shapeless.Witness
 import play.api.libs.json.{
   Json,
   Reads,
-  Writes,
-  Format,
+  OWrites,
+  OFormat,
   JsPath
 }
 import de.dnpm.dip.util.Completer
@@ -294,7 +294,7 @@ object Coding
     )
 
 
-  implicit def writesCoding[S]: Writes[Coding[S]] = 
+  implicit def writesCoding[S]: OWrites[Coding[S]] = 
     Json.writes[Coding[S]]
 
 

@@ -5,10 +5,9 @@ import java.net.URI
 import cats.data.Ior
 import play.api.libs.json.{
   Json,
-  JsObject,
-  Format,
+  OFormat,
   Reads,
-  Writes
+  OWrites
 }
 
 
@@ -94,27 +93,27 @@ object Reference
   }
 
 
-  implicit def formatUriRef[T]: Format[UriReference[T]] =
+  implicit def formatUriRef[T]: OFormat[UriReference[T]] =
     Json.format[UriReference[T]]
 
-  implicit def formatIdRef[T]: Format[IdReference[T]] =
+  implicit def formatIdRef[T]: OFormat[IdReference[T]] =
     Json.format[IdReference[T]]
 
-  implicit def formatExternalRef[T]: Format[ExternalReference[T]] =
+  implicit def formatExternalRef[T]: OFormat[ExternalReference[T]] =
     Json.format[ExternalReference[T]]
 
 
-  implicit def formatReference[T]: Format[Reference[T]] =
-    Format(
+  implicit def formatReference[T]: OFormat[Reference[T]] =
+    OFormat[Reference[T]](
       Reads(js =>
         js.validate[IdReference[T]]
           .orElse(js.validate[ExternalReference[T]]) 
           .orElse(js.validate[UriReference[T]]) 
       ),
-      Writes {
-        case r: UriReference[T]      => Json.toJson(r)
-        case r: IdReference[T]       => Json.toJson(r)
-        case r: ExternalReference[T] => Json.toJson(r)
+      OWrites {
+        case r: UriReference[T]      => Json.toJsObject(r)
+        case r: IdReference[T]       => Json.toJsObject(r)
+        case r: ExternalReference[T] => Json.toJsObject(r)
       }
     )
 
