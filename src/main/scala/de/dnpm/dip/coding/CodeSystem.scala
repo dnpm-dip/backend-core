@@ -87,12 +87,12 @@ final case class CodeSystem[S]
     childrenOf(p.code)
 
 
-  //TODO: Look for tail-recursive implementation?
   def descendantsOf(p: Code[S]): Seq[CodeSystem.Concept[S]] = { 
 
     val children = childrenOf(p)
             
-    children ++ children.flatMap(c => childrenOf(c.code))
+  //TODO: Look for tail-recursive implementation?
+    children ++ children.flatMap(descendantsOf)
   }
 
   def descendantsOf(p: CodeSystem.Concept[S]): Seq[CodeSystem.Concept[S]] =
