@@ -152,6 +152,21 @@ object UnboundedInterval
 object Interval
 {
 
+  def apply[T: Ordering](
+    min: Option[T],
+    max: Option[T]
+  ): Interval[T] = {
+
+    (min,max) match {
+      case (Some(mn),Some(mx)) => ClosedInterval(mn -> mx)
+      case (Some(mn),None)     => LeftClosedInterval(mn)
+      case (None,Some(mx))     => RightClosedInterval(mx)
+      case (None,None)         => UnboundedInterval[T]()
+    }
+
+  }
+
+
   implicit class OrderOps[T](val t: T) extends AnyVal
   {
     def <(u: T)(implicit o: Ordering[T])  = o.lt(t,u)
@@ -159,6 +174,8 @@ object Interval
     def >(u: T)(implicit o: Ordering[T])  = o.gt(t,u)
     def >=(u: T)(implicit o: Ordering[T]) = o.gteq(t,u)
   }
+
+
 
 
   implicit class IntervalOps[T](val t: T) extends AnyVal
