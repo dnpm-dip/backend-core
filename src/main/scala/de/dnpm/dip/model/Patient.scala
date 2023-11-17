@@ -8,7 +8,8 @@ import scala.util.chaining._
 import de.dnpm.dip.coding.Coding
 import play.api.libs.json.{
   Json,
-  OFormat
+  Reads,
+  OWrites
 }
 import de.dnpm.dip.util.Completer.syntax._
 
@@ -48,6 +49,23 @@ final case class Patient
 
 object Patient
 {
-  implicit val format: OFormat[Patient] = 
-    Json.format[Patient]
+
+  implicit val reads: Reads[Patient] = 
+    Json.reads[Patient]
+
+  implicit val writes: OWrites[Patient] = 
+    OWrites[Patient]{
+      pat =>
+        Json.obj(
+          "id"              -> pat.id,
+          "gender"          -> pat.gender,
+          "birthDate"       -> pat.birthDate,
+          "dateOfDeath"     -> pat.dateOfDeath,
+          "managingSite"    -> pat.managingSite,
+          "healthInsurance" -> pat.healthInsurance,
+          "age"             -> pat.age,
+          "vitalStatus"     -> pat.vitalStatus
+        )
+    }
+
 }

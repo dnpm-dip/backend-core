@@ -18,6 +18,7 @@ extends Enumeration
 
   implicit val codeSystem: CodeSystem[Value]
 
+
   def unapply(code: String): Option[Value] =
     self.values.find(_.toString == code)
 

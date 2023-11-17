@@ -17,5 +17,3 @@ object Code
     Json.valueFormat[Code[S]]
 
 }
-
-

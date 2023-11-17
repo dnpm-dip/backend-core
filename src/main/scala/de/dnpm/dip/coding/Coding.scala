@@ -188,7 +188,7 @@ object Coding
   
     def apply[S](implicit sys: System[S]) = sys
   
-  
+/* 
     implicit def enumValueSystem[E <: Enumeration](
       implicit w: Witness.Aux[E]
     ): System[E#Value] =
@@ -203,7 +203,7 @@ object Coding
       implicit vs: ValueSet[S]
     ): System[S] =
       System(vs.uri)
-
+*/
   }
 
 
