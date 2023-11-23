@@ -44,11 +44,21 @@ object ATC extends CodeSystem.Publisher[ATC]
     )
 
 
-  override val properties =
-    List(Kind,DDD)  
+  val filterByKind: Map[Kinds.Value,CodeSystem.Filter[ATC]] =
+    Kinds.values
+      .toList
+      .map { kind =>
 
-  override val filters =
-    List.empty
+        import extensions._
+
+        kind -> CodeSystem.Filter[ATC](
+          s"is a $kind",
+          Some(s"Filter entries with 'kind' = '$kind'"),
+          _.kind == kind
+        )
+      }
+      .toMap
+
 
 
   object extensions
@@ -65,6 +75,17 @@ object ATC extends CodeSystem.Publisher[ATC]
     }
 
   }
+
+
+  override val properties =
+    List(
+      Kind,
+      DDD
+    )  
+
+  override val filters =
+    filterByKind.values.toList
+
 
 
   trait Catalogs[F[_],Env] extends CodeSystemProvider[ATC,F,Env]

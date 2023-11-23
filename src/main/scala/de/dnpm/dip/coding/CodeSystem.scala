@@ -70,6 +70,11 @@ final case class CodeSystem[S]
     this.codingWithCode(c.toString).get
 
 
+  def parentOf(c: CodeSystem.Concept[S]): Option[CodeSystem.Concept[S]] =
+    c.parent
+     .flatMap(concept)
+
+
   def parentOf(c: Code[S]): Option[CodeSystem.Concept[S]] =
     concept(c)
       .flatMap(_.parent)
@@ -215,6 +220,18 @@ object CodeSystem
 
   }
 
+  object Concept
+  {
+    def properties(
+      prop: (Property,Iterable[String]),
+      props: (Property,Iterable[String])*,
+    ): Map[String,Set[String]] =
+      (prop +: props)
+        .collect {
+          case (prp,values) if values.nonEmpty => prp.name -> values.toSet
+        }
+        .toMap
+  }
 
 
   abstract class Filter[T] private (
