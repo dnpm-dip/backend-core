@@ -6,7 +6,8 @@ import java.time.LocalDateTime
 import cats.Eval
 import play.api.libs.json.{
   Json,
-  OFormat
+  OFormat,
+  OWrites
 }
 import scala.collection.{
   WithFilter => StdWithFilter
@@ -70,43 +71,73 @@ final case class CodeSystem[S]
     this.codingWithCode(c.toString).get
 
 
-  def parentOf(c: CodeSystem.Concept[S]): Option[CodeSystem.Concept[S]] =
-    c.parent
-     .flatMap(concept)
-
-
   def parentOf(c: Code[S]): Option[CodeSystem.Concept[S]] =
     concept(c)
       .flatMap(_.parent)
       .flatMap(concept)
 
+  def parentOf(c: CodeSystem.Concept[S]): Option[CodeSystem.Concept[S]] =
+    parentOf(c.code)
 
-  def childrenOf(p: Code[S]): Seq[CodeSystem.Concept[S]] =
+
+  def parentsOf(
+    c: Code[S],
+    // allow providing a function to determine parents of a concept
+    // since not all hierarchical CodeSystems are pure trees, but allow a concept
+    // to have multiple parents/super-concepts, so this could be the function to
+    // get the corresponding concept property
+    parents: CodeSystem.Concept[S] => Set[Code[S]] = parentOf(_).map(_.code).toSet
+  ): Set[CodeSystem.Concept[S]] =
+    concept(c)
+      .toSet
+      .flatMap(parents)
+      .flatMap(concept)
+
+
+  def ancestorsOf(
+    c: Code[S],
+    // allow providing a function to determine parents of a concept
+    // since not all hierarchical CodeSystems are pure trees, but allow a concept
+    // to have multiple parents/super-concepts, so this could be the function to
+    // get the corresponding concept property
+    ps: CodeSystem.Concept[S] => Set[Code[S]] = c => parentsOf(c.code).map(_.code)
+  ): Set[CodeSystem.Concept[S]] = {
+
+    val parents = parentsOf(c,ps)
+
+    //TODO: Look for tail-recursive implementation?
+    parents ++
+      parents.flatMap(p => ancestorsOf(p.code,ps))
+
+  }
+
+
+  def childrenOf(p: Code[S]): Set[CodeSystem.Concept[S]] =
     concept(p)
       .flatMap(_.children)
       .map(_.flatMap(concept))
-      .getOrElse(Seq.empty)
+      .getOrElse(Set.empty)
 
 
-  def childrenOf(p: CodeSystem.Concept[S]): Seq[CodeSystem.Concept[S]] =
+  def childrenOf(p: CodeSystem.Concept[S]): Set[CodeSystem.Concept[S]] =
     childrenOf(p.code)
 
 
-  def descendantsOf(p: Code[S]): Seq[CodeSystem.Concept[S]] = { 
+  def descendantsOf(p: Code[S]): Set[CodeSystem.Concept[S]] = { 
 
     val children = childrenOf(p)
             
-  //TODO: Look for tail-recursive implementation?
-    children ++ children.flatMap(descendantsOf)
+    //TODO: Look for tail-recursive implementation?
+    children ++
+      children.flatMap(descendantsOf)
   }
 
-  def descendantsOf(p: CodeSystem.Concept[S]): Seq[CodeSystem.Concept[S]] =
+  def descendantsOf(p: CodeSystem.Concept[S]): Set[CodeSystem.Concept[S]] =
     descendantsOf(p.code)
 
 
   def displayOf(c: Code[S]): Option[String] =
     this.concept(c).map(_.display)
-
 
   def filter(f: CodeSystem.Concept[S] => Boolean): CodeSystem[S] =
     this.copy(concepts = concepts.filter(f))
@@ -200,7 +231,7 @@ object CodeSystem
     version: Option[String],
     properties: Map[String,Set[String]],
     parent: Option[Code[S]],
-    children: Option[List[Code[S]]] 
+    children: Option[Set[Code[S]]] 
   )
   {
     def get(p: Property): Option[Set[String]] =
@@ -283,6 +314,14 @@ object CodeSystem
         override def apply(c: Concept[T]) = op(c)
       }
 
+    implicit def writes[T,F <: Filter[T]]: OWrites[F] =
+      OWrites {
+        filter =>
+          Json.obj(
+            "name"        -> filter.name,
+            "description" -> filter.description
+          )
+      }
   }
 
 

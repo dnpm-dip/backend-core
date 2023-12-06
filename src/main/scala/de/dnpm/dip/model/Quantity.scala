@@ -9,6 +9,7 @@ import play.api.libs.json.{
   JsError,
   JsSuccess,
   Writes,
+  OWrites,
   Reads,
 }
 import de.dnpm.dip.coding.Coding
@@ -131,8 +132,8 @@ object Quantity
   implicit def ordering[Q <: Quantity]: Ordering[Q] =
     Ordering[Double].on(_.value)
 
-  implicit def quantityWrites[Q <: Quantity]: Writes[Q] =
-    Writes {
+  implicit def quantityWrites[Q <: Quantity]: OWrites[Q] =
+    OWrites {
       q => 
         Json.obj(
           "value" -> q.value,

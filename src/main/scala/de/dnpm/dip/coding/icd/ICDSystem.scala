@@ -15,8 +15,8 @@ object ClassKinds extends Enumeration
   val Chapter  = Value("chapter")
   val Block    = Value("block")
   val Category = Value("category")
-
 }
+
 
 private [icd] trait ICD
 
@@ -36,7 +36,7 @@ trait ICDSystem[T <: ICD] extends CodeSystem.Publisher[T]
     )
 
 
-  val classKindFilters: Map[ClassKinds.Value,CodeSystem.Filter[T]] =
+  val filterByClassKind: Map[ClassKinds.Value,CodeSystem.Filter[T]] =
     ClassKinds.values
       .toList
       .map { kind =>
@@ -44,8 +44,8 @@ trait ICDSystem[T <: ICD] extends CodeSystem.Publisher[T]
         import extensions._
 
         kind -> CodeSystem.Filter[T](
-          s"is a $kind",
-          Some(s"Filter ICD classes with 'kind' = '$kind'"),
+          s"is-a-$kind",
+          Some(s"Filter ICD classes of kind '$kind'"),
           _.classKind == kind
         )
       }
@@ -53,14 +53,14 @@ trait ICDSystem[T <: ICD] extends CodeSystem.Publisher[T]
 
 
   override val filters =
-    classKindFilters.values.toList
+    filterByClassKind.values.toList
 
 
   object extensions 
   {
 
-    implicit class ICDConceptProperties(
-      val c: CodeSystem.Concept[T]
+    implicit class ICDConceptProperties[Tpr <: T](
+      val c: CodeSystem.Concept[Tpr]
     )
     {
 
