@@ -68,23 +68,38 @@ extends Reference[T]
 object Reference
 {
 
-  def apply[T](uri: URI, display: Option[String]): Reference[T] =
+  def apply[T](
+    uri: URI,
+    display: Option[String]
+  ): Reference[T] =
     UriReference(uri,display)
 
-  def apply[T](id: Id[T], display: Option[String]): Reference[T] =
+  def apply[T](
+    id: Id[T],
+    display: Option[String]
+  ): Reference[T] =
     IdReference(id,display)
 
-  def apply[T](extId: ExternalId[T], display: Option[String]): Reference[T] =
+  def apply[T](
+    extId: ExternalId[T],
+    display: Option[String]
+  ): Reference[T] =
     ExternalReference(extId,display)
 
-  def uri[T](uri: String, display: Option[String] = None): Reference[T] =
+  def uri[T](
+    uri: String,
+    display: Option[String] = None
+  ): Reference[T] =
     UriReference(URI.create(uri),display)
 
-  def id[T](id: String, display: Option[String] = None): Reference[T] =
+  def id[T](
+    id: String,
+    display: Option[String] = None
+  ): Reference[T] =
     IdReference(Id(id),display)
 
   
-  def apply[T <: AnyRef { val id: Id[T]}](t: T): Reference[T] = {
+  def apply[T <: { val id: Id[T] }](t: T): Reference[T] = {
     import scala.language.reflectiveCalls
 
     // Cast id value to String instead of Id[T] here
