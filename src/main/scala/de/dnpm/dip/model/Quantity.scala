@@ -165,3 +165,16 @@ object Age
     Json.reads[Age]
 }
 
+final case class Duration
+(
+  value: Double,
+  unit: UnitOfTime
+)
+extends Quantity
+
+object Duration
+{
+  implicit val readsDuration: Reads[Duration] =
+    Json.reads[Duration]
+}
+

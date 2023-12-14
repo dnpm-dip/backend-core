@@ -155,6 +155,7 @@ object CodeSystem
     name: String,
     title: Option[String],
     uri: URI,
+//    versions: List[String]
     version: Option[String]
   )
 

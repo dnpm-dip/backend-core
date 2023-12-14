@@ -48,7 +48,7 @@ class CodeTests extends AnyFlatSpec
 
     coding1 must equal (coding1pr)
 
-    coding1 must not equal coding1ppr
+    coding1 must equal (coding1ppr)
 
     coding1 must not equal coding2
 

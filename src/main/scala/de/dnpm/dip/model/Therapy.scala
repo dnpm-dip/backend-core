@@ -23,7 +23,7 @@ sealed trait Therapy
   val statusReason: Option[Coding[Therapy.StatusReason]]
   val therapyLine: Option[Int]
   val basedOn: Option[Reference[TherapyRecommendation]]
-  val recordedOn: Option[LocalDate]
+  val recordedOn: LocalDate
   val period: Option[Period[LocalDate]]
   val note: Option[String]
 }
