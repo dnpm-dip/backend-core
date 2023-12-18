@@ -43,7 +43,8 @@ final case class Coding[+S]
         val cdng = that.asInstanceOf[Coding[_]]
 
         this.system  == cdng.system && 
-        this.code    == cdng.code   //  && this.version == cdng.version
+        this.code    == cdng.code 
+        //  && this.version == cdng.version
 
       case _ => false
 

@@ -24,14 +24,22 @@ sealed trait Reference[+T]
 }
 
 
-trait Resolver[T]
-{
-  def apply(ref: Reference[T]): Option[T]
-}
+trait Resolver[T] extends (Reference[T] => Option[T])
 
 object Resolver
 {
   def apply[T](implicit res: Resolver[T]) = res
+
+  def on[T <: { val id: Id[T] }](ts: Iterable[T]): Resolver[T] =
+    new Resolver[T]{
+      import scala.language.reflectiveCalls
+      override def apply(ref: Reference[T]): Option[T] =
+        ref match {
+          case IdReference(id,_) => ts.find(_.id == id)
+          case _                 => None
+        }
+    }
+
 }
 
 trait ResolverF[F[_],Env]
