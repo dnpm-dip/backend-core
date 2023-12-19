@@ -22,8 +22,8 @@ object HGVS extends CodeSystem.Publisher[HGVS]
   implicit val codingSystem: Coding.System[HGVS] =
     Coding.System[HGVS]("https://varnomen.hgvs.org")
 
-  sealed trait DNA
-  sealed trait Protein
+  sealed trait DNA extends HGVS
+  sealed trait Protein extends HGVS
 
 
   implicit val codingSystemDNA: Coding.System[HGVS.DNA] =

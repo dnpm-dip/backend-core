@@ -1,15 +1,14 @@
 package de.dnpm.dip.coding.icd
 
 
-import cats.Applicative
 
+import cats.Applicative
 import de.dnpm.dip.coding.{
   Code,
   Coding,
   CodeSystem,
   CodeSystemProvider,
 }
-
 import de.dnpm.dip.util.{
   SPIF,
   SPILoaderF
@@ -70,6 +69,7 @@ object ICDO3 extends ICDSystem[ICDO3]
   ]
 
   object Catalogs extends SPILoaderF[CatalogsSPI]
+
 
 }
 

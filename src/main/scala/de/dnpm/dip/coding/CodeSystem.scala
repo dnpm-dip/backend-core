@@ -337,12 +337,12 @@ object CodeSystem
     concepts: (T,String)*
   ): CodeSystem[T] =
     CodeSystem(
-      uri,
-      name,
-      title,
-      None,
-      None,
-      List.empty,
+      uri        = uri,
+      name       = name,
+      title      = title,
+      date       = None,
+      version    = version,
+      properties = List.empty,
       concepts.toSeq.map {
         case (t,display) =>
           Concept[T]( 
@@ -365,12 +365,12 @@ object CodeSystem
     concepts: (String,String)*
   ): CodeSystem[T] =
     CodeSystem(
-      uri,
-      name,
-      title,
-      None,
-      None,
-      List.empty,
+      uri        = uri,
+      name       = name,
+      title      = title,
+      date       = None,
+      version    = version,
+      properties = List.empty,
       concepts.toSeq.map {
         case (c,display) =>
           Concept[T]( 
@@ -392,12 +392,12 @@ object CodeSystem
     concepts: (String,String)*
   ): CodeSystem[T] =
     CodeSystem(
-      Coding.System[T].uri,
-      name,
-      title,
-      None,
-      None,
-      List.empty,
+      uri        = Coding.System[T].uri,
+      name       = name,
+      title      = title,
+      date       = None,
+      version    = version,
+      properties = List.empty,
       concepts.toSeq.map {
         case (c,display) =>
           Concept[T]( 

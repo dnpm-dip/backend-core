@@ -128,6 +128,10 @@ trait CodeSystemProviderSPI extends SPIF[
 object CodeSystemProvider extends SPILoaderF[CodeSystemProviderSPI]
 {
 
+  def apply[S](implicit csp: CodeSystemProvider[S,cats.Id,Applicative[cats.Id]]) =
+    csp
+
+
   import scala.language.implicitConversions
 
   implicit def toAnyCodeSystemProvider[S,Spr >: S,F[_],Env](
