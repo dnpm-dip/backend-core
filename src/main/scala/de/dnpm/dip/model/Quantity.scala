@@ -3,6 +3,7 @@ package de.dnpm.dip.model
 
 
 import java.net.URI
+import java.time.temporal.ChronoUnit
 import play.api.libs.json.{
   Json,
   JsString,
@@ -61,7 +62,6 @@ object UnitOfTime
   final case object Months  extends UnitOfTime("Months","mo")
   final case object Years   extends UnitOfTime("Years","a")
 
-  import java.time.temporal.ChronoUnit
 
   val values =
     Set(
@@ -74,11 +74,9 @@ object UnitOfTime
       Years  
     )
 
+  import ChronoUnit._
 
-  val of: PartialFunction[ChronoUnit,UnitOfTime] = {
-
-    import ChronoUnit._
-
+  private val chronoUnitMap =
     Map( 
       SECONDS -> Seconds,
       MINUTES -> Minutes,
@@ -88,7 +86,15 @@ object UnitOfTime
       MONTHS  -> Months,  
       YEARS   -> Years
     )
-  }
+
+  val of: PartialFunction[ChronoUnit,UnitOfTime] =
+    chronoUnitMap
+
+
+  val chronoUnit: PartialFunction[UnitOfTime,ChronoUnit] =
+    chronoUnitMap.map { 
+      case (k,v) => v -> k
+    }
 
 
   implicit val readsUnitOfTime: Reads[UnitOfTime] =
@@ -174,6 +180,14 @@ extends Quantity
 
 object Duration
 {
+
+  def of(
+    value: Double,
+    unit: ChronoUnit
+  ): Duration =
+    Duration(value, UnitOfTime.of(unit))
+
+
   implicit val readsDuration: Reads[Duration] =
     Json.reads[Duration]
 }

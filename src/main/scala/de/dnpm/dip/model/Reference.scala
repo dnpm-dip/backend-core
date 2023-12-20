@@ -5,6 +5,8 @@ import java.net.URI
 import cats.data.Ior
 import play.api.libs.json.{
   Json,
+  JsObject,
+  JsString,
   OFormat,
   Reads,
   OWrites
@@ -126,18 +128,34 @@ object Reference
     Json.format[ExternalReference[T]]
 
 
-  implicit def formatReference[T]: OFormat[Reference[T]] =
-    OFormat[Reference[T]](
-      Reads(js =>
-        js.validate[IdReference[T]]
-          .orElse(js.validate[ExternalReference[T]]) 
-          .orElse(js.validate[UriReference[T]]) 
-      ),
-      OWrites {
-        case r: UriReference[T]      => Json.toJsObject(r)
-        case r: IdReference[T]       => Json.toJsObject(r)
-        case r: ExternalReference[T] => Json.toJsObject(r)
-      }
+  final case class TypeName[T](value: String)
+
+  object TypeName
+  {
+    import scala.reflect.ClassTag
+
+    def apply[T](implicit t: TypeName[T]) = t
+
+    implicit def typeName[T](implicit tag: ClassTag[T]): TypeName[T] =
+      TypeName[T](tag.runtimeClass.asInstanceOf[Class[T]].getSimpleName)
+  }
+
+
+  implicit def readsReference[T]: Reads[Reference[T]] =
+    Reads(js =>
+      js.validate[IdReference[T]]
+        .orElse(js.validate[ExternalReference[T]]) 
+        .orElse(js.validate[UriReference[T]]) 
+    )
+
+  implicit def writesReference[T: TypeName]: OWrites[Reference[T]] =
+    OWrites[Reference[T]]{
+      case r: UriReference[T]      => Json.toJsObject(r)
+      case r: IdReference[T]       => Json.toJsObject(r)
+      case r: ExternalReference[T] => Json.toJsObject(r)
+    }
+    .transform(
+      (js: JsObject) => js + ("type" -> JsString(TypeName[T].value))
     )
 
 }
