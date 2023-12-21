@@ -32,7 +32,7 @@ object Resolver
 {
   def apply[T](implicit res: Resolver[T]) = res
 
-  def on[T <: { val id: Id[T] }](ts: Iterable[T]): Resolver[T] =
+  implicit def resolverOn[T <: { def id: Id[T] }](implicit ts: Iterable[T]): Resolver[T] =
     new Resolver[T]{
       import scala.language.reflectiveCalls
       override def apply(ref: Reference[T]): Option[T] =
@@ -78,6 +78,9 @@ extends Reference[T]
 object Reference
 {
 
+  type HasId[T] = { def id: Id[T] }
+
+
   def apply[T](
     uri: URI,
     display: Option[String]
@@ -109,6 +112,13 @@ object Reference
     IdReference(Id(id),display)
 
   
+  def apply[T <: { def id: Id[T] }](t: T): Reference[T] = {
+    import scala.language.reflectiveCalls
+
+    Reference.id[T](t.id.value)
+  }
+
+/*
   def apply[T <: { val id: Id[T] }](t: T): Reference[T] = {
     import scala.language.reflectiveCalls
 
@@ -116,7 +126,7 @@ object Reference
     // because Id extends AnyVal and is thus a String at runtime
     Reference.id[T](t.asInstanceOf[{ val id: String }].id)
   }
-
+*/
 
   implicit def formatUriRef[T]: OFormat[UriReference[T]] =
     Json.format[UriReference[T]]

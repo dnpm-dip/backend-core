@@ -83,6 +83,9 @@ object Period
   def apply[T <: Temporal: Format](start: T): Period[T] =
     OpenEndPeriod(start)
 
+  def apply[T <: Temporal: Format](start: T, end: T): Period[T] =
+    ClosedPeriod(start,end)
+
 
   implicit def format[T <: Temporal: Format]: OFormat[Period[T]] =
     OFormat[Period[T]](

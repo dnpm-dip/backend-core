@@ -11,7 +11,7 @@ import play.api.libs.json.{
 
 
 
-final case class Id[+T](value: String) extends AnyVal
+final case class Id[+T](value: String)// extends AnyVal
 {
   override def toString: String = value
 }
