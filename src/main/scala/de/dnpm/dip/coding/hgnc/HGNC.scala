@@ -32,10 +32,10 @@ object HGNC extends CodeSystem.Publisher[HGNC]
     Coding.System[HGNC]("https://www.genenames.org/")
 
 
-  val Symbol =
+  val Name =
     CodeSystem.Property[String](
-      "Symbol",
-      Some("Gene symbol")
+      "name",
+      Some("Gene name")
     )
 
   val AliasSymbols =
@@ -59,7 +59,7 @@ object HGNC extends CodeSystem.Publisher[HGNC]
 
   override val properties =
     List(
-      Symbol,
+      Name,
       AliasSymbols,
       PreviousSymbols,
       EnsemblID
@@ -84,17 +84,22 @@ object HGNC extends CodeSystem.Publisher[HGNC]
 
     implicit class HGNCConceptProperties(val c: CodeSystem.Concept[HGNC]) extends AnyVal
     {
-      def symbol: String =
-        c.get(Symbol).get.head  // safe, always defined
+      def name: String =
+        c.get(Name)
+         .get.head  // safe, always defined
 
       def aliasSymbols: Set[String] =
-        c.get(AliasSymbols).getOrElse(Set.empty)
+        c.get(AliasSymbols)
+         .getOrElse(Set.empty)
 
       def previousSymbols: Set[String] =
-        c.get(PreviousSymbols).getOrElse(Set.empty)
+        c.get(PreviousSymbols)
+         .getOrElse(Set.empty)
 
       def ensemblID: Option[Code[Ensembl]] =
-        c.get(EnsemblID).flatMap(_.headOption).map(Code[Ensembl](_))
+        c.get(EnsemblID)
+         .flatMap(_.headOption)
+         .map(Code[Ensembl](_))
     }
 
   }

@@ -417,9 +417,9 @@ object CodeSystem
 
     implicit val codingSystem: Coding.System[T]
 
-    val properties: List[Property]
+    def properties: List[Property]
 
-    val filters: List[Filter[T]]
+    def filters: List[Filter[T]]
   }
 
   object Publisher

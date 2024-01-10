@@ -1,7 +1,10 @@
 package de.dnpm.dip.coding.atc
 
 
-import cats.Applicative
+import cats.{
+  Applicative,
+  Id
+}
 import de.dnpm.dip.coding.{
   Code,
   Coding,
@@ -72,6 +75,24 @@ object ATC extends CodeSystem.Publisher[ATC]
 
       def ddd: Option[String] =
         c.get(DDD).flatMap(_.headOption)
+    }
+
+    implicit class ATCCodingProperties(val coding: Coding[ATC]) extends AnyVal
+    {
+      import Kinds._
+
+      def group(
+        implicit csp: CodeSystemProvider[ATC,Id,Applicative[Id]]
+      ): Option[Coding[ATC]] =
+        for {
+          cs <- csp.get(coding.version.getOrElse(csp.latestVersion))
+          concept <- cs.concept(coding.code)
+          group <- 
+            concept.kind match {
+              case Substance => cs.parentOf(concept)
+              case Group     => Some(concept)
+            }
+        } yield group.toCoding
     }
 
   }

@@ -1,7 +1,7 @@
 package de.dnpm.dip.coding.icd
 
 
-
+import scala.util.matching.Regex
 import cats.Applicative
 import de.dnpm.dip.coding.{
   Code,
@@ -36,6 +36,35 @@ object ICDO3 extends ICDSystem[ICDO3]
 
   implicit val codingSystemT: Coding.System[ICDO3.T] =
     Coding.System[ICDO3].asInstanceOf[Coding.System[ICDO3.T]]
+
+
+
+  // Match either C**-C** or C**.*  where * = digit
+  private val topographyRegex =
+    """(C\d{2}-C\d{2}|C\d{2}(.\d{1})?)""".r
+
+  // Match either ***-*** or ****/*  where * = digit
+  private val morphologyRegex =
+    """(\d{3}-\d{3}|\d{4}/\d{1})""".r
+
+
+  val topographyFilter =
+    CodeSystem.Filter[ICDO3](
+      "topography",
+      Some("Filters ICD-O-3-T codings (Topography)"),
+      c => topographyRegex matches (c.code.value)
+    )
+
+  val morphologyFilter =
+    CodeSystem.Filter[ICDO3](
+      "morphology",
+      Some("Filters ICD-O-3-M coding (Morphology)"),
+      c => morphologyRegex matches (c.code.value)
+    )
+
+  override val filters =
+    super.filters :+ topographyFilter :+ morphologyFilter 
+
 
 
   trait Catalogs[F[_],Env] extends CodeSystemProvider[ICDO3,F,Env]

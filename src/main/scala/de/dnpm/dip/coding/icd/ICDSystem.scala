@@ -52,7 +52,7 @@ trait ICDSystem[T <: ICD] extends CodeSystem.Publisher[T]
       .toMap
 
 
-  override val filters =
+  override def filters =
     filterByClassKind.values.toList
 
 

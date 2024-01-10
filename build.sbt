@@ -21,7 +21,6 @@ lazy val root =
         "com.chuusai"        %% "shapeless"   % "2.3.10",
         "org.typelevel"      %% "cats-core"   % "2.9.0",
         "com.typesafe.play"  %% "play-json"   % "2.9.4",
-//        "com.typesafe.play"  %% "play-json"   % "2.10.0",
      )
   )
 
