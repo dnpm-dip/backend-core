@@ -42,6 +42,11 @@ abstract class BasicCodeSystemProvider[S: Coding.System](
       self.versions
         .map(_.toList.max(versionOrder))
 
+    override def filters(
+      implicit env: Applicative[F]
+    ): F[List[CodeSystem.Filter[S]]] =
+      List.empty.pure
+
   
     override def get(
       version: String
@@ -94,6 +99,11 @@ abstract class SingleCodeSystemProvider[S: Coding.System](
       implicit env: Applicative[F]
     ): F[String] =
       version.pure[F]
+
+    override def filters(
+      implicit env: Applicative[F]
+    ): F[List[CodeSystem.Filter[S]]] =
+      List.empty.pure
 
   
     override def get(

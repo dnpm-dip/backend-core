@@ -315,6 +315,15 @@ object CodeSystem
         override def apply(c: Concept[T]) = op(c)
       }
 
+    implicit def writes[T]: OWrites[Filter[T]] =
+      OWrites {
+        filter =>
+          Json.obj(
+            "name"        -> filter.name,
+            "description" -> filter.description
+          )
+      }
+/*      
     implicit def writes[T,F <: Filter[T]]: OWrites[F] =
       OWrites {
         filter =>
@@ -323,6 +332,7 @@ object CodeSystem
             "description" -> filter.description
           )
       }
+*/      
   }
 
 
