@@ -59,9 +59,7 @@ trait ICDSystem[T <: ICD] extends CodeSystem.Publisher[T]
   object extensions 
   {
 
-    implicit class ICDConceptProperties[Tpr <: T](
-      val c: CodeSystem.Concept[Tpr]
-    )
+    implicit class ICDConceptProperties[Tpr <: T](val c: CodeSystem.Concept[Tpr])
     {
 
       def classKind: ClassKinds.Value =

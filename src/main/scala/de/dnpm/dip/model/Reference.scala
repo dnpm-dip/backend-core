@@ -32,7 +32,7 @@ object Resolver
 {
   def apply[T](implicit res: Resolver[T]) = res
 
-  implicit def resolverOn[T <: { def id: Id[T] }](implicit ts: Iterable[T]): Resolver[T] =
+  implicit def on[T <: { def id: Id[T] }](implicit ts: Iterable[T]): Resolver[T] =
     new Resolver[T]{
       import scala.language.reflectiveCalls
       override def apply(ref: Reference[T]): Option[T] =

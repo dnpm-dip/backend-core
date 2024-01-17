@@ -21,6 +21,8 @@ object HGVS extends CodeSystem.Publisher[HGVS]
 
   implicit val codingSystem: Coding.System[HGVS] =
     Coding.System[HGVS]("https://varnomen.hgvs.org")
+//    Coding.System[HGVS]("https://hgvs-nomenclature.org")
+
 
   sealed trait DNA extends HGVS
   sealed trait Protein extends HGVS
@@ -38,7 +40,6 @@ object HGVS extends CodeSystem.Publisher[HGVS]
 
   override val filters =
     List.empty
-
 
 
   object Protein
@@ -81,7 +82,6 @@ object HGVS extends CodeSystem.Publisher[HGVS]
        aminoAcidMappings
          .map { case (one,three) => three.toLowerCase -> one }
 
-     //TODO: Case insensitivity
 
      private val threeLetterAA =
        s"(?i)(${aminoAcidMappings.values.mkString("|")})".r.unanchored

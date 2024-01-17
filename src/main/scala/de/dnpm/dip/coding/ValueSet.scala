@@ -265,14 +265,7 @@ object ValueSet
             acc ++
               cs.concepts
                 .withFilter(incl)
-                .map( c =>
-                  Coding[Any](
-                    Code[Any](c.code.value),
-                    Some(c.display),
-                    cs.uri,
-                    cs.version
-                  )
-                )
+                .map(_.toCoding(cs.uri))
 
         } ++
         excls.foldLeft(
@@ -285,14 +278,7 @@ object ValueSet
             acc ++
               cs.concepts
                 .filterNot(excl)
-                .map( c =>
-                  Coding[Any](
-                    Code[Any](c.code.value),
-                    Some(c.display),
-                    cs.uri,
-                    cs.version
-                  )
-                )
+                .map(_.toCoding(cs.uri))
         } ++ codings
 
       ValueSet(

@@ -40,9 +40,9 @@ extends Logging
     }
     .recoverWith {
       case t =>
-        log.warn(
-          s"""Failed to load Service Provider Interface instance for ${spi.runtimeClass.getName}.
-          Unless handled properly with a fallback option in the client component, this is the cause of any occurring exception!"""
+        log.debug(
+s"""NOTE: Failed to load Service Provider Interface instance for ${spi.runtimeClass.getName}.
+Unless handled with a fallback option in the client component, this is the cause of any occurring java.util.ServiceLoader exception!"""
         )
         Failure(t)
     }
@@ -94,9 +94,9 @@ extends Logging
     }
     .recoverWith {
       case t =>
-        log.warn(
-          s"""Failed to load Service Provider Interface instance for ${spi.runtimeClass.getName}.
-          Unless handled properly with a fallback option in the client component, this is the cause of any occurring exception!"""
+        log.debug(
+s"""NOTE: Failed to load Service Provider Interface instance for ${spi.runtimeClass.getName}.
+Unless handled with a fallback option in the client component, this is the cause of any occurring java.util.ServiceLoader exception!"""
         )
         Failure(t)
     }

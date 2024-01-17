@@ -19,8 +19,8 @@ import de.dnpm.dip.util.{
 
 object Kinds extends Enumeration
 {
-  val Group     = Value
-  val Substance = Value
+  val Group     = Value  // Level 4 Entry e.g. A01BC
+  val Substance = Value  // Level 5 Entry e.g. A01BC23
 }
 
 
@@ -81,11 +81,34 @@ object ATC extends CodeSystem.Publisher[ATC]
     {
       import Kinds._
 
+      // Get the current group an ATC Entry is classified into,
+      // by resolving the entry with same name in the latest ATC version then its parent
+      def currentGroup(
+        implicit atc: CodeSystemProvider[ATC,Id,Applicative[Id]]
+      ): Option[Coding[ATC]] = {
+        val cs = atc.latest
+        for {
+          concept <-
+            coding.version match {
+              case Some(v) if v == atc.latestVersion =>
+                cs.concept(coding.code)
+              case _ =>
+                cs.concepts.find(c => coding.display.exists(_ equalsIgnoreCase c.display))
+            }
+
+          group <- 
+            concept.kind match {
+              case Substance => cs.parentOf(concept)
+              case Group     => Some(concept)
+            }
+        } yield group.toCoding
+      }
+
       def group(
-        implicit csp: CodeSystemProvider[ATC,Id,Applicative[Id]]
+        implicit atc: CodeSystemProvider[ATC,Id,Applicative[Id]]
       ): Option[Coding[ATC]] =
         for {
-          cs <- csp.get(coding.version.getOrElse(csp.latestVersion))
+          cs <- atc.get(coding.version.getOrElse(atc.latestVersion))
           concept <- cs.concept(coding.code)
           group <- 
             concept.kind match {
@@ -93,7 +116,9 @@ object ATC extends CodeSystem.Publisher[ATC]
               case Group     => Some(concept)
             }
         } yield group.toCoding
-    }
+
+    }    
+
 
   }
 
