@@ -17,8 +17,15 @@ sealed abstract class Period[T <: Temporal]
 {
   val start: T
 
+  def endOption: Option[T] =
+    this match {
+      case p: ClosedPeriod[T]  => Some(p.end)
+      case p: OpenEndPeriod[T] => p.end
+    }
+
   def contains(t: T)(implicit order: Ordering[T]): Boolean
 
+  /*
   def duration(u: UnitOfTime): Option[Duration] =
     this match {
       case p: ClosedPeriod[T] =>
@@ -31,8 +38,21 @@ sealed abstract class Period[T <: Temporal]
             u
           )
         )
-      case p: OpenEndPeriod[T]  => None
+      case p: OpenEndPeriod[T] => None
     }
+  */
+
+  def duration(u: UnitOfTime): Option[Duration] =
+    this.endOption.map(
+      end =>
+      Duration(
+        UnitOfTime
+          .chronoUnit(u)
+          .between(start,end)
+          .toDouble,
+        u
+      )
+    )
 }
 
 

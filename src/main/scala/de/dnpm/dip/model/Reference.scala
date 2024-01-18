@@ -22,6 +22,18 @@ sealed trait Reference[+T]
   def resolve[TT >: T](implicit res: Resolver[TT]): Option[TT] =
     res(self)
 
+  def resolveOn[TT >: T](
+    ts: Iterable[TT]
+  )(
+    implicit hasId: TT <:< { def id: Id[TT] }
+  ): Option[TT] = {
+    import scala.language.reflectiveCalls
+    self match {
+      case IdReference(id,_) => ts.find(_.id == id)
+      case _                 => None
+    }
+  }
+
 //  def resolveF[F,TT >: T](implicit res: ResolverF[F]) = res[TT](self)
 }
 
@@ -31,16 +43,6 @@ trait Resolver[T] extends (Reference[T] => Option[T])
 object Resolver
 {
   def apply[T](implicit res: Resolver[T]) = res
-
-  implicit def on[T <: { def id: Id[T] }](implicit ts: Iterable[T]): Resolver[T] =
-    new Resolver[T]{
-      import scala.language.reflectiveCalls
-      override def apply(ref: Reference[T]): Option[T] =
-        ref match {
-          case IdReference(id,_) => ts.find(_.id == id)
-          case _                 => None
-        }
-    }
 
 }
 
