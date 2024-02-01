@@ -1,7 +1,10 @@
 package de.dnpm.dip.model
 
 
-import java.time.temporal.Temporal
+import java.time.temporal.{
+  ChronoUnit,
+  Temporal
+}
 import play.api.libs.json.{
   Json,
   Format,
@@ -25,22 +28,6 @@ sealed abstract class Period[T <: Temporal]
 
   def contains(t: T)(implicit order: Ordering[T]): Boolean
 
-  /*
-  def duration(u: UnitOfTime): Option[Duration] =
-    this match {
-      case p: ClosedPeriod[T] =>
-        Some(
-          Duration(
-            UnitOfTime
-              .chronoUnit(u)
-              .between(p.start,p.end)
-              .toDouble,
-            u
-          )
-        )
-      case p: OpenEndPeriod[T] => None
-    }
-  */
 
   def duration(u: UnitOfTime): Option[Duration] =
     this.endOption.map(
@@ -53,6 +40,10 @@ sealed abstract class Period[T <: Temporal]
         u
       )
     )
+
+  def duration(u: ChronoUnit): Option[Duration] =
+    this.duration(UnitOfTime.of(u))
+
 }
 
 

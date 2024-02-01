@@ -83,7 +83,7 @@ object HGVS extends CodeSystem.Publisher[HGVS]
          .map { case (one,three) => three.toLowerCase -> one }
 
 
-     private val threeLetterAA =
+     private[hgvs] val threeLetterAA =
        s"(?i)(${aminoAcidMappings.values.mkString("|")})".r.unanchored
 
      private val oneLetterAA =

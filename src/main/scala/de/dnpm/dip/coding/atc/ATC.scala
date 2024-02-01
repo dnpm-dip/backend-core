@@ -104,6 +104,7 @@ object ATC extends CodeSystem.Publisher[ATC]
         } yield group.toCoding
       }
 
+
       def group(
         implicit atc: CodeSystemProvider[ATC,Id,Applicative[Id]]
       ): Option[Coding[ATC]] =

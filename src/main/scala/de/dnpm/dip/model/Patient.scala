@@ -25,25 +25,30 @@ final case class Patient
 )
 {
 
-  def ageIn(ch: ChronoUnit): Age =
+  def ageOnDate(
+    date: LocalDate,
+    ch: ChronoUnit = YEARS
+  ): Age =
     Age(
-      ch.between(
-        birthDate,
-        dateOfDeath.getOrElse(LocalDate.now)
-      )
-      .toDouble,
+      ch.between(birthDate,date).toDouble,
       UnitOfTime.of(ch)
     )
 
-  lazy val age: Age =
+  def ageIn(ch: ChronoUnit): Age =
+    ageOnDate(dateOfDeath.getOrElse(LocalDate.now),ch)
+
+  def ageIn(t: UnitOfTime): Age =
+    ageIn(UnitOfTime.chronoUnit(t))
+
+  def age: Age =
     ageIn(YEARS)
 
 
-  lazy val vitalStatus: Coding[VitalStatus.Value] =
+  def vitalStatus: Coding[VitalStatus.Value] =
     dateOfDeath
       .map(_ => VitalStatus.Deceased)
       .getOrElse(VitalStatus.Alive)
-      .pipe(Coding(_).complete)
+      .pipe(Coding(_))
 }
 
 

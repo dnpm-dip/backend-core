@@ -166,6 +166,13 @@ object Interval
 
   }
 
+  def apply[T: Ordering](
+    min: T,
+    max: T
+  ): Interval[T] =
+    ClosedInterval(min -> max)
+
+
 
   implicit class OrderOps[T](val t: T) extends AnyVal
   {

@@ -31,9 +31,8 @@ final case class Coding[+S]
   override def canEqual(that: Any): Boolean =
     that.isInstanceOf[Coding[_]]
 
-
   // Override equals() methods generated for case class, which checks for deep equality
-  // because 2 Codings should be considered equal when their code, system and version are equal,
+  // because 2 Codings should be considered equal when their code, system (and version??) are equal,
   // irrespective of whether the display value is also defined
   override def equals(that: Any): Boolean =
     that match {
@@ -74,17 +73,25 @@ final case class Coding[+S]
 object Coding
 {
 
+  import de.dnpm.dip.util.{
+    Display,
+    Displayer
+  }
+
+
   def apply[E <: Enumeration](
-    code: E#Value
+    e: E#Value
   )(
    implicit sys: CodeSystem[E#Value]
-  ): Coding[E#Value] =
+  ): Coding[E#Value] = {
+    val code = Code[E#Value](e.toString)
     Coding[E#Value](
-      Code(code.toString),
+      code,
       Some(Display.of(code).value),
       sys.uri,
       None
     )
+  }
 
   def apply[S](
     code: String
@@ -188,23 +195,11 @@ object Coding
   
     def apply[S](implicit sys: System[S]) = sys
   
-/* 
-    implicit def enumValueSystem[E <: Enumeration](
-      implicit w: Witness.Aux[E]
-    ): System[E#Value] =
-      System(w.value.getClass.getName.replace("$",""))
-  
-    implicit def enumSystem[E <: Enumeration](
-      implicit w: Witness.Aux[E]
-    ): System[E] =
-      System(w.value.getClass.getName.replace("$",""))
-  
-    implicit def codingSystemForValueSet[S](
-      implicit vs: ValueSet[S]
-    ): System[S] =
-      System(vs.uri)
-*/
   }
+
+
+  implicit def defaultDisplayer[S]: Displayer[Coding[S]] =
+    Displayer.from(_.display.getOrElse("N/A"))
 
 
   implicit def completeByCodeSystemProvider[S](

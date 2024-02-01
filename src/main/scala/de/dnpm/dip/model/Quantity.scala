@@ -22,7 +22,7 @@ abstract class UnitOfMeasure
   val name: String
   val symbol: String
 
-  override def toString = symbol
+  override def toString = name
 }
 
 object UnitOfMeasure
@@ -143,7 +143,7 @@ object Quantity
       q => 
         Json.obj(
           "value" -> q.value,
-          "unit" ->  q.unit.symbol
+          "unit" ->  q.unit.name
         )
     }
 }
