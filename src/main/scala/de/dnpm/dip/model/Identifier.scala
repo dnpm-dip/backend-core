@@ -8,11 +8,22 @@ import play.api.libs.json.{
   Format,
   OFormat
 }
+import de.dnpm.dip.coding.Coding
 
 
-
-final case class Id[+T](value: String)// extends AnyVal
+final case class Id[+T](value: String)
 {
+
+  import scala.language.reflectiveCalls
+
+  def resolveOn[TT >: T](
+    ts: Iterable[TT]
+  )(
+    implicit hasId: TT <:< { def id: Id[TT] }
+  ): Option[TT] =
+    ts.find(_.id == this)
+  
+
   override def toString: String = value
 }
 
@@ -39,6 +50,14 @@ object ExternalId
     ExternalId(
       value,
       Some(URI.create(system))
+    )
+
+  def apply[T, S: Coding.System](
+    value: String
+  ): ExternalId[T] =
+    ExternalId(
+      value,
+      Some(Coding.System[S].uri)
     )
 
 

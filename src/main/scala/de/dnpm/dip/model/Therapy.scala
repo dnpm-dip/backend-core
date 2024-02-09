@@ -23,7 +23,7 @@ sealed trait Therapy
   val statusReason: Option[Coding[Therapy.StatusReason]]
   val therapyLine: Option[Int]
   val basedOn: Option[Reference[TherapyRecommendation]]
-  val recordedOn: LocalDate
+  val recordedOn: Option[LocalDate]
   val period: Option[Period[LocalDate]]
   val note: Option[String]
 }
@@ -45,23 +45,25 @@ object Therapy
 {
 
   object Status
-  extends CodedEnum("therapy/status")
+  extends CodedEnum("dnpm-dip/therapy/status")
   with DefaultCodeSystem
   {
 
     val NotDone   = Value("not-done")
-    val Ongoing   = Value("ongoing")
+    val Ongoing   = Value("on-going")
     val Stopped   = Value("stopped")
     val Completed = Value("completed")
     val Unknown   = Value("unknown")
 
-    override val display = {
-      case NotDone   => "Nicht umgesetzt"
-      case Ongoing   => "Laufend"
-      case Stopped   => "Abgebrochen"
-      case Completed => "Abgeschlossen"
-      case Unknown   => "Unbekannt"
-    }
+    override val display =
+      Map(
+        NotDone   -> "Nicht umgesetzt",
+        Ongoing   -> "Laufend",
+        Stopped   -> "Abgebrochen",
+        Completed -> "Abgeschlossen",
+        Unknown   -> "Unbekannt"
+      )
+
 
     final class ProviderSPI extends CodeSystemProviderSPI
     {
@@ -77,7 +79,7 @@ object Therapy
   object StatusReason
   {
     implicit val codingSystem: Coding.System[StatusReason] =
-      Coding.System[StatusReason]("therapy/status-reason")
+      Coding.System[StatusReason]("dnpm-dip/therapy/status-reason")
   }
 
 }

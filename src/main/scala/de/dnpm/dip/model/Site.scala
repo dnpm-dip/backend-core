@@ -9,6 +9,6 @@ sealed trait Site
 object Site
 {
   implicit val codingSystem: Coding.System[Site] =
-    Coding.System[Site]("dnpm/site")
+    Coding.System[Site]("dnpm-dip/site")
 }
 

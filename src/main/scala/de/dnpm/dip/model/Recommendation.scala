@@ -18,7 +18,6 @@ trait Recommendation
   val id: Id[Recommendation]
   val patient: Reference[Patient]
   val issuedOn: LocalDate
-//  val reason: Option[Coding[_]]
 }
 
 

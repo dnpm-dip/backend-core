@@ -120,16 +120,6 @@ object Reference
     Reference.id[T](t.id.value)
   }
 
-/*
-  def apply[T <: { val id: Id[T] }](t: T): Reference[T] = {
-    import scala.language.reflectiveCalls
-
-    // Cast id value to String instead of Id[T] here
-    // because Id extends AnyVal and is thus a String at runtime
-    Reference.id[T](t.asInstanceOf[{ val id: String }].id)
-  }
-*/
-
   implicit def formatUriRef[T]: OFormat[UriReference[T]] =
     Json.format[UriReference[T]]
 

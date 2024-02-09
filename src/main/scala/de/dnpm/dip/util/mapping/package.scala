@@ -59,19 +59,19 @@ import shapeless.ops.hlist
     Unaligned <: HList
   ](
     implicit
-    aGen    : LabelledGeneric.Aux[A,Apr],
-    bGen    : LabelledGeneric.Aux[B,Bpr],
-    inter   : hlist.Intersection.Aux[Apr,Bpr,Common],
-    diff    : hlist.Diff.Aux[Bpr,Common,Added],
-    monoid  : Monoid[Added],
-    prepend : hlist.Prepend.Aux[Added,Common,Unaligned],
-    align   : hlist.Align[Unaligned,Bpr]
+    aGen   : LabelledGeneric.Aux[A,Apr],
+    bGen   : LabelledGeneric.Aux[B,Bpr],
+    inter  : hlist.Intersection.Aux[Apr,Bpr,Common],
+    diff   : hlist.Diff.Aux[Bpr,Common,Added],
+    monoid : Monoid[Added],
+    prepend: hlist.Prepend.Aux[Added,Common,Unaligned],
+    align  : hlist.Align[Unaligned,Bpr]
   ): Mapping[A,B] = {
     a => bGen.from(align(prepend(monoid.empty,inter(aGen.to(a)))))
   }
 
 
-  def deriveFor[A,B](implicit f: Mapping[A,B]) = f
+  def of[A,B](implicit f: Mapping[A,B]) = f
 
 
 }

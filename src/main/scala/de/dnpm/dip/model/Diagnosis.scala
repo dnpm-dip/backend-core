@@ -19,28 +19,28 @@ trait Diagnosis
   val id: Id[Diagnosis]
   val patient: Reference[Patient]
   val recordedOn: Option[LocalDate]
-//  val code: Coding[ICD10GM]
-//  val guidelineTreatmentStatus: Option[Coding[GuidelineTreatmentStatus.Value]]
 }
 
 
 object GuidelineTreatmentStatus
-extends CodedEnum("diagnosis/guideline-therapy/status")
+extends CodedEnum("dnpm-dip/diagnosis/guideline-therapy/status")
 with DefaultCodeSystem
 {
+
   val Exhaustive            = Value("exhausted")
   val NonExhaustive         = Value("non-exhausted")
   val Impossible            = Value("impossible")
   val NoGuidelinesAvailable = Value("no-guidelines-available")
   val Unknown               = Value("unknown")
 
-  override val display = {
-    case GuidelineTreatmentStatus.Exhaustive            => "Leitlinien ausgeschöpft"
-    case GuidelineTreatmentStatus.NonExhaustive         => "Leitlinien nicht ausgeschöpft"
-    case GuidelineTreatmentStatus.Impossible            => "Leitlinientherapie nicht möglich"
-    case GuidelineTreatmentStatus.NoGuidelinesAvailable => "Keine Leitlinien vorhanden"
-    case GuidelineTreatmentStatus.Unknown               => "Unbekannt"
-  }
+  override val display =
+    Map(
+      Exhaustive            -> "Leitlinien ausgeschöpft",
+      NonExhaustive         -> "Leitlinien nicht ausgeschöpft",
+      Impossible            -> "Leitlinientherapie nicht möglich",
+      NoGuidelinesAvailable -> "Keine Leitlinien vorhanden",
+      Unknown               -> "Unbekannt"
+    )
 
   final class ProviderSPI extends CodeSystemProviderSPI
   {

@@ -36,14 +36,17 @@ object Episode
     val Active    = Value("active")
     val Finished  = Value("finished")
     val Cancelled = Value("cancelled")
+    val Unknown   = Value("unknown")
 
 
-    override val display = {
-      case Planned    => "In Vorbereitung"
-      case Active     => "Laufend"
-      case Finished   => "Abgeschlossen"
-      case Cancelled  => "Abgebrochen"
-    }
+    override val display =
+      Map(
+        Planned    -> "In Vorbereitung",
+        Active     -> "Laufend",
+        Finished   -> "Abgeschlossen",
+        Cancelled  -> "Abgebrochen",
+        Unknown    -> "Unbekannt" 
+      )
 
     final class ProviderSPI extends CodeSystemProviderSPI
     {
