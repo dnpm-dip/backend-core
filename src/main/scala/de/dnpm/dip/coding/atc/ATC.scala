@@ -55,7 +55,7 @@ object ATC extends CodeSystem.Publisher[ATC]
         import extensions._
 
         kind -> CodeSystem.Filter[ATC](
-          s"is a $kind",
+          s"is-a-$kind",
           Some(s"Filter entries with 'kind' = '$kind'"),
           _.kind == kind
         )

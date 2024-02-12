@@ -11,12 +11,25 @@ import de.dnpm.dip.coding.{
   CodeSystemProvider,
   CodeSystemProviderSPI
 }
+import play.api.libs.json.{
+  Json,
+  OFormat
+}
 
+
+// Transfer Transaction Number (Transfer-Vorgangs-Nummer)
+sealed trait TTAN
+object TTAN
+{
+  implicit val codingSystem: Coding.System[TTAN] =
+    Coding.System[TTAN]("mvh/transfer-vorgangs-nummer")
+}
 
 
 trait Episode
 {
   val id: Id[Episode]
+  val ttan: Id[TTAN]
   val patient: Reference[Patient]
   val period: Period[LocalDate]
   val status: Coding[Episode.Status.Value]
@@ -28,7 +41,7 @@ object Episode
 {
 
   object Status
-  extends CodedEnum("episode/status")
+  extends CodedEnum("dnpm-dip/episode/status")
   with DefaultCodeSystem
   {
 
@@ -56,5 +69,8 @@ object Episode
 
   }
 
+
+//  implicit val format: OFormat[Episode] =
+//    Json.format[Episode]
 
 }
