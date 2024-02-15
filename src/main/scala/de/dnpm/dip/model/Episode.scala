@@ -29,7 +29,8 @@ object TTAN
 trait Episode
 {
   val id: Id[Episode]
-  val ttan: Id[TTAN]
+  val ttan: Option[Id[TTAN]]
+//  val ttan: Id[TTAN]
   val patient: Reference[Patient]
   val period: Period[LocalDate]
   val status: Coding[Episode.Status.Value]
@@ -69,8 +70,5 @@ object Episode
 
   }
 
-
-//  implicit val format: OFormat[Episode] =
-//    Json.format[Episode]
 
 }

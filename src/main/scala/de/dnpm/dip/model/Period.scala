@@ -61,7 +61,7 @@ extends Period[T]
 final case class OpenEndPeriod[T <: Temporal]
 (
   start: T,
-  end: Option[T] = None
+  end: Option[T]// = None
 )
 extends Period[T]
 {
@@ -92,7 +92,7 @@ object Period
 {
 
   def apply[T <: Temporal: Format](start: T): Period[T] =
-    OpenEndPeriod(start)
+    OpenEndPeriod(start,None)
 
   def apply[T <: Temporal: Format](start: T, end: T): Period[T] =
     ClosedPeriod(start,end)
