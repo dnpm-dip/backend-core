@@ -59,6 +59,40 @@ Unless handled with a fallback option in the client component, this is the cause
 
   }
 
+
+  def getInstance(cl: ClassLoader): Try[S#Service] =
+    Try {
+      ServiceLoader.load(
+        spi.runtimeClass.asInstanceOf[Class[S]],
+        cl
+      )
+      .iterator
+      .next
+    }
+    .recoverWith {
+      case t =>
+        log.debug(
+s"""NOTE: Failed to load Service Provider Interface instance for ${spi.runtimeClass.getName}.
+Unless handled with a fallback option in the client component, this is the cause of any occurring java.util.ServiceLoader exception!"""
+        )
+        Failure(t)
+    }
+    .map(_.getInstance)
+
+  def getInstances(cl: ClassLoader): Iterator[S#Service] = {
+
+    import scala.jdk.CollectionConverters._
+
+    ServiceLoader.load(
+      spi.runtimeClass.asInstanceOf[Class[S]],
+      cl
+    )
+    .iterator
+    .asScala
+    .map(_.getInstance)
+
+  }
+
 }
 
 
