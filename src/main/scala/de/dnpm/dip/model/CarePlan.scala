@@ -11,6 +11,6 @@ trait CarePlan
   val issuedOn: LocalDate
   val indication: Reference[Diagnosis]
   val protocol: Option[String]
-  val medicationRecommendations: List[MedicationRecommendation[_]]
+  val medicationRecommendations: Option[List[MedicationRecommendation[_]]]
 }
 
