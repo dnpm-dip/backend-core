@@ -2,7 +2,7 @@ package de.dnpm.dip.coding
 
 
 import java.net.URI
-import de.dnpm.dip.util.Displayer
+import de.dnpm.dip.util.Displays
 import play.api.libs.json.{
   Json,
   Format
@@ -14,10 +14,10 @@ final case class Code[+S](value: String) extends AnyVal
 object Code
 {
 
-  implicit def enumCodeDisplayer[E <: Enumeration](
+  implicit def enumCodeDisplays[E <: Enumeration](
     implicit cs: CodeSystem[E#Value]
-  ): Displayer[Code[E#Value]] =
-    Displayer.from(
+  ): Displays[Code[E#Value]] =
+    Displays.from(
       e =>
         cs.conceptWithCode(e.value)
           .map(_.display)

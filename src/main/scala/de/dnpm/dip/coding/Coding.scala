@@ -74,8 +74,8 @@ object Coding
 {
 
   import de.dnpm.dip.util.{
-    Display,
-    Displayer
+    DisplayLabel,
+    Displays
   }
 
 
@@ -87,7 +87,7 @@ object Coding
     val code = Code[E#Value](e.toString)
     Coding[E#Value](
       code,
-      Some(Display.of(code).value),
+      Some(DisplayLabel.of(code).value),
       sys.uri,
       None
     )
@@ -198,8 +198,8 @@ object Coding
   }
 
 
-  implicit def defaultDisplayer[S]: Displayer[Coding[S]] =
-    Displayer.from(_.display.getOrElse("N/A"))
+  implicit def defaultDisplays[S]: Displays[Coding[S]] =
+    Displays.from(_.display.getOrElse("N/A"))
 
 
   implicit def completeByCodeSystemProvider[S](
@@ -275,7 +275,13 @@ object Coding
       (JsPath \ "display").readNullable[String] and
       (JsPath \ "version").readNullable[String]
     )(
-      (code,display,version) => Coding[S](code,display,Coding.System[S].uri,version)
+      (code,display,version) =>
+        Coding[S](
+          code,
+          display,
+          Coding.System[S].uri,
+          version
+        )
     )
 
   implicit val readsAnyCoding: Reads[Coding[Any]] =
@@ -285,7 +291,13 @@ object Coding
       (JsPath \ "system").read[URI] and
       (JsPath \ "version").readNullable[String]
     )(
-      (code,display,system,version) => Coding[Any](code,display,system,version)
+      (code,display,system,version) =>
+        Coding[Any](
+          code,
+          display,
+          system,
+          version
+        )
     )
 
 
