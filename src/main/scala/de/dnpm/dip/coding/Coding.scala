@@ -3,7 +3,6 @@ package de.dnpm.dip.coding
 
 import java.net.URI
 import cats.{
-  Eq,
   Id,
   Applicative
 }
@@ -199,7 +198,7 @@ object Coding
 
 
   implicit def defaultDisplays[S]: Displays[Coding[S]] =
-    Displays.from(_.display.getOrElse("N/A"))
+    Displays[Coding[S]](_.display.getOrElse("N/A"))
 
 
   implicit def completeByCodeSystemProvider[S](
@@ -305,13 +304,9 @@ object Coding
     Json.writes[Coding[S]]
 
 
+  import shapeless.{Coproduct, CNil, :+:}
 
-  implicit def eqForCoding[S]: Eq[Coding[S]] =
-    Eq.instance(
-      (c1,c2) =>
-        c1.system  == c2.system && 
-        c1.code    == c2.code && 
-        c1.version == c2.version 
-    )
+  implicit def coproductCodingReads[S <: Coproduct]: Reads[Coding[S]] =
+    readsAnyCoding.asInstanceOf[Reads[Coding[S]]]
 
 }

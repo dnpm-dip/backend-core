@@ -17,7 +17,7 @@ object Code
   implicit def enumCodeDisplays[E <: Enumeration](
     implicit cs: CodeSystem[E#Value]
   ): Displays[Code[E#Value]] =
-    Displays.from(
+    Displays[Code[E#Value]](
       e =>
         cs.conceptWithCode(e.value)
           .map(_.display)

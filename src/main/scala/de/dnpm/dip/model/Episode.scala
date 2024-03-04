@@ -18,22 +18,21 @@ import play.api.libs.json.{
 
 
 // Transfer Transaction Number (Transfer-Vorgangs-Nummer)
-sealed trait TTAN
-object TTAN
+sealed trait TransferTAN
+object TransferTAN
 {
-  implicit val codingSystem: Coding.System[TTAN] =
-    Coding.System[TTAN]("mvh/transfer-vorgangs-nummer")
+  implicit val codingSystem: Coding.System[TransferTAN] =
+    Coding.System[TransferTAN]("mvh/transfer-vorgangs-nummer")
 }
 
 
 trait Episode
 {
   val id: Id[Episode]
-  val ttan: Option[Id[TTAN]]
-//  val ttan: Id[TTAN]
+  val transferTan: Option[Id[TransferTAN]]  //TODO: Make required 
   val patient: Reference[Patient]
-  val period: Period[LocalDate]
-  val status: Coding[Episode.Status.Value]
+//  val period: Period[LocalDate]
+//  val status: Coding[Episode.Status.Value]
   val diagnoses: List[Reference[Diagnosis]]
 }
 

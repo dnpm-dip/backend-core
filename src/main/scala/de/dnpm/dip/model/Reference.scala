@@ -7,12 +7,106 @@ import play.api.libs.json.{
   Json,
   JsObject,
   JsString,
+  JsonValidationError,
   OFormat,
   Reads,
   OWrites
 }
 
 
+trait Resolver[T] extends (Reference[T] => Option[T])
+
+object Resolver
+{
+  def apply[T](implicit res: Resolver[T]) = res
+}
+
+
+final case class Reference[+T]
+(
+  id: Option[Id[T]],
+  extId: Option[ExternalId[T]],
+  uri: Option[URI],
+  display: Option[String]
+)
+{
+
+  def resolve[TT >: T](implicit res: Resolver[TT]): Option[TT] =
+    res(this)
+
+  def resolveOn[TT >: T](
+    ts: Iterable[TT]
+  )(
+    implicit hasId: TT <:< { def id: Id[TT] }
+  ): Option[TT] = {
+    import scala.language.reflectiveCalls
+    this.id match {
+      case Some(id) => ts.find(_.id == id)
+      case _        => None
+    }
+  }
+}
+
+
+object Reference
+{
+
+  def from[T](
+    uri: URI,
+  ): Reference[T] =
+    Reference(None,None,Some(uri),None)
+
+  def from[T](
+    id: Id[T],
+  ): Reference[T] =
+    Reference(Some(id),None,None,None)
+
+  def from[T](
+    extId: ExternalId[T],
+  ): Reference[T] =
+    Reference(None,Some(extId),None,None)
+
+  
+  def to[T <: { def id: Id[T] }](t: T): Reference[T] = {
+    import scala.language.reflectiveCalls
+
+    Reference.from(t.id)
+  }
+
+
+  final case class TypeName[T](value: String)
+
+  object TypeName
+  {
+    import scala.reflect.ClassTag
+
+    def apply[T](implicit t: TypeName[T]) = t
+
+    implicit def typeName[T](implicit tag: ClassTag[T]): TypeName[T] =
+      TypeName[T](tag.runtimeClass.asInstanceOf[Class[T]].getSimpleName)
+  }
+
+
+
+  implicit def readsReference[T]: Reads[Reference[T]] =
+    Json.reads[Reference[T]]
+      .filter(
+        JsonValidationError("At least one of 'id', 'extId' or 'uri' must be defined on a Reference")
+      )(
+        ref => ref.id.isDefined || ref.extId.isDefined || ref.uri.isDefined
+      )
+
+
+  implicit def writesReference[T: TypeName]: OWrites[Reference[T]] =
+    Json.writes[Reference[T]]
+      .transform(
+        (js: JsObject) => js + ("type" -> JsString(TypeName[T].value))
+      )
+
+}
+
+
+/*
 sealed trait Reference[+T]
 {
   self =>
@@ -80,9 +174,6 @@ extends Reference[T]
 object Reference
 {
 
-  type HasId[T] = { def id: Id[T] }
-
-
   def apply[T](
     uri: URI,
     display: Option[String]
@@ -117,7 +208,7 @@ object Reference
   def apply[T <: { def id: Id[T] }](t: T): Reference[T] = {
     import scala.language.reflectiveCalls
 
-    Reference.id[T](t.id.value)
+    Reference(t.id,None)
   }
 
   implicit def formatUriRef[T]: OFormat[UriReference[T]] =
@@ -161,3 +252,5 @@ object Reference
     )
 
 }
+
+*/
