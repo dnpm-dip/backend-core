@@ -45,6 +45,9 @@ final case class Reference[+T]
       case _        => None
     }
   }
+
+  def withDisplay(d: String): Reference[T] =
+    this.copy(display = Some(d))
 }
 
 
@@ -67,10 +70,22 @@ object Reference
     Reference(None,Some(extId),None,None)
 
   
-  def to[T <: { def id: Id[T] }](t: T): Reference[T] = {
+  def to[T <: { def id: Id[T] }](
+    t: T,
+    display: Option[String] = None
+  ): Reference[T] = {
     import scala.language.reflectiveCalls
 
-    Reference.from(t.id)
+    Reference.from(t.id).copy(display = display)
+  }
+
+  def to[T <: { def id: Id[T] }](
+    t: T,
+    display: String
+  ): Reference[T] = {
+    import scala.language.reflectiveCalls
+
+    Reference.to(t,Some(display))
   }
 
 

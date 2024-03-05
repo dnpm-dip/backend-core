@@ -21,6 +21,10 @@ lazy val root =
         "com.chuusai"         %% "shapeless"                  % "2.3.10",
         "org.typelevel"       %% "cats-core"                  % "2.9.0",
         "com.typesafe.play"   %% "play-json"                  % "2.9.4",
+        "com.github.andyglow" %% "scala-jsonschema"           % "0.7.11",
+        "com.github.andyglow" %% "scala-jsonschema-cats"      % "0.7.11",
+        "com.github.andyglow" %% "scala-jsonschema-play-json" % "0.7.11"
+
      )
   )
 
