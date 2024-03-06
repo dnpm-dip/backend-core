@@ -7,12 +7,19 @@ import cats.{
   Applicative
 }
 import shapeless.Witness
+import shapeless.{
+  Coproduct,
+  :+:,
+  CNil
+}
+import shapeless.ops.coproduct.Selector
 import play.api.libs.json.{
   Json,
   Reads,
   OWrites,
   OFormat,
-  JsPath
+  JsPath,
+  JsonValidationError
 }
 import de.dnpm.dip.util.Completer
 
@@ -193,7 +200,28 @@ object Coding
       }
   
     def apply[S](implicit sys: System[S]) = sys
-  
+
+
+
+    // Type class to accumulate URIs for a Coproduct of Systems as a set
+    final class UriSet[C] private (val values: Set[URI]) extends AnyVal
+    object UriSet
+    {
+    
+      def apply[C](implicit css: UriSet[C]) = css
+    
+      implicit def coproductUriSet[H, T <: Coproduct](
+        implicit
+        csH: Coding.System[H],
+        cssT: UriSet[T]
+      ): UriSet[H :+: T] =
+        new UriSet[H :+: T](cssT.values + csH.uri)
+
+      implicit val terminalCoproductUriSet: UriSet[CNil] =
+        new UriSet[CNil](Set.empty)
+        
+    }
+
   }
 
 
@@ -268,6 +296,10 @@ object Coding
 
   import play.api.libs.functional.syntax._
 
+
+  implicit def writesCoding[S]: OWrites[Coding[S]] = 
+    Json.writes[Coding[S]]
+
   implicit def readsCoding[S: Coding.System]: Reads[Coding[S]] =
     (
       (JsPath \ "code").read[Code[S]] and
@@ -299,14 +331,31 @@ object Coding
         )
     )
 
-
-  implicit def writesCoding[S]: OWrites[Coding[S]] = 
-    Json.writes[Coding[S]]
-
-
-  import shapeless.{Coproduct, CNil, :+:}
-
-  implicit def coproductCodingReads[S <: Coproduct]: Reads[Coding[S]] =
+  implicit def readsCoproductCoding[S <: Coproduct](
+    implicit css: System.UriSet[S]
+  ): Reads[Coding[S]] =
     readsAnyCoding.asInstanceOf[Reads[Coding[S]]]
+      .filter(
+        JsonValidationError(s"Invalid 'system' value, expected one of {${css.values.mkString(", ")}}")
+      )(
+        coding => css.values.contains(coding.system)
+      )
+
+
+  implicit def codingToCoproductCoding[S, C <: Coproduct](
+    coding: Coding[S]
+  )(
+    implicit sel: Selector[C,S]
+  ): Coding[C] =
+    coding.asInstanceOf[Coding[C]]
+
+  implicit def coproductCodingToCoding[C <: Coproduct,S](
+    coding: Coding[C]
+  )(
+    implicit sel: Selector[C,S]
+  ): Coding[S] =
+    coding.asInstanceOf[Coding[S]]
+
+
 
 }
