@@ -32,6 +32,7 @@ import de.dnpm.dip.model.{
   Reference,
 }
 import shapeless.{
+  Coproduct,
   =:!=,
   Witness
 }
@@ -48,7 +49,7 @@ trait BaseSchemas
   implicit def externalIdSchema[T]: Schema[ExternalId[T]] =
     Schema.`object`[ExternalId[T]](
       Field("value",Schema.`string`),
-      Field("system",Schema.`string`(Schema.`string`.Format.`uri`),false),
+      Field("system",Schema.`string`,false),
     )
     .toDefinition("ExternalId")
 
@@ -56,6 +57,8 @@ trait BaseSchemas
   implicit def defaultReferenceSchema[T]: Schema[Reference[T]] =
     Schema.`object`[Reference[T]](
       Field("id",Schema.`string`),
+      Field("display",Schema.`string`,false),
+      Field("type",Schema.`string`,false),
     )
     .toDefinition("Reference")
 
@@ -71,12 +74,15 @@ trait BaseSchemas
             Schema.`enum`[String](
               Schema.`string`,
               Set(Coding.System[PubMed].uri.toString).map(Value.str)
-            )
+            ),
+            false,
+            Coding.System[PubMed].uri.toString
           ),
         ),
         false
       ),
-      Field("uri",Schema.`string`(Schema.`string`.Format.`uri`),false),
+      Field("uri",Schema.`string`,false),
+      Field("type",Schema.`string`,false),
     )
     .toDefinition("Reference[Publication]")
 
@@ -108,7 +114,7 @@ trait BaseSchemas
         )
       ),
       Field("display",Schema.`string`,false),
-      Field("system",Schema.`string`(Schema.`string`.Format.`uri`),false),
+      Field("system",Schema.`string`,false),
       Field("version",Schema.`string`,false)
     )
     .toDefinition(s"Coding[$name]")
@@ -121,16 +127,32 @@ trait BaseSchemas
       .toDefinition("Code")
 
 
-  implicit def codingSchema[T](
-    implicit notAny: T =:!= Any
-  ): Schema[Coding[T]] =
+  implicit def codingSchema[T]: Schema[Coding[T]] =
     Schema.`object`[Coding[T]](
       Field("code",codeSchema[T]),
       Field("display",Schema.`string`,false),
-      Field("system",Schema.`string`(Schema.`string`.Format.`uri`),false),
+      Field("system",Schema.`string`,false),
       Field("version",Schema.`string`,false)
     )
     .toDefinition("Coding")
+
+
+  def coproductCodingSchema[S <: Coproduct](
+    implicit uris: Coding.System.UriSet[S]
+  ): Schema[Coding[S]] =
+    Schema.`object`[Coding[S]](
+      Field("code",codeSchema[Any]),
+      Field("display",Schema.`string`,false),
+      Field(
+        "system",
+        Schema.`enum`[String](
+          Schema.`string`,
+          uris.values.map(_.toString).map(Value.str)
+        ),
+        true
+      ),
+      Field("version",Schema.`string`,false)
+    )
 
 /*
   implicit val anyCodingSchema: Schema[Coding[Any]] =

@@ -3,7 +3,7 @@
 
 name := "core"
 ThisBuild / organization := "de.dnpm.dip"
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.13"
 ThisBuild / version      := "1.0-SNAPSHOT"
 
 
@@ -16,7 +16,7 @@ lazy val root =
     .settings(settings)
     .settings(
       libraryDependencies ++= Seq(
-        "org.scalatest"       %% "scalatest"                  % "3.2.17" % Test,
+        "org.scalatest"       %% "scalatest"                  % "3.2.18" % Test,
         "org.slf4j"           %  "slf4j-api"                  % "2.0.9",
         "com.chuusai"         %% "shapeless"                  % "2.3.10",
         "org.typelevel"       %% "cats-core"                  % "2.9.0",
@@ -24,7 +24,6 @@ lazy val root =
         "com.github.andyglow" %% "scala-jsonschema"           % "0.7.11",
         "com.github.andyglow" %% "scala-jsonschema-cats"      % "0.7.11",
         "com.github.andyglow" %% "scala-jsonschema-play-json" % "0.7.11"
-
      )
   )
 

@@ -11,7 +11,7 @@ import play.api.libs.json.{
 
 final case class Snapshot[T] private (
   data: T,
-  id: Long
+  timestamp: Long // epoch milliseconds
 )
 
 object Snapshot
