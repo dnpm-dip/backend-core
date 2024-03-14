@@ -306,7 +306,7 @@ object Coding
     E <: Enumeration
   ](
     implicit
-    sys: Coding.System[E#Value],
+//    sys: Coding.System[E#Value],
     cs: CodeSystem[E#Value]
   ): Reads[Coding[E#Value]] =
     (
@@ -318,18 +318,74 @@ object Coding
         Coding[E#Value](
           code,
           display,
-          sys.uri,
+          cs.uri,
+//          sys.uri,
           version
         )
     )
     .filter(
       JsonValidationError(
-        s"Invalid 'code' value, expected one of {${cs.concepts.map(_.code.value).mkString(",")}}"
+        s"Invalid 'code' value, expected one of {${cs.concepts.map(_.code.value).mkString(", ")}}"
       )
     )(
       coding => cs.concepts.exists(_.code.value == coding.code.value)
     )
 
+
+  implicit def readsCodingByCodeSystem[S](
+    implicit cs: CodeSystem[S]
+  ): Reads[Coding[S]] =
+    (
+      (JsPath \ "code").read[Code[S]] and
+      (JsPath \ "display").readNullable[String] and
+      (JsPath \ "version").readNullable[String]
+    )(
+      (code,display,version) =>
+        Coding[S](
+          code,
+          display,
+          cs.uri,
+          version
+        )
+    )
+    .filter(
+      JsonValidationError(
+        s"Invalid 'code' value, expected one of {${cs.concepts.map(_.code.value).mkString(", ")}}"
+      )
+    )(
+      coding => cs.concepts.exists(_.code.value == coding.code.value)
+    )
+
+/*
+  implicit def readsEnumCoding[
+    E <: Enumeration
+  ](
+    implicit
+//    sys: Coding.System[E#Value],
+    cs: CodeSystem[E#Value]
+  ): Reads[Coding[E#Value]] =
+    (
+      (JsPath \ "code").read[Code[E#Value]] and
+      (JsPath \ "display").readNullable[String] and
+      (JsPath \ "version").readNullable[String]
+    )(
+      (code,display,version) =>
+        Coding[E#Value](
+          code,
+          display,
+          cs.uri,
+//          sys.uri,
+          version
+        )
+    )
+    .filter(
+      JsonValidationError(
+        s"Invalid 'code' value, expected one of {${cs.concepts.map(_.code.value).mkString(", ")}}"
+      )
+    )(
+      coding => cs.concepts.exists(_.code.value == coding.code.value)
+    )
+*/
 
   implicit def readsCoding[S: Coding.System]: Reads[Coding[S]] =
     (
@@ -387,7 +443,5 @@ object Coding
     implicit sel: Selector[C,S]
   ): Coding[S] =
     coding.asInstanceOf[Coding[S]]
-
-
 
 }

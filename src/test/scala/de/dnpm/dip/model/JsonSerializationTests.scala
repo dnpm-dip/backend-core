@@ -1,8 +1,6 @@
 package de.dnpm.dip.model
 
 
-import java.time.LocalDate
-import java.util.UUID.randomUUID
 import scala.util.chaining._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers._
@@ -17,24 +15,17 @@ import de.dnpm.dip.coding.Coding
 class JsonSerializationTests extends AnyFlatSpec
 {
 
-  "Deserialization of invalid Patient-gender" must "have failed" in {
+  "Deserialization of invalid Coding[Gender]" must "have failed" in {
 
-    val patient =
-      Patient(
-        Id[Patient]("1234567890"),
-        Coding(Gender.Female),
-        LocalDate.now,
-        None,
-        None,
-        None,
-      )
-      .pipe(Json.toJson(_))
-      .pipe(Json.prettyPrint)
-      .pipe(_.replace("female","fmale"))
-      .pipe(Json.parse)
-      .pipe(Json.fromJson[Patient](_))
+    val coding =
+      Coding(Gender.Female)
+       .pipe(Json.toJson(_))
+       .pipe(Json.stringify)
+       .pipe(_.replace("female","fmale"))
+       .pipe(Json.parse)
+       .pipe(Json.fromJson[Coding[Gender.Value]](_))
 
-    patient.isError mustBe true
+    coding.isError mustBe true
 
   }
 
