@@ -10,7 +10,8 @@ import shapeless.Witness
 import shapeless.{
   Coproduct,
   :+:,
-  CNil
+  CNil,
+  <:!<
 }
 import shapeless.ops.coproduct.Selector
 import play.api.libs.json.{
@@ -300,6 +301,36 @@ object Coding
   implicit def writesCoding[S]: OWrites[Coding[S]] = 
     Json.writes[Coding[S]]
 
+
+  implicit def readsEnumCoding[
+    E <: Enumeration
+  ](
+    implicit
+    sys: Coding.System[E#Value],
+    cs: CodeSystem[E#Value]
+  ): Reads[Coding[E#Value]] =
+    (
+      (JsPath \ "code").read[Code[E#Value]] and
+      (JsPath \ "display").readNullable[String] and
+      (JsPath \ "version").readNullable[String]
+    )(
+      (code,display,version) =>
+        Coding[E#Value](
+          code,
+          display,
+          sys.uri,
+          version
+        )
+    )
+    .filter(
+      JsonValidationError(
+        s"Invalid 'code' value, expected one of {${cs.concepts.map(_.code.value).mkString(",")}}"
+      )
+    )(
+      coding => cs.concepts.exists(_.code.value == coding.code.value)
+    )
+
+
   implicit def readsCoding[S: Coding.System]: Reads[Coding[S]] =
     (
       (JsPath \ "code").read[Code[S]] and
@@ -314,6 +345,7 @@ object Coding
           version
         )
     )
+
 
   implicit val readsAnyCoding: Reads[Coding[Any]] =
     (
