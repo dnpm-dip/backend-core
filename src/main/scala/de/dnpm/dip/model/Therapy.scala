@@ -20,13 +20,25 @@ sealed trait Therapy
   val indication: Reference[Diagnosis]
   val category: Option[Coding[_]]
   val status: Coding[Therapy.Status.Value]
-  val statusReason: Option[Coding[Therapy.StatusReason]]
+  val statusReason: Option[Coding[Therapy.StatusReason.Value]]
+//  val statusReason: Option[Coding[Therapy.StatusReason]]
   val therapyLine: Option[Int]
   val basedOn: Option[Reference[TherapyRecommendation]]
   val recordedOn: LocalDate
-//  val recordedOn: Option[LocalDate]
   val period: Option[Period[LocalDate]]
   val note: Option[String]
+
+  final def statusValue: Therapy.Status.Value =
+    status match {
+      case Therapy.Status(s) => s
+      case _ => Therapy.Status.Unknown
+    }
+
+  final def statusReasonValue: Therapy.StatusReason.Value =
+    statusReason match {
+      case Some(Therapy.StatusReason(s)) => s
+      case _ => Therapy.StatusReason.Unknown
+    }
 }
 
 
@@ -77,10 +89,58 @@ object Therapy
 
   sealed trait StatusReason
 
+/*
   object StatusReason
   {
     implicit val codingSystem: Coding.System[StatusReason] =
       Coding.System[StatusReason]("dnpm-dip/therapy/status-reason")
+  }
+*/
+
+  object StatusReason
+  extends CodedEnum("dnpm-dip/therapy/status-reason")
+  with DefaultCodeSystem
+  {
+
+    val PaymentRefused      = Value("payment-refused")
+    val PaymentPending      = Value("payment-pending")
+    val PaymentEnded        = Value("payment-ended")
+    val NoIndication        = Value("no-indication")
+    val MedicalReason       = Value("medical-reason")
+    val PatientRefusal      = Value("patient-refusal")
+    val PatientWish         = Value("patient-wish")
+    val PatientDeath        = Value("patient-death")
+    val LostToFU            = Value("lost-to-fu")
+    val Remission           = Value("chronic-remission")
+    val Progression         = Value("progression")
+    val Toxicity            = Value("toxicity")
+    val OtherTherapyChosen  = Value("other-therapy-chosen")
+    val ContinuedExternally = Value("continued-externally")
+    val StateDeterioration  = Value("deterioration")
+    val Other               = Value("other")
+    val Unknown             = Value("unknown")
+
+    override val display =
+      Map(
+        PaymentRefused      -> "Kostenübernahme abgelehnt",
+        PaymentPending      -> "Kostenübernahme noch ausstehend",
+        PaymentEnded        -> "Ende der Kostenübernahme",
+        NoIndication        -> "Klinisch keine Indikation",
+        MedicalReason       -> "Medizinische Gründe",
+        PatientRefusal      -> "Therapie durch Patient abgelehnt",
+        PatientWish         -> "Auf Wunsch des Patienten",
+        PatientDeath        -> "Tod",
+        LostToFU            -> "Lost to follow-up",
+        Remission           -> "Anhaltende Remission",
+        Progression         -> "Progression",
+        Toxicity            -> "Toxizität",
+        OtherTherapyChosen  -> "Wahl einer anderen Therapie durch Behandler",
+        ContinuedExternally -> "Weiterbehandlung extern",
+        StateDeterioration  -> "Zustandsverschlechterung",
+        Other               -> "Weitere Gründe",
+        Unknown             -> "Unbekannt"
+      )
+
   }
 
 }
