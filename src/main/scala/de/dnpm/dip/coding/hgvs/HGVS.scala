@@ -42,6 +42,18 @@ object HGVS extends CodeSystem.Publisher[HGVS]
     List.empty
 
 
+  object extensions
+  {
+
+    implicit class HGVSCodingExtensions(val coding: Coding[HGVS]) extends AnyVal
+    {
+      def matches(criterion: Coding[HGVS]): Boolean =
+        coding.code.value.toLowerCase contains criterion.code.value.toLowerCase 
+    }
+  }
+
+
+
   object Protein
   {
 

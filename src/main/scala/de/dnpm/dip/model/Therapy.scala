@@ -21,7 +21,6 @@ sealed trait Therapy
   val category: Option[Coding[_]]
   val status: Coding[Therapy.Status.Value]
   val statusReason: Option[Coding[Therapy.StatusReason.Value]]
-//  val statusReason: Option[Coding[Therapy.StatusReason]]
   val therapyLine: Option[Int]
   val basedOn: Option[Reference[TherapyRecommendation]]
   val recordedOn: LocalDate
@@ -95,6 +94,8 @@ object Therapy
     implicit val codingSystem: Coding.System[StatusReason] =
       Coding.System[StatusReason]("dnpm-dip/therapy/status-reason")
   }
+*/
+/*
 */
 
   object StatusReason

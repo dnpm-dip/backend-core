@@ -37,7 +37,7 @@ object TherapyRecommendation
 {
 
   object Priority
-  extends CodedEnum("therapy-recommendation/priority")
+  extends CodedEnum("dnpm-dip/therapy-recommendation/priority")
   with DefaultCodeSystem
   {
     val One   = Value("1")
