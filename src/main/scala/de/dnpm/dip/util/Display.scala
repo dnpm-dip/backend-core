@@ -10,6 +10,9 @@ import play.api.libs.json.{
 // Utility to map (complex) types to a string label for display purposes
 
 final case class DisplayLabel[T](value: String) extends AnyVal
+{
+  override def toString = value
+}
 
 object DisplayLabel
 {
