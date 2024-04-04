@@ -34,20 +34,6 @@ final case class Reference[+T]
   def resolve[TT >: T](implicit res: Resolver[TT]): Option[TT] =
     res(this)
 
-/*  
-  def resolveOn[TT >: T](
-    ts: Iterable[TT]
-  )(
-    implicit hasId: TT <:< { def id: Id[TT] }
-  ): Option[TT] = {
-    import scala.language.reflectiveCalls
-    this.id match {
-      case Some(id) => ts.find(_.id == id)
-      case _        => None
-    }
-  }
-*/
-
   def resolveOn[TT >: T](
     ts: Iterable[TT]
   )(
