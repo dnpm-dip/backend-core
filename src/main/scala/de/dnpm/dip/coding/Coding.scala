@@ -305,8 +305,7 @@ object Coding
   implicit def readsEnumCoding[
     E <: Enumeration
   ](
-    implicit
-    cs: CodeSystem[E#Value]
+    implicit cs: CodeSystem[E#Value]
   ): Reads[Coding[E#Value]] =
     (
       (JsPath \ "code").read[Code[E#Value]] and

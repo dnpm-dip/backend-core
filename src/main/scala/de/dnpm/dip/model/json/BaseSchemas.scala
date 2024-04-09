@@ -1,8 +1,12 @@
 package de.dnpm.dip.model.json
 
 
-import java.time.LocalDate
+import java.time.{
+  LocalDate,
+  YearMonth
+}
 import java.time.temporal.Temporal
+import scala.reflect.ClassTag
 import scala.util.chaining._
 import cats.data.NonEmptyList
 import play.api.libs.json.JsObject
@@ -40,6 +44,32 @@ import shapeless.{
 
 trait BaseSchemas
 {
+
+  implicit class SchemaExtensions[T](val sch: Schema[T]){
+
+    def toSimpleNameDefinition(implicit ct: ClassTag[T]): Schema[T] =
+      sch.toDefinition(ct.runtimeClass.getSimpleName)
+  }
+
+
+  private def enumDefName[E <: Enumeration](
+    e: E
+  ): String =
+    e.getClass.getName
+     .pipe {
+        name =>
+          val idx = name lastIndexOf "."
+          if (idx > 0) name.substring(idx+1,name.length)
+          else name
+     }
+     .pipe {
+       name =>
+         if (name endsWith "$") name.substring(0,name.length - 1)
+         else name
+     }
+     .pipe(_.replace("$","."))
+
+
 
   implicit def idSchema[T]: Schema[Id[T]] =
     Schema.`string`.asInstanceOf[Schema[Id[T]]]
@@ -87,37 +117,38 @@ trait BaseSchemas
     .toDefinition("Reference[Publication]")
 
 
+
+  implicit def enumValueSchema[E <: Enumeration](
+    implicit w: Witness.Aux[E]
+  ): Schema[E#Value] = {
+
+    Schema.`enum`[E#Value](
+      Schema.`string`,
+      w.value.values.map(_.toString).toSet.map(Value.str)
+    )
+    .toDefinition(enumDefName(w.value))
+  }
+
+
+  implicit val yearMonthSchema: Schema[YearMonth] =
+    Json.schema[LocalDate].asInstanceOf[Schema[YearMonth]]
+     .toDefinition("YearMonth")
+
+
+
   implicit def enumCodingSchema[E <: Enumeration](
     implicit w: Witness.Aux[E]
   ): Schema[Coding[E#Value]] = {
-    val name =
-      w.value.getClass.getName
-       .pipe {
-         name =>
-           val idx = name lastIndexOf "."
-           if (idx > 0) name.substring(idx+1,name.length)
-           else name  
-      }
-      .pipe { 
-        name => 
-          if (name endsWith "$") name.substring(0,name.length - 1)
-          else name
-      }
-      .pipe(_.replace("$","."))
-
     Schema.`object`[Coding[E#Value]](
       Field(
         "code",
-        Schema.`enum`[Code[E#Value]](
-          Schema.`string`,
-          w.value.values.map(_.toString).toSet.map(Value.str)
-        )
+        enumValueSchema(w.value)
       ),
       Field("display",Schema.`string`,false),
       Field("system",Schema.`string`,false),
       Field("version",Schema.`string`,false)
     )
-    .toDefinition(s"Coding[$name]")
+    .toDefinition(s"Coding[${enumDefName(w.value)}]")
   }
 
 
@@ -154,20 +185,11 @@ trait BaseSchemas
       Field("version",Schema.`string`,false)
     )
 
-/*
-  implicit val anyCodingSchema: Schema[Coding[Any]] =
-    Schema.`object`[Coding[Any]](
-      Field("code",codeSchema[Any]),
-      Field("display",Schema.`string`,false),
-      Field("system",Schema.`string`(Schema.`string`.Format.`uri`)),
-      Field("version",Schema.`string`,false)
-    )
-    .toDefinition("Coding[Any]")
-*/
 
   implicit val datePeriodSchema: Schema[Period[LocalDate]] =
     Json.schema[OpenEndPeriod[LocalDate]]
       .asInstanceOf[Schema[Period[LocalDate]]]
+      .toDefinition("Period[LocalDate]")
 
 
   import de.dnpm.dip.model.UnitOfTime.{Months,Years}
