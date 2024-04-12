@@ -5,11 +5,19 @@ import de.dnpm.dip.coding.{
   Coding
 }
 
-abstract class Observation[T: Observation.ValidValue]
+
+trait Obs
 {
-  val id: Id[Observation[_]]
+  type ValueType
+
+  val id: Id[Obs]
   val patient: Reference[Patient]
-  val value: T
+  val value: ValueType
+}
+
+abstract class Observation[T: Observation.ValidValue] extends Obs
+{
+  type ValueType = T
 }
 
 
