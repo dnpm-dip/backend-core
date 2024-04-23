@@ -58,7 +58,7 @@ object ICDO3 extends ICDSystem[ICDO3]
   val morphologyFilter =
     CodeSystem.Filter[ICDO3](
       "morphology",
-      Some("Filters ICD-O-3-M coding (Morphology)"),
+      Some("Filters ICD-O-3-M codings (Morphology)"),
       c => morphologyRegex matches (c.code.value)
     )
 
