@@ -1,6 +1,8 @@
 package de.dnpm.dip.coding.hgvs
 
 
+import scala.util.chaining._
+import scala.util.matching.{Regex,UnanchoredRegex}
 import cats.Applicative
 import de.dnpm.dip.util.{
   SPIF,
@@ -20,8 +22,7 @@ object HGVS extends CodeSystem.Publisher[HGVS]
 {
 
   implicit val codingSystem: Coding.System[HGVS] =
-    Coding.System[HGVS]("https://varnomen.hgvs.org")
-//    Coding.System[HGVS]("https://hgvs-nomenclature.org")
+    Coding.System[HGVS]("https://hgvs-nomenclature.org")
 
 
   sealed trait DNA extends HGVS
@@ -29,10 +30,10 @@ object HGVS extends CodeSystem.Publisher[HGVS]
 
 
   implicit val codingSystemDNA: Coding.System[HGVS.DNA] =
-    Coding.System[HGVS.DNA]("https://varnomen.hgvs.org/recommendations/DNA/")
+    Coding.System[HGVS.DNA]("https://hgvs-nomenclature.org")
 
   implicit val codingSystemProtein: Coding.System[HGVS.Protein] =
-    Coding.System[HGVS.Protein]("https://varnomen.hgvs.org/recommendations/protein/")
+    Coding.System[HGVS.Protein]("https://hgvs-nomenclature.org")
 
 
   override val properties =
@@ -45,9 +46,9 @@ object HGVS extends CodeSystem.Publisher[HGVS]
   object extensions
   {
 
-    implicit class HGVSCodingExtensions(val coding: Coding[HGVS]) extends AnyVal
+    implicit class HGVSCodingExtensions[C <: HGVS](val coding: Coding[C]) extends AnyVal
     {
-      def matches(criterion: Coding[HGVS]): Boolean =
+      def matches(criterion: Coding[C]): Boolean =
         coding.code.value.toLowerCase contains criterion.code.value.toLowerCase 
     }
   }
@@ -56,9 +57,6 @@ object HGVS extends CodeSystem.Publisher[HGVS]
 
   object Protein
   {
-
-    import scala.util.chaining._
-    import scala.util.matching.Regex
 
     private val aminoAcidMappings =
       Map(
@@ -95,22 +93,22 @@ object HGVS extends CodeSystem.Publisher[HGVS]
          .map { case (one,three) => three.toLowerCase -> one }
 
 
-     val threeLetterAA =
+     val threeLetterCode: UnanchoredRegex =
        s"(?i)(${aminoAcidMappings.values.mkString("|")})".r.unanchored
 
-     val oneLetterAA =
+     val oneLetterCode: UnanchoredRegex =
        s"(${(aminoAcidMappings.keySet - "*").mkString("|")}|\\*)".r.unanchored
 
 
      def to3LetterCode(in: String): String =
        in match {
-         case threeLetterAA(_*) => in
-         case _                 => oneLetterAA replaceAllIn (in, m => aminoAcidMappings(m.matched))
+         case threeLetterCode(_*) => in
+         case _                 => oneLetterCode replaceAllIn (in, m => aminoAcidMappings(m.matched))
        }
 
      def to1LetterCode(in: String): String =
        in match {
-         case threeLetterAA(_*) => threeLetterAA replaceAllIn (in, m => invertedMappings(m.matched.toLowerCase))
+         case threeLetterCode(_*) => threeLetterCode replaceAllIn (in, m => invertedMappings(m.matched.toLowerCase))
          case _                 => in
        }
 

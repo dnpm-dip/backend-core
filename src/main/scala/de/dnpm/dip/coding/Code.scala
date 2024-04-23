@@ -10,6 +10,9 @@ import play.api.libs.json.{
 
 
 final case class Code[+S](value: String) extends AnyVal
+{
+  override def toString = value
+}
 
 object Code
 {

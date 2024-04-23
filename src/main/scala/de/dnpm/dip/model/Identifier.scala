@@ -14,6 +14,9 @@ import de.dnpm.dip.coding.Coding
 final case class Id[+T](value: String)
 {
 
+  override def toString: String = value
+
+
   import scala.language.reflectiveCalls
 
   def resolveOn[TT >: T](
@@ -23,8 +26,6 @@ final case class Id[+T](value: String)
   ): Option[TT] =
     ts.find(_.id == this)
   
-
-  override def toString: String = value
 }
 
 object Id
