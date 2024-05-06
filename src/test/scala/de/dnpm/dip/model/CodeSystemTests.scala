@@ -26,6 +26,8 @@ class CodeSystemTests extends AnyFlatSpec
         Coding.System[Gender.Value].uri,
         Coding.System[VitalStatus.Value].uri,
         Coding.System[TherapyRecommendation.Priority.Value].uri,
+        Coding.System[NGSReport.SequencingType.Value].uri,
+        Coding.System[NGSReport.Platform.Value].uri
       )
 
   }

@@ -142,7 +142,10 @@ trait BaseSchemas
     Schema.`object`[Coding[E#Value]](
       Field(
         "code",
-        enumValueSchema(w.value)
+        Schema.`enum`[E#Value](
+          Schema.`string`,
+          w.value.values.map(_.toString).toSet.map(Value.str)
+        )
       ),
       Field("display",Schema.`string`,false),
       Field("system",Schema.`string`,false),

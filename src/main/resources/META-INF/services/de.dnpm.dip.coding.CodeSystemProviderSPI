@@ -5,3 +5,5 @@ de.dnpm.dip.model.VitalStatus$ProviderSPI
 de.dnpm.dip.model.Episode$Status$ProviderSPI
 de.dnpm.dip.model.Therapy$Status$ProviderSPI
 de.dnpm.dip.model.TherapyRecommendation$Priority$ProviderSPI
+de.dnpm.dip.model.NGSReport$SequencingType$ProviderSPI
+de.dnpm.dip.model.NGSReport$Platform$ProviderSPI

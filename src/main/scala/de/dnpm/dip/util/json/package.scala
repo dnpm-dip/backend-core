@@ -12,7 +12,6 @@ import play.api.libs.json._
 import cats.data.NonEmptyList
 
 
-
 package object json
 {
 
@@ -33,5 +32,22 @@ package object json
     reads
       .filterNot(JsonValidationError("Found empty list where non-empty list expected"))(_.isEmpty)
       .map(NonEmptyList.fromListUnsafe)
+
+
+  // Custom implementation of Format[Enum] because the implementation
+  // in Play JSON Lib Json.formatEnum() doesn't return the valueset in its error message
+  def enumFormat[E <: Enumeration](
+    e: E
+  ): Format[E#Value] =
+    Format(
+      Reads.of[String]
+        .filter(
+          JsonValidationError(s"Invalid enum value, expected one of {${e.values.mkString(",")}}")
+        )(
+          s => e.values.exists(_.toString == s)
+        )
+        .map(e.withName),
+      Json.formatEnum(e)
+    )
 
 }
