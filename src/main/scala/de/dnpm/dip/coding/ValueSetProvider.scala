@@ -5,12 +5,14 @@ import java.net.URI
 import cats.data.NonEmptyList
 import cats.Applicative
 import cats.Eval
-/*
+import play.api.libs.json.{
+  Json,
+  OWrites
+}
 import de.dnpm.dip.util.{
   SPIF,
   SPILoaderF
 }
-*/
 
 trait ValueSetProvider[S,F[_],Env]
 {
@@ -41,59 +43,95 @@ trait ValueSetProvider[S,F[_],Env]
 }
 
 
-class BasicValueSetProvider[S,F[_]](
-  private val versionOrder: Ordering[String],
-  private val vss: NonEmptyList[ValueSet[S]]
-)
-extends ValueSetProvider[S,F,Applicative[F]]
+trait ValueSetProviderSPI extends SPIF[
+  ({ type Service[F[_]] = ValueSetProvider[Any,F,Applicative[F]] })#Service
+]
+
+object ValueSetProvider extends SPILoaderF[ValueSetProviderSPI]
 {
-  self =>
 
-  private val valueSets: Map[String,ValueSet[S]] =
-    vss.map(c => c.version.get -> c)
-      .toList
-      .toMap
+  final case class Info
+  (
+    name: String,
+    title: Option[String],
+    uri: URI,
+    versions: List[String],
+    latestVersion: String
+  )
 
-
-  import cats.syntax.functor._
-  import cats.syntax.applicative._
-
-  override val versionOrdering =
-    versionOrder
-
-  override val uri: URI =
-    vss.head.uri
+  implicit val format: OWrites[Info] =
+    Json.writes[Info]
 
 
-  override def versions(
-    implicit env: Applicative[F]
-  ): F[NonEmptyList[String]] =
-    vss.map(_.version.get)
-      .pure[F]
+  import scala.language.implicitConversions
 
-  override def latestVersion(
-    implicit env: Applicative[F]
-  ): F[String] =
-    self.versions
-      .map(_.toList.max(versionOrder))
-
-
-  override def get(
-    version: String
-  )(
-    implicit env: Applicative[F]
-  ): F[Option[ValueSet[S]]] =
-    valueSets.get(version)
-      .pure[F]
-
-  override def latest(
-    implicit env: Applicative[F]
-  ): F[ValueSet[S]] =
-    self.latestVersion
-      .map(valueSets(_))
+  implicit def toAnyValueSetProvider[S,Spr >: S,F[_],Env](
+    vsp: ValueSetProvider[S,F,Env]
+  ): ValueSetProvider[Spr,F,Env] =
+    vsp.asInstanceOf[ValueSetProvider[Spr,F,Env]]
 
 }
 
+/*
+abstract class BasicValueSetProvider[S](
+  uri: URI,
+  versionOrder: Ordering[String],
+  vs: ValueSet[S],
+  vss: ValueSet[S]*
+)
+{
+
+  val valueSets: Map[String,ValueSet[S]] =
+    (vs +: vss).map(v => v.version.get -> v)
+      .toMap
+
+
+  final class Facade[F[_]] extends ValueSetProvider[S,F,Applicative[F]]
+  {
+    self =>
+
+    import cats.syntax.functor._
+    import cats.syntax.applicative._
+
+    override val versionOrdering = versionOrder
+
+    override val uri: URI =
+      uri
+
+    override def versions(
+      implicit env: Applicative[F]
+    ): F[NonEmptyList[String]] =
+      NonEmptyList.of(cs,css: _*).map(_.version.get).pure[F]
+
+    override def latestVersion(
+      implicit env: Applicative[F]
+    ): F[String] =
+      self.versions
+        .map(_.toList.max(versionOrder))
+
+    override def filters(
+      implicit env: Applicative[F]
+    ): F[List[ValueSet.Filter[S]]] =
+      List.empty.pure
+
+
+    override def get(
+      version: String
+    )(
+      implicit env: Applicative[F]
+    ): F[Option[ValueSet[S]]] =
+      codeSystems.get(version).pure[F]
+
+    override def latest(
+      implicit env: Applicative[F]
+    ): F[ValueSet[S]] =
+      self.latestVersion
+        .map(codeSystems(_))
+
+  }
+
+}
+*/
 
 class LazyValueSetProvider[S,F[_]](
   private val csp: CodeSystemProvider[S,cats.Id,Applicative[cats.Id]],
@@ -149,10 +187,3 @@ extends ValueSetProvider[Any,F,Applicative[F]]
 
 }
 
-/*
-trait ValueSetProviderSPI extends SPIF[
-  ({ type Service[F[_]] = ValueSetProvider[Any,F,Applicative[F]] })#Service
-]
-
-object ValueSetProvider extends SPILoaderF[ValueSetProviderSPI]
-*/

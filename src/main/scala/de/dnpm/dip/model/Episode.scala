@@ -31,7 +31,6 @@ trait Episode
   val id: Id[Episode]
   val transferTan: Option[Id[TransferTAN]]  //TODO: Make required 
   val patient: Reference[Patient]
-//  val period: Period[LocalDate]
 //  val status: Coding[Episode.Status.Value]
   val diagnoses: List[Reference[Diagnosis]]
 }

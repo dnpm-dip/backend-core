@@ -151,7 +151,7 @@ object CodeSystemProvider extends SPILoaderF[CodeSystemProviderSPI]
     uri: URI,
     versions: List[String],
     latestVersion: String,
-    filters: List[CodeSystem.Filter[S]],
+    filters: List[CodeSystem.Filter[S]]
   )
 
   implicit def format[S]: OWrites[Info[S]] =

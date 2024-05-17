@@ -150,16 +150,6 @@ final case class CodeSystem[S]
 object CodeSystem
 {
 
-  final case class Info
-  (
-    name: String,
-    title: Option[String],
-    uri: URI,
-//    versions: List[String]
-    version: Option[String]
-  )
-
-
   final case class Property private (
     name: String,
     `type`: String,
@@ -250,10 +240,21 @@ object CodeSystem
       this.toCoding(cs.uri)
 
 
+    import shapeless.{Coproduct}
+    import shapeless.ops.coproduct.Selector
+
+    def toCodingOf[T <: Coproduct](
+      implicit
+      cs: Coding.System[S],
+      sel: Selector[T,S]
+    ): Coding[T] =
+      this.toCoding.asInstanceOf[Coding[T]]
+
   }
 
   object Concept
   {
+
     def properties(
       prop: (Property,Iterable[String]),
       props: (Property,Iterable[String])*,
@@ -263,6 +264,7 @@ object CodeSystem
           case (prp,values) if values.nonEmpty => prp.name -> values.toSet
         }
         .toMap
+
   }
 
 
@@ -323,16 +325,6 @@ object CodeSystem
             "description" -> filter.description
           )
       }
-/*      
-    implicit def writes[T,F <: Filter[T]]: OWrites[F] =
-      OWrites {
-        filter =>
-          Json.obj(
-            "name"        -> filter.name,
-            "description" -> filter.description
-          )
-      }
-*/      
   }
 
 
@@ -441,9 +433,6 @@ object CodeSystem
   }
 
 
-  implicit val formatInfo: OFormat[Info] =
-    Json.format[Info]
-
   implicit val formatProperty: OFormat[Property] =
     Json.format[Property]
 
@@ -459,63 +448,6 @@ object CodeSystem
   implicit def toAnyCodeSystem[S,T >: S](cs: CodeSystem[S]): CodeSystem[T] =
     cs.asInstanceOf[CodeSystem[T]]
 
-  implicit def toInfo[S](cs: CodeSystem[S]): Info =
-    Info(
-      cs.name,
-      cs.title,
-      cs.uri,
-      cs.version
-    )
-
 }
 
-
-
-@annotation.implicitNotFound(
-"Couldn't resolve implicit CodeSystems for default injection. Ensure implicit CodeSystems are in scope for all types in ${CS}."
-)
-trait CodeSystems[CS]{
-  val values: List[CodeSystem[Any]]
-}
-
-object CodeSystems
-{
-
-  import shapeless.{HList, ::, HNil, Generic}
-
-  def apply[CS <: Product](implicit cs: CodeSystems[CS]) = cs
-
-  implicit def genericCodeSystem[CS, CSpr](
-    implicit
-    gen: Generic.Aux[CS,CSpr],
-    genCs: CodeSystems[CSpr]
-  ): CodeSystems[CS] =
-    new CodeSystems[CS]{
-      val values = genCs.values
-    }
-
-  implicit def hlistCodeSystems[H, T <: HList](
-    implicit
-    hcs: CodeSystem[H],
-    tcs: CodeSystems[T]
-  ): CodeSystems[H :: T] =
-    new CodeSystems[H :: T]{
-      val values = hcs :: tcs.values
-    }
-
-  implicit def productHeadHListCodeSystems[H <: Product, T <: HList](
-    implicit
-    hcs: CodeSystems[H],
-    tcs: CodeSystems[T]
-  ): CodeSystems[H :: T] =
-    new CodeSystems[H :: T]{
-      val values = hcs.values ++ tcs.values
-    }
-
-  implicit val hnilCodeSystems: CodeSystems[HNil] =
-    new CodeSystems[HNil]{
-      val values = Nil
-    }
-
-}
 

@@ -404,11 +404,12 @@ object Coding
   ): Coding[C] =
     coding.asInstanceOf[Coding[C]]
 
+/*
   implicit def coproductCodingToCoding[C <: Coproduct,S](
     coding: Coding[C]
   )(
     implicit sel: Selector[C,S]
   ): Coding[S] =
     coding.asInstanceOf[Coding[S]]
-
+*/
 }
