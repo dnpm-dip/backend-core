@@ -10,10 +10,15 @@ import de.dnpm.dip.coding.{
   CodeSystems,
   ValueSet
 }
-
+import shapeless.{
+  :+:,
+  CNil
+}
 
 class ValueSetTests extends AnyFlatSpec
 {
+
+  type Systems = VitalStatus.Value :+: Gender.Value :+: CNil
 
   "ValueSet composition" must "have worked" in {
 
@@ -28,12 +33,20 @@ class ValueSetTests extends AnyFlatSpec
 
 
     val valueSet =
+      composer.expand[Systems]
+      
+    valueSet.codings.size must equal (
+      CodeSystems[Systems].values.values.flatMap(_.concepts).size
+    )
+
+/*
+    val valueSet =
       composer.expand[(VitalStatus.Value,Gender.Value)]
       
     valueSet.codings.size must equal (
       CodeSystems[(VitalStatus.Value,Gender.Value)].values.flatMap(_.concepts).size
     )
-
+*/
   }
 
 

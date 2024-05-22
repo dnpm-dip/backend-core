@@ -20,21 +20,6 @@ class CompleterTests extends AnyFlatSpec
       pat => pat.copy(gender = pat.gender.complete)
     )
 
-/*
-  implicit val completer: Completer[Patient] = {
-
-    import shapeless.{=:!=}
-    import Completer.derivation._
-
-    implicit def defaultCompleter[T](
-      implicit notCoding: T =:!= Coding[Any]
-    ): Completer[T] =
-      Completer.of(identity)
-
-    Completer[Patient]  
-  }
-*/
-
 
   "Completer[Patient]" must "have worked correctly" in {
 
@@ -46,6 +31,7 @@ class CompleterTests extends AnyFlatSpec
         None,
         None,
         None,
+        None
       )
       
 

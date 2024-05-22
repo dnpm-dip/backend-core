@@ -19,7 +19,7 @@ class CodeSystemTests extends AnyFlatSpec
       .getInstances[cats.Id]
       .map(_.uri)
       .toList must contain allOf (
-        Coding.System[Episode.Status.Value].uri,
+//        Coding.System[Episode.Status.Value].uri,
         Coding.System[GuidelineTreatmentStatus.Value].uri,
         Coding.System[Therapy.Status.Value].uri,
         Coding.System[Relationship.Value].uri,

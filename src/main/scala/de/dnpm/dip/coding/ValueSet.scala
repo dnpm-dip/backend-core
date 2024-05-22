@@ -179,13 +179,15 @@ object ValueSet
       css: CodeSystem[Any]*
     ): ValueSet[Any]
 
+    import shapeless.Coproduct
 
-    def expand[CS <: Product](
+    def expand[CS <: Coproduct](
       implicit
       cs: CodeSystems[CS]
     ): ValueSet[Any] =
       self.expand(
-        cs.values: _*
+        cs.values.values.toSeq: _*
+//        cs.values: _*
       )
 
     def expand[S](

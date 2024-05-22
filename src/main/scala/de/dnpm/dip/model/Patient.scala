@@ -21,7 +21,8 @@ final case class Patient
   birthDate: LocalDate,
   dateOfDeath: Option[LocalDate],
   managingSite: Option[Coding[Site]],
-  healthInsurance: Option[Reference[Organization]]
+  healthInsurance: Option[Reference[Organization]],
+//  address: Option[Address]
 )
 {
 
@@ -58,6 +59,20 @@ object Patient
   implicit val reads: Reads[Patient] = 
     Json.reads[Patient]
 
+
+  implicit val writes: OWrites[Patient] = {
+
+    val w = Json.writes[Patient]
+
+    OWrites[Patient](
+      pat =>
+        w.writes(pat) +
+          ("age"         -> Json.toJson(pat.age)) +
+          ("vitalStatus" -> Json.toJson(pat.vitalStatus))
+    )
+  }
+
+/*        
   implicit val writes: OWrites[Patient] = 
     OWrites[Patient]{
       pat =>
@@ -68,9 +83,11 @@ object Patient
           "dateOfDeath"     -> pat.dateOfDeath,
           "managingSite"    -> pat.managingSite,
           "healthInsurance" -> pat.healthInsurance,
+          "address"         -> pat.address,
           "age"             -> pat.age,
           "vitalStatus"     -> pat.vitalStatus
         )
     }
+*/
 
 }

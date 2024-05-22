@@ -31,7 +31,7 @@ trait Episode
   val id: Id[Episode]
   val transferTan: Option[Id[TransferTAN]]  //TODO: Make required 
   val patient: Reference[Patient]
-//  val status: Coding[Episode.Status.Value]
+//  val statusReason: Option[Coding[Episode.StatusReason.Value]]
   val diagnoses: List[Reference[Diagnosis]]
 }
 
@@ -39,6 +39,7 @@ trait Episode
 object Episode
 {
 
+/*
   object Status
   extends CodedEnum("dnpm-dip/episode/status")
   with DefaultCodeSystem
@@ -67,6 +68,57 @@ object Episode
     }
 
   }
+*/
 
+
+  object StatusReason
+  extends CodedEnum("dnpm-dip/episode/status-reason")
+  with DefaultCodeSystem
+  {
+
+    val NoSeqReq = Value("no-sequencing-requested")
+
+    override val display =
+      Map(
+        NoSeqReq -> "Keine Sequenzierung beantragt"
+      )
+/*
+    final class ProviderSPI extends CodeSystemProviderSPI
+    {
+      override def getInstance[F[_]]: CodeSystemProvider[Any,F,Applicative[F]] =
+        new Provider.Facade[F]
+    }
+*/
+  }
+
+
+  object SubmissionType
+  extends CodedEnum("dnpm-dip/episode/status")
+  with DefaultCodeSystem
+  {
+
+    val Initial    = Value("initial")
+    val Addition   = Value("addition")
+    val Correction = Value("correction")
+    val Other      = Value("other")
+
+//    implicit val format: Format[Value] =
+//      Json.formatEnum(this)
+
+    override val display =
+      Map(
+        Initial    -> "Erstmeldung",
+        Addition   -> "Nachtrag",
+        Correction -> "Korrektur",
+        Other      -> "Löschung",
+      )
+/*
+    final class ProviderSPI extends CodeSystemProviderSPI
+    {
+      override def getInstance[F[_]]: CodeSystemProvider[Any,F,Applicative[F]] =
+        new Provider.Facade[F]
+    }
+*/
+  }
 
 }
