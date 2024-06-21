@@ -12,7 +12,7 @@ trait CarePlan
   val indication: Option[Reference[Diagnosis]]
   val therapyRecommendations: Option[List[TherapyRecommendation]]
   val medicationRecommendations: Option[List[MedicationRecommendation[_]]]
-  val studyEnrollmentRecommendation: Option[StudyEnrollmentRecommendation]
+//  val studyEnrollmentRecommendation: Option[StudyEnrollmentRecommendation]
   val notes: Option[String]
 }
 
