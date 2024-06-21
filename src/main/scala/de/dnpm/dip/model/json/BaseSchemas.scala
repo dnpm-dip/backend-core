@@ -34,6 +34,7 @@ import de.dnpm.dip.model.{
   PubMed,
   OpenEndPeriod,
   Reference,
+  UnitOfTime
 }
 import shapeless.{
   Coproduct,
@@ -209,6 +210,15 @@ trait BaseSchemas
       ),
     )
     .toDefinition("Age")
+
+
+  implicit val unitOfTimeSchema: Schema[UnitOfTime] =
+    Schema.`enum`[UnitOfTime](
+      Schema.`string`,
+      UnitOfTime.values.map(_.name).map(Value.str)  
+    )
+    .toDefinition("UnitOfTime")
+  
 
 }
 

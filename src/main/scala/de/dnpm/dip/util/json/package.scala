@@ -1,7 +1,11 @@
 package de.dnpm.dip.util
 
 
-
+import java.time.{
+  LocalDate,
+  YearMonth
+}
+import java.time.format.DateTimeFormatter
 import scala.util.{
   Either,
   Left,
@@ -18,7 +22,6 @@ package object json
 
   implicit def writesNel[T: Writes](
     implicit
-    reads: Reads[List[T]],
     writes: Writes[List[T]]
   ): Writes[NonEmptyList[T]] =
     writes.contramap(_.toList)
@@ -27,7 +30,6 @@ package object json
   implicit def readsNel[T: Reads](
     implicit
     reads: Reads[List[T]],
-    writes: Writes[List[T]]
   ): Reads[NonEmptyList[T]] =
     reads
       .filterNot(JsonValidationError("Found empty list where non-empty list expected"))(_.isEmpty)
@@ -49,5 +51,22 @@ package object json
         .map(e.withName),
       Json.formatEnum(e)
     )
+
+
+  private val yyyyMM    = "yyyy-MM"
+  private val yyyyMMFormatter = DateTimeFormatter.ofPattern(yyyyMM)
+
+
+  implicit val readsYearMonth: Reads[YearMonth] =
+    Reads.of[String]
+      .map(YearMonth.parse(_,yyyyMMFormatter))
+      .orElse(
+        Reads.of[LocalDate]
+          .map(d => YearMonth.of(d.getYear,d.getMonth))
+      )
+
+  implicit val writesYearMonth: Writes[YearMonth] =
+    Writes.of[String].contramap(yyyyMMFormatter.format)
+
 
 }

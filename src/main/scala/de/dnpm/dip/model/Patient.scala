@@ -72,22 +72,4 @@ object Patient
     )
   }
 
-/*        
-  implicit val writes: OWrites[Patient] = 
-    OWrites[Patient]{
-      pat =>
-        Json.obj(
-          "id"              -> pat.id,
-          "gender"          -> pat.gender,
-          "birthDate"       -> pat.birthDate,
-          "dateOfDeath"     -> pat.dateOfDeath,
-          "managingSite"    -> pat.managingSite,
-          "healthInsurance" -> pat.healthInsurance,
-          "address"         -> pat.address,
-          "age"             -> pat.age,
-          "vitalStatus"     -> pat.vitalStatus
-        )
-    }
-*/
-
 }

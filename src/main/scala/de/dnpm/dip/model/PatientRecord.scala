@@ -12,7 +12,9 @@ trait PatientRecord
 
   val consent: JsObject   // leave unstructured (for now)
 
-  val episodes: NonEmptyList[Episode]
+  val episodesOfCare: NonEmptyList[EpisodeOfCare]
+
+  val carePlans: Option[List[CarePlan]]
 
 
   final def id: Id[Patient] =
