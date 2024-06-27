@@ -5,6 +5,7 @@ import cats.data.NonEmptyList
 import play.api.libs.json.JsObject
 
 
+
 trait PatientRecord
 {
 
@@ -14,7 +15,11 @@ trait PatientRecord
 
   val episodesOfCare: NonEmptyList[EpisodeOfCare]
 
+  val ngsReports: Option[List[NGSReport]]
+
   val carePlans: Option[List[CarePlan]]
+
+  val therapies: Option[List[History[MedicationTherapy[_]]]]
 
 
   final def id: Id[Patient] =

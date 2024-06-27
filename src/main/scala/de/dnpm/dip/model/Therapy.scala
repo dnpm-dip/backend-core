@@ -17,15 +17,24 @@ sealed trait Therapy
 {
   val id: Id[Therapy]
   val patient: Reference[Patient]
-  val indication: Reference[Diagnosis]
+  val indication: Option[Reference[Diagnosis]]
+  val recordedOn: LocalDate
+  val basedOn: Option[Reference[TherapyRecommendation]]
   val category: Option[Coding[_]]
+//  val status: Option[Coding[Therapy.Status.Value]]
   val status: Coding[Therapy.Status.Value]
   val statusReason: Option[Coding[Therapy.StatusReason.Value]]
   val therapyLine: Option[Int]
-  val basedOn: Option[Reference[TherapyRecommendation]]
-  val recordedOn: LocalDate
   val period: Option[Period[LocalDate]]
-  val note: Option[String]
+  val notes: Option[String]
+
+/*
+  final def statusValue: Therapy.Status.Value =
+    status match {
+      case Some(Therapy.Status(s)) => s
+      case _ => Therapy.Status.Unknown
+    }
+*/
 
   final def statusValue: Therapy.Status.Value =
     status match {
@@ -40,11 +49,11 @@ sealed trait Therapy
     }
 }
 
-
 trait MedicationTherapy[Medication] extends Therapy
 {
   val medication: Option[Set[Coding[Medication]]]
 }
+
 
 trait Procedure[CS] extends Therapy
 {
@@ -87,16 +96,6 @@ object Therapy
 
 
   sealed trait StatusReason
-
-/*
-  object StatusReason
-  {
-    implicit val codingSystem: Coding.System[StatusReason] =
-      Coding.System[StatusReason]("dnpm-dip/therapy/status-reason")
-  }
-*/
-/*
-*/
 
   object StatusReason
   extends CodedEnum("dnpm-dip/therapy/status-reason")

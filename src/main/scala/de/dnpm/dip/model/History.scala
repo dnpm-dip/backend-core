@@ -12,7 +12,7 @@ import play.api.libs.json.{
 }
 
 
-final case class History[T]
+final case class History[+T]
 (
   history: NonEmptyList[T]
 )

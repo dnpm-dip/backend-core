@@ -22,7 +22,7 @@ final case class Patient
   dateOfDeath: Option[LocalDate],
   managingSite: Option[Coding[Site]],
   healthInsurance: Option[Reference[Organization]],
-//  address: Option[Address]
+  address: Option[Address]
 )
 {
 

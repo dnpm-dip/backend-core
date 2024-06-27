@@ -19,14 +19,13 @@ trait Recommendation
   val patient: Reference[Patient]
   val issuedOn: LocalDate
   val supportingVariants: Option[List[Reference[_]]]
-//  val supportingEvidence: Option[List[Reference[_]]]  // renamed !!
 }
 
 
 trait TherapyRecommendation extends Recommendation
 {
   val indication: Option[Reference[Diagnosis]]
-  val priority: Coding[TherapyRecommendation.Priority.Value]
+  val priority: Option[Coding[TherapyRecommendation.Priority.Value]]
 }
 
 

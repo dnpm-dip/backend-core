@@ -9,7 +9,7 @@ import play.api.libs.json.{
 
 final case class Address
 (
-  postalCode: String
+  municipalityCode: String
 )
 
 object Address
