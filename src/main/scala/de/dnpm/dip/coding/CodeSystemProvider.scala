@@ -20,7 +20,7 @@ import play.api.libs.json.{
 
 
 
-trait CodeSystemProvider[S,F[_],Env]
+trait CodeSystemProvider[S,F[_],-Env]
 {
   self =>
 

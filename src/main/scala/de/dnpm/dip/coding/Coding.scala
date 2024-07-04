@@ -10,8 +10,7 @@ import shapeless.Witness
 import shapeless.{
   Coproduct,
   :+:,
-  CNil,
-  <:!<
+  CNil
 }
 import shapeless.ops.coproduct.Selector
 import play.api.libs.json.{
@@ -22,7 +21,10 @@ import play.api.libs.json.{
   JsPath,
   JsonValidationError
 }
-import de.dnpm.dip.util.Completer
+import de.dnpm.dip.util.{
+  Completer,
+  Tree
+}
 
 
 
@@ -58,22 +60,25 @@ final case class Coding[+S]
 
   
   def parent[Spr >: S](
-   implicit
-   csp: CodeSystemProvider[Spr,cats.Id,Applicative[cats.Id]],
+    implicit csp: CodeSystemProvider[Spr,Id,Applicative[Id]],
   ): Option[Coding[Spr]] =
     version
       .flatMap(csp.get)
       .getOrElse(csp.latest)
       .parentOf(code)
-      .map(p =>
-        Coding(
-          p.code,
-          Some(p.display),
-          system,
-          p.version
-        )
-      )
+      .map(_.toCoding(system))
 
+
+  def expand[Spr >: S](
+    implicit csp: CodeSystemProvider[Spr,Id,Applicative[Id]]
+  ): Option[Tree[Coding[Spr]]] = 
+    version
+      .flatMap(csp.get)
+      .getOrElse(csp.latest)
+      .descendantTree(code)
+      .map(_.map(_.toCoding(system)))
+
+  
 }
 
 

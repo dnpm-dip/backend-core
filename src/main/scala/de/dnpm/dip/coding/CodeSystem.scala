@@ -12,6 +12,8 @@ import play.api.libs.json.{
 import scala.collection.{
   WithFilter => StdWithFilter
 }
+import de.dnpm.dip.util.Tree
+
 
 
 final case class CodeSystem[S]
@@ -134,6 +136,20 @@ final case class CodeSystem[S]
 
   def descendantsOf(p: CodeSystem.Concept[S]): Set[CodeSystem.Concept[S]] =
     descendantsOf(p.code)
+
+
+  def descendantTree(code: Code[S]): Option[Tree[CodeSystem.Concept[S]]] =
+    concept(code)
+      .map(
+        cpt =>
+          Tree(
+            cpt,
+            Option(
+              childrenOf(cpt).toSeq.flatMap(c => descendantTree(c.code))
+            )
+            .filter(_.nonEmpty)
+          )
+      )
 
 
   def displayOf(c: Code[S]): Option[String] =
