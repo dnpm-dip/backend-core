@@ -17,6 +17,7 @@ final case class Tree[+T]
   children: Option[Seq[Tree[T]]] = None
 )
 {
+
   def contains[Tpr >: T](t: Tpr): Boolean =
     element == t || children.exists(_.exists(_ contains t))
 
@@ -28,7 +29,7 @@ final case class Tree[+T]
       Some(element)
     else
       children.flatMap(
-        _.flatMap(_.find(f)).headOption
+        _.view.flatMap(_.find(f)).headOption
       )
 
   def map[U](f: T => U): Tree[U] =
@@ -36,6 +37,52 @@ final case class Tree[+T]
       f(element),
       children.map(_.map(_.map(f)))
     )
+
+/*
+  def find(f: T => Boolean): Option[T] = {
+
+    @annotation.tailrec
+    def findRecursive(seq: Seq[Tree[T]]): Option[T] = {
+      if (seq.nonEmpty){
+        val child = 
+          seq.head.find(f)
+
+        if (child.isDefined) child
+        else findRecursive(seq.tail)
+      } else
+        None
+    }
+
+    if (f(element)) Some(element)
+    else children.flatMap(findRecursive)
+  }
+*/
+
+/*
+  def filter(f: T => Boolean): Seq[T] = {
+    Seq(element).filter(f) ++
+      children.getOrElse(Seq.empty).flatMap(_.filter(f))
+  }
+*/
+/*
+  def foldLeft[U](z: U)(f: (U,T) => U): U = {
+    val u = f(z,element)
+    children.fold(
+      u
+    )(
+      _.foldLeft(u)((acc,t) => t.foldLeft(acc)(f))
+    )  
+  }
+
+  def filter(f: T => Boolean): Seq[T] = {
+    foldLeft(Seq.empty[T])(
+      (acc,t) =>
+        if (f(t)) acc :+ t
+        else acc
+    )
+  }
+*/
+
 }
 
 
