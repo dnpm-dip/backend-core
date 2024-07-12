@@ -21,8 +21,10 @@ final case class Tree[+T]
   def contains[Tpr >: T](t: Tpr): Boolean =
     element == t || children.exists(_.exists(_ contains t))
 
+
   def exists(f: T => Boolean): Boolean =
     f(element) || children.exists(_.exists(_.exists(f)))
+
 
   def find(f: T => Boolean): Option[T] =
     if (f(element))
@@ -31,6 +33,7 @@ final case class Tree[+T]
       children.flatMap(
         _.view.flatMap(_.find(f)).headOption
       )
+
 
   def map[U](f: T => U): Tree[U] =
     Tree(

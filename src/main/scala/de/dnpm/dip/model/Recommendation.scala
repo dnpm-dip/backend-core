@@ -28,11 +28,11 @@ trait TherapyRecommendation extends Recommendation
   val priority: Option[Coding[TherapyRecommendation.Priority.Value]]
 }
 
-
 trait MedicationRecommendation[Medication] extends TherapyRecommendation
 {
   val medication: Set[Coding[Medication]]
 }
+
 
 object TherapyRecommendation
 {

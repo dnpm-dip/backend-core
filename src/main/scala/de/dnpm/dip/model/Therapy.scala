@@ -21,20 +21,12 @@ sealed trait Therapy
   val recordedOn: LocalDate
   val basedOn: Option[Reference[TherapyRecommendation]]
   val category: Option[Coding[_]]
-//  val status: Option[Coding[Therapy.Status.Value]]
   val status: Coding[Therapy.Status.Value]
   val statusReason: Option[Coding[Therapy.StatusReason.Value]]
   val therapyLine: Option[Int]
   val period: Option[Period[LocalDate]]
   val notes: Option[String]
 
-/*
-  final def statusValue: Therapy.Status.Value =
-    status match {
-      case Some(Therapy.Status(s)) => s
-      case _ => Therapy.Status.Unknown
-    }
-*/
 
   final def statusValue: Therapy.Status.Value =
     status match {

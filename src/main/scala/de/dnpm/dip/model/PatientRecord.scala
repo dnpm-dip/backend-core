@@ -19,6 +19,7 @@ trait PatientRecord
 
   val carePlans: Option[List[CarePlan]]
 
+//  val therapies: Option[List[History[MedicationTherapy]]]
   val therapies: Option[List[History[MedicationTherapy[_]]]]
 
 

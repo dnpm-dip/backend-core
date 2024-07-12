@@ -30,7 +30,7 @@ class CompleterTests extends AnyFlatSpec
         LocalDate.now,
         None,
         None,
-//        None,
+        None,
         None
       )
       

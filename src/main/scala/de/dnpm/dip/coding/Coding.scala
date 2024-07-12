@@ -52,7 +52,6 @@ final case class Coding[+S]
 
         this.system  == cdng.system && 
         this.code    == cdng.code 
-        //  && this.version == cdng.version
 
       case _ => false
 
