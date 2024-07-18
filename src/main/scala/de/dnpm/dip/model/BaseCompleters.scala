@@ -48,7 +48,11 @@ trait BaseCompleters
 
 
   implicit val unregisteredCodingCompleter: Completer[Coding[UnregisteredMedication]] =
-    Completer.of(identity)
+    Completer.of(
+      coding => coding.copy(
+        display = coding.display.orElse(Some(coding.code.value))
+      )
+    )
 
 
   implicit def coproductCodingCompleter[
@@ -77,8 +81,6 @@ trait BaseCompleters
     compH: Completer[Coding[H]],
   ): Completer[Coding[H :+: CNil]] =
     compH.asInstanceOf[Completer[Coding[H :+: CNil]]]
-
-
 
 
 
