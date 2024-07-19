@@ -4,8 +4,9 @@ package de.dnpm.dip.model
 import java.time.Instant
 import play.api.libs.json.{
   Json,
-  Format,
-  OFormat
+  Reads,
+  Writes,
+  OWrites,
 }
 
 
@@ -17,11 +18,14 @@ final case class Snapshot[T] private (
 object Snapshot
 {
 
-  def apply[T](data: T): Snapshot[T] =
+  def of[T](data: T): Snapshot[T] =
     Snapshot(data,Instant.now.toEpochMilli)
 
 
-  implicit def format[T: Format]: OFormat[Snapshot[T]] =
-    Json.format[Snapshot[T]]
+  implicit def reads[T: Reads]: Reads[Snapshot[T]] =
+    Json.reads[Snapshot[T]]
+
+  implicit def writes[T: Writes]: OWrites[Snapshot[T]] =
+    Json.writes[Snapshot[T]]
 
 }
