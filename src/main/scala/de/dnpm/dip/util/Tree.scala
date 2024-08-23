@@ -101,7 +101,7 @@ object Tree
   implicit def writesTree[T: OWrites]: OWrites[Tree[T]] =
     (
       JsPath.write[T] and
-      (JsPath \ "_children").lazyWriteNullable(OWrites.seq[Tree[T]])
+      (JsPath \ "children").lazyWriteNullable(OWrites.seq[Tree[T]])
     )(
       unlift(Tree.unapply[T](_))
     )
@@ -109,7 +109,7 @@ object Tree
   implicit def readsTree[T: Reads: OWrites]: Reads[Tree[T]] =
     (
       JsPath.read[T] and
-      (JsPath \ "_children").lazyReadNullable(Reads.seq[Tree[T]])
+      (JsPath \ "children").lazyReadNullable(Reads.seq[Tree[T]])
     )(
       Tree(_,_)
     )

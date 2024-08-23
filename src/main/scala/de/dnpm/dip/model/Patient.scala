@@ -45,7 +45,7 @@ final case class Patient
     ageIn(YEARS)
 
 
-  def vitalStatus: Coding[VitalStatus.Value] =
+  lazy val vitalStatus: Coding[VitalStatus.Value] =
     dateOfDeath
       .map(_ => VitalStatus.Deceased)
       .getOrElse(VitalStatus.Alive)

@@ -33,7 +33,6 @@ object NGSReport
   with DefaultCodeSystem
   {
     val Panel           = Value("panel")
-    val Array           = Value("array")
     val Exome           = Value("exome")
     val GenomeShortRead = Value("genome-short-read")
     val GenomeLongRead  = Value("genome-long-read")
@@ -41,7 +40,6 @@ object NGSReport
     override val display =
       Map(
         Panel           -> "Panel",
-        Array           -> "Array",
         Exome           -> "Exome",
         GenomeShortRead -> "Genome short-read",
         GenomeLongRead  -> "Genome long-read"
@@ -58,7 +56,7 @@ object NGSReport
 
   sealed trait Platform
   object Platform
-  extends CodedEnum("/dnpm-dip/ngs/sequencing-platform")
+  extends CodedEnum("dnpm-dip/ngs/sequencing-platform")
   with DefaultCodeSystem
   {
     val Illumina       = Value("illu")
