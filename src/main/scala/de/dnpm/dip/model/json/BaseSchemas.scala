@@ -115,7 +115,7 @@ trait BaseSchemas
       Field("uri",Schema.`string`,false),
       Field("type",Schema.`string`,false),
     )
-    .toDefinition("Reference[Publication]")
+    .toDefinition("Reference_Publication")
 
 
 
@@ -152,7 +152,7 @@ trait BaseSchemas
       Field("system",Schema.`string`,false),
       Field("version",Schema.`string`,false)
     )
-    .toDefinition(s"Coding[${enumDefName(w.value)}]")
+    .toDefinition(s"Coding_${enumDefName(w.value)}")
   }
 
 
@@ -193,7 +193,7 @@ trait BaseSchemas
   implicit val datePeriodSchema: Schema[Period[LocalDate]] =
     Json.schema[OpenEndPeriod[LocalDate]]
       .asInstanceOf[Schema[Period[LocalDate]]]
-      .toDefinition("Period[LocalDate]")
+      .toDefinition("Period_LocalDate")
 
 
   import de.dnpm.dip.model.UnitOfTime.{Months,Years}
