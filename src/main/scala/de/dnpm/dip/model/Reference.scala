@@ -74,6 +74,7 @@ object Reference
     t: T,
     display: Option[String] = None
   ): Reference[T] = {
+
     import scala.language.reflectiveCalls
 
     Reference.from(t.id).copy(display = display)
@@ -82,11 +83,8 @@ object Reference
   def to[T <: { def id: Id[T] }](
     t: T,
     display: String
-  ): Reference[T] = {
-    import scala.language.reflectiveCalls
-
+  ): Reference[T] =
     Reference.to(t,Some(display))
-  }
 
 
   final case class TypeName[T](value: String)

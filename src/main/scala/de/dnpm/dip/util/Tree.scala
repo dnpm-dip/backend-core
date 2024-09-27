@@ -18,8 +18,19 @@ final case class Tree[+T]
 )
 {
 
+  def addChild[U >: T](t: Tree[U]): Tree[U] =
+    Tree(
+      element,
+      Some(children.fold(Seq(t))(_ :+ t))
+    )
+
+
   def contains[Tpr >: T](t: Tpr): Boolean =
-    element == t || children.exists(_.exists(_ contains t))
+    exists(_ == t)
+
+
+  def depth: Int =
+    1 + children.flatMap(_.map(_.depth).maxOption).getOrElse(0)
 
 
   def exists(f: T => Boolean): Boolean =
@@ -27,12 +38,32 @@ final case class Tree[+T]
 
 
   def find(f: T => Boolean): Option[T] =
-    if (f(element))
-      Some(element)
-    else
-      children.flatMap(
-        _.view.flatMap(_.find(f)).headOption
+    Option.when(f(element))(element)
+      .orElse(
+        children.flatMap(
+          _.foldLeft(Option.empty[T])((acc,ch) => acc orElse ch.find(f))
+        )
       )
+
+/*
+  def find(f: T => Boolean): Option[T] =
+    Option.when(f(element))(element)
+      .orElse(
+        children.flatMap(
+          _.view.flatMap(_.find(f)).headOption
+        )
+      )
+*/
+
+
+  def foldLeft[U](z: U)(f: (U,T) => U): U = {
+    val u = f(z,element)
+    children.fold(u)(_.foldLeft(u)((acc,t) => t.foldLeft(acc)(f)))  
+  }
+
+
+  def hasChildren: Boolean =
+    children.exists(_.nonEmpty)
 
 
   def map[U](f: T => U): Tree[U] =
@@ -41,56 +72,49 @@ final case class Tree[+T]
       children.map(_.map(_.map(f)))
     )
 
-/*
-  def find(f: T => Boolean): Option[T] = {
 
-    @annotation.tailrec
-    def findRecursive(seq: Seq[Tree[T]]): Option[T] = {
-      if (seq.nonEmpty){
-        val child = 
-          seq.head.find(f)
+  def size: Int =
+    1 + children.fold(0)(_.map(_.size).sum)
 
-        if (child.isDefined) child
-        else findRecursive(seq.tail)
-      } else
-        None
-    }
 
-    if (f(element)) Some(element)
-    else children.flatMap(findRecursive)
-  }
-*/
+  def toSeq: Seq[T] =
+    element +: children.getOrElse(Seq.empty[Tree[T]]).flatMap(_.toSeq) 
 
-/*
-  def filter(f: T => Boolean): Seq[T] = {
-    Seq(element).filter(f) ++
-      children.getOrElse(Seq.empty).flatMap(_.filter(f))
-  }
-*/
-/*
-  def foldLeft[U](z: U)(f: (U,T) => U): U = {
-    val u = f(z,element)
-    children.fold(
-      u
-    )(
-      _.foldLeft(u)((acc,t) => t.foldLeft(acc)(f))
-    )  
-  }
 
-  def filter(f: T => Boolean): Seq[T] = {
-    foldLeft(Seq.empty[T])(
-      (acc,t) =>
-        if (f(t)) acc :+ t
-        else acc
-    )
-  }
-*/
+  def toSet[U >: T]: Set[U] =
+    children.getOrElse(Seq.empty[Tree[T]]).flatMap(_.toSet).toSet + element
 
 }
 
 
 object Tree
 {
+
+  def apply[T](t: T, children: Tree[T]*): Tree[T] =
+    Tree(
+      t,
+      Option(children).filter(_.nonEmpty)
+    )
+
+
+  type Expander[T] = T => Tree[T]
+
+  object Expander
+  {
+
+    def apply[T](implicit exp: Expander[T]) = exp
+
+    object syntax
+    {
+      implicit class ExpansionOps[T](val t: T) extends AnyVal
+      {
+        def expand(implicit exp: Expander[T]): Tree[T] = exp(t) 
+      } 
+    }
+
+  }
+
+
 
   import play.api.libs.functional.syntax._
 
@@ -113,5 +137,11 @@ object Tree
     )(
       Tree(_,_)
     )
+
+
+  import Completer.syntax._
+
+  implicit def treeCompleter[T: Completer]: Completer[Tree[T]] =
+    t => t.map(_.complete)
 
 }

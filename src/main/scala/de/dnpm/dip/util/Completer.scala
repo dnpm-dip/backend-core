@@ -39,15 +39,17 @@ object Completer
     }
 
 
+  import scala.language.implicitConversions
+
+  implicit def fromFunction[T](f: T => T): Completer[T] =
+    Completer.of(f)
+
+
   import scala.collection.Factory
   import syntax._
 
-  implicit def optionCompleter[
-    T: Completer
-  ]: Completer[Option[T]] =
-    Completer.of(
-      opt => opt.map(_.complete)
-    )
+  implicit def optionCompleter[T: Completer]: Completer[Option[T]] =
+    opt => opt.map(_.complete)
 
   implicit def iterableCompleter[
     T: Completer,
@@ -55,51 +57,12 @@ object Completer
   ](
     implicit fac: Factory[T,C[T]]
   ): Completer[C[T]] =
-    Completer.of(
-      ts => ts.map(_.complete).to(fac)
-    )
+    ts => ts.map(_.complete).to(fac)
 
-  implicit def nonEmptyListCompleter[
-    T: Completer
-  ]: Completer[NonEmptyList[T]] =
-    Completer.of(
-      ts => ts.map(_.complete)
-    )
+  implicit def nonEmptyListCompleter[T: Completer]: Completer[NonEmptyList[T]] =
+    ts => ts.map(_.complete)
 
 
   def apply[T](implicit cp: Completer[T]) = cp
-
-
-/*
-  object derivation
-  {
-
-    implicit def hlistCompleter[H,T <: HList](
-      implicit
-      hComp: Completer[H],
-      tComp: Completer[T],
-    ): Completer[H :: T] =
-      Completer.of(
-        hlist => hComp(hlist.head) :: tComp(hlist.tail)
-      )
-
-    implicit val hnilCompleter: Completer[HNil] =
-      Completer.of(identity)
-
-
-    implicit def genericCompleter[T,Tpr](
-      implicit
-      gen: Generic.Aux[T,Tpr],
-      comp: Completer[Tpr]
-    ): Completer[T] = {
-
-      import scala.util.chaining._
-
-      Completer.of(
-        gen.to(_) pipe comp pipe gen.from
-      )
-    }
-  }
-*/
 
 }

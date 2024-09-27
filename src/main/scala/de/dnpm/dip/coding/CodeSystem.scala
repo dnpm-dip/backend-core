@@ -124,7 +124,7 @@ final case class CodeSystem[S]
   def childrenOf(p: CodeSystem.Concept[S]): Set[CodeSystem.Concept[S]] =
     childrenOf(p.code)
 
-
+  @deprecated
   def descendantsOf(p: Code[S]): Set[CodeSystem.Concept[S]] = { 
 
     val children = childrenOf(p)
@@ -134,6 +134,7 @@ final case class CodeSystem[S]
       children.flatMap(descendantsOf)
   }
 
+  @deprecated
   def descendantsOf(p: CodeSystem.Concept[S]): Set[CodeSystem.Concept[S]] =
     descendantsOf(p.code)
 
@@ -144,10 +145,8 @@ final case class CodeSystem[S]
         cpt =>
           Tree(
             cpt,
-            Option(
-              childrenOf(cpt).toSeq.flatMap(c => descendantTree(c.code))
-            )
-            .filter(_.nonEmpty)
+            Option(childrenOf(cpt).toSeq.flatMap(c => descendantTree(c.code)))
+              .filter(_.nonEmpty)
           )
       )
 

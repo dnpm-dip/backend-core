@@ -67,7 +67,7 @@ final case class Coding[+S]
       .parentOf(code)
       .map(_.toCoding(system))
 
-
+//  @deprecated
   def expand[Spr >: S](
     implicit csp: CodeSystemProvider[Spr,Id,Applicative[Id]]
   ): Option[Tree[Coding[Spr]]] = 
@@ -77,7 +77,6 @@ final case class Coding[+S]
       .descendantTree(code)
       .map(_.map(_.toCoding(system)))
 
-  
 }
 
 
@@ -229,6 +228,32 @@ object Coding
 
   }
 
+
+  implicit def descendantExpander[T](
+    implicit csp: CodeSystemProvider[T,Id,Applicative[Id]]
+  ): Tree.Expander[Coding[T]] =
+    coding =>
+      coding.version
+        .flatMap(csp.get)
+        .getOrElse(csp.latest)
+        .descendantTree(coding.code)
+        .map(_.map(_.toCoding(coding.system)))
+        .getOrElse(Tree(coding))
+
+/*
+  implicit def descendantExpander[T](
+    implicit csp: CodeSystemProvider[T,Id,Applicative[Id]]
+  ): Tree.Expander[Coding[T]] =
+    new Tree.Expander[Coding[T]]{
+      override def apply(coding: Coding[T]) =
+        coding.version
+          .flatMap(csp.get)
+          .getOrElse(csp.latest)
+          .descendantTree(coding.code)
+          .map(_.map(_.toCoding(coding.system)))
+          .getOrElse(Tree(coding))
+    }
+*/
 
   implicit def defaultDisplays[S]: Displays[Coding[S]] =
     Displays[Coding[S]](_.display.getOrElse("N/A"))
