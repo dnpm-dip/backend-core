@@ -11,6 +11,7 @@ import play.api.libs.json.{
 }
 
 
+// Utility class to build taxonomy-like trees
 final case class Tree[+T]
 (
   element: T,
@@ -45,20 +46,16 @@ final case class Tree[+T]
         )
       )
 
-/*
-  def find(f: T => Boolean): Option[T] =
-    Option.when(f(element))(element)
-      .orElse(
-        children.flatMap(
-          _.view.flatMap(_.find(f)).headOption
-        )
-      )
-*/
-
 
   def foldLeft[U](z: U)(f: (U,T) => U): U = {
     val u = f(z,element)
     children.fold(u)(_.foldLeft(u)((acc,t) => t.foldLeft(acc)(f)))  
+  }
+
+
+  def foldRight[U](z: U)(f: (T,U) => U): U = {
+    val u = f(element,z)
+    children.fold(u)(_.foldRight(u)((t,acc) => t.foldRight(acc)(f)))  
   }
 
 
@@ -75,6 +72,15 @@ final case class Tree[+T]
 
   def size: Int =
     1 + children.fold(0)(_.map(_.size).sum)
+
+
+  def subTree(f: T => Boolean): Option[Tree[T]] =
+    Option.when(f(element))(this)
+      .orElse(
+        children.flatMap(
+          _.foldLeft(Option.empty[Tree[T]])((acc,ch) => acc orElse ch.subTree(f))
+        )
+      )
 
 
   def toSeq: Seq[T] =
