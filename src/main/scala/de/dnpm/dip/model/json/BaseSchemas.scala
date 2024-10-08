@@ -21,6 +21,7 @@ import Schema.`object`.Field
 import json.schema.Version._
 import de.dnpm.dip.coding.{
   Code,
+  CodedEnum,
   Coding,
   CodeSystem
 }
@@ -118,28 +119,31 @@ trait BaseSchemas
     .toDefinition("Reference_Publication")
 
 
-
-  implicit def enumValueSchema[E <: Enumeration](
-    implicit w: Witness.Aux[E]
-  ): Schema[E#Value] = {
-
-    Schema.`enum`[E#Value](
-      Schema.`string`,
-      w.value.values.map(_.toString).toSet.map(Value.str)
-    )
-    .toDefinition(enumDefName(w.value))
-  }
-
-
+/*
   implicit val yearMonthSchema: Schema[YearMonth] =
-    Json.schema[LocalDate].asInstanceOf[Schema[YearMonth]]
-     .toDefinition("YearMonth")
+    Json.schema[LocalDate]
+      .asInstanceOf[Schema[YearMonth]]
+      .toDefinition("YearMonth")
+*/
 
+  implicit val yearMonthSchema: Schema[YearMonth] = {
+    
+    import json.schema.validation._
+    
+    Json.schema[String]
+      .asInstanceOf[Schema[YearMonth]]
+      .toDefinition("YearMonth")
+      .withValidation(
+        Instance.pattern := "^\\d{4}\\-(0[1-9]|1[012])$"
+      )(
+        Magnet.mk[YearMonth,String]
+      )
+  }
 
 
   implicit def enumCodingSchema[E <: Enumeration](
     implicit w: Witness.Aux[E]
-  ): Schema[Coding[E#Value]] = {
+  ): Schema[Coding[E#Value]] = 
     Schema.`object`[Coding[E#Value]](
       Field(
         "code",
@@ -153,12 +157,21 @@ trait BaseSchemas
       Field("version",Schema.`string`,false)
     )
     .toDefinition(s"Coding_${enumDefName(w.value)}")
-  }
 
+
+  implicit def enumValueSchema[E <: Enumeration](
+    implicit w: Witness.Aux[E]
+  ): Schema[E#Value] =
+    Schema.`enum`[E#Value](
+      Schema.`string`,
+      w.value.values.map(_.toString).toSet.map(Value.str)
+    )
+    .toDefinition(enumDefName(w.value))
 
 
   protected def codeSchema[T]: Schema[Code[T]] =
-    Schema.`string`.asInstanceOf[Schema[Code[T]]]
+    Schema.`string`
+      .asInstanceOf[Schema[Code[T]]]
       .toDefinition("Code")
 
 
