@@ -130,7 +130,7 @@ trait BaseSchemas
     
     import json.schema.validation._
     
-    Json.schema[String]
+    Json.schema[LocalDate]
       .asInstanceOf[Schema[YearMonth]]
       .toDefinition("YearMonth")
       .withValidation(
