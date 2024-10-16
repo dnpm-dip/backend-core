@@ -170,11 +170,9 @@ trait BaseSchemas
 
 
   def coproductCodingSchema[S <: Coproduct](
-    name: String
-  )(
     implicit
     uris: Coding.System.UriSet[S],
-    ct: ClassTag[S]
+    ns: Coding.System.Names[S],
   ): Schema[Coding[S]] =
     Schema.`object`[Coding[S]](
       Field("code",codeSchema[Any]),
@@ -189,7 +187,7 @@ trait BaseSchemas
       ),
       Field("version",Schema.`string`,false)
     )
-    .toDefinition(s"Coding_$name")
+    .toDefinition(s"Coding_${ns.names.mkString("_")}")
 
 
   protected def codeSchema[T]: Schema[Code[T]] =

@@ -226,6 +226,26 @@ object Coding
         
     }
 
+    // Type class to accumulate names of the Types in Coproduct of Systems
+    final class Names[C] private (val names: List[String]) extends AnyVal
+    object Names
+    {
+      import scala.reflect.ClassTag
+    
+      def apply[C](implicit names: Names[C]) = names
+    
+      implicit def coproductNameSet[H, T <: Coproduct](
+        implicit
+        ctH: ClassTag[H],
+        tail: Names[T]
+      ): Names[H :+: T] =
+        new Names[H :+: T](ctH.runtimeClass.getSimpleName :: tail.names)
+
+      implicit val cnilNames: Names[CNil] =
+        new Names[CNil](List.empty)
+        
+    }
+
   }
 
 
