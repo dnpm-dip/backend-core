@@ -169,6 +169,29 @@ trait BaseSchemas
     .toDefinition(enumDefName(w.value))
 
 
+  def coproductCodingSchema[S <: Coproduct](
+    name: String
+  )(
+    implicit
+    uris: Coding.System.UriSet[S],
+    ct: ClassTag[S]
+  ): Schema[Coding[S]] =
+    Schema.`object`[Coding[S]](
+      Field("code",codeSchema[Any]),
+      Field("display",Schema.`string`,false),
+      Field(
+        "system",
+        Schema.`enum`[String](
+          Schema.`string`,
+          uris.values.map(_.toString).map(Value.str)
+        ),
+        true
+      ),
+      Field("version",Schema.`string`,false)
+    )
+    .toDefinition(s"Coding_$name")
+
+
   protected def codeSchema[T]: Schema[Code[T]] =
     Schema.`string`
       .asInstanceOf[Schema[Code[T]]]
@@ -185,28 +208,11 @@ trait BaseSchemas
     .toDefinition("Coding")
 
 
-  def coproductCodingSchema[S <: Coproduct](
-    implicit uris: Coding.System.UriSet[S]
-  ): Schema[Coding[S]] =
-    Schema.`object`[Coding[S]](
-      Field("code",codeSchema[Any]),
-      Field("display",Schema.`string`,false),
-      Field(
-        "system",
-        Schema.`enum`[String](
-          Schema.`string`,
-          uris.values.map(_.toString).map(Value.str)
-        ),
-        true
-      ),
-      Field("version",Schema.`string`,false)
-    )
-
 
   implicit val datePeriodSchema: Schema[Period[LocalDate]] =
     Json.schema[OpenEndPeriod[LocalDate]]
       .asInstanceOf[Schema[Period[LocalDate]]]
-      .toDefinition("Period_LocalDate")
+      .toDefinition("Period_Date")
 
 
   import de.dnpm.dip.model.UnitOfTime.{Months,Years}
