@@ -260,20 +260,6 @@ object Coding
         .map(_.map(_.toCoding(coding.system)))
         .getOrElse(Tree(coding))
 
-/*
-  implicit def descendantExpander[T](
-    implicit csp: CodeSystemProvider[T,Id,Applicative[Id]]
-  ): Tree.Expander[Coding[T]] =
-    new Tree.Expander[Coding[T]]{
-      override def apply(coding: Coding[T]) =
-        coding.version
-          .flatMap(csp.get)
-          .getOrElse(csp.latest)
-          .descendantTree(coding.code)
-          .map(_.map(_.toCoding(coding.system)))
-          .getOrElse(Tree(coding))
-    }
-*/
 
   implicit def defaultDisplays[S]: Displays[Coding[S]] =
     Displays[Coding[S]](_.display.getOrElse("N/A"))
@@ -347,10 +333,76 @@ object Coding
   import play.api.libs.functional.syntax._
 
 
+//  implicit def writesCoding[S]: OWrites[Coding[S]] = 
+//    Json.writes[Coding[S]]
+
+  implicit val writesAnyCoding: OWrites[Coding[Any]] = 
+    Json.writes[Coding[Any]]
+
+  implicit def writesCoproductCoding[S <: Coproduct]: OWrites[Coding[S]] =
+    writesAnyCoding.contramap(_.asInstanceOf[Coding[Any]])
+
   implicit def writesCoding[S]: OWrites[Coding[S]] = 
-    Json.writes[Coding[S]]
+    (
+      (JsPath \ "code").write[Code[S]] and
+      (JsPath \ "display").writeNullable[String] and
+      (JsPath \ "version").writeNullable[String]
+    )(
+      coding => (coding.code,coding.display,coding.version)
+    )
 
 
+  implicit def readsEnumCoding[
+    E <: Enumeration
+  ](
+    implicit cs: CodeSystem[E#Value]
+  ): Reads[Coding[E#Value]] =
+    (
+      (JsPath \ "code").read[Code[E#Value]].filter(
+        JsonValidationError(
+          s"Invalid 'code' value, expected one of {${cs.concepts.map(_.code.value).mkString(", ")}}"
+        )
+      )(
+        code => cs.concepts.exists(_.code.value == code.value)
+      ) and
+      (JsPath \ "display").readNullable[String] and
+      (JsPath \ "version").readNullable[String]
+    )(
+      (code,display,version) =>
+        Coding[E#Value](
+          code,
+          display,
+          cs.uri,
+          version
+        )
+    )
+
+
+  implicit def readsCodingByCodeSystem[S](
+    implicit cs: CodeSystem[S]
+  ): Reads[Coding[S]] =
+    (
+      (JsPath \ "code").read[Code[S]]
+        .filter(
+          JsonValidationError(
+            s"Invalid value, expected one of {${cs.concepts.map(_.code.value).mkString(", ")}}"
+          )
+        )(
+          code => cs.concepts.exists(_.code.value == code.value)
+        ) and
+      (JsPath \ "display").readNullable[String] and
+      (JsPath \ "version").readNullable[String]
+    )(
+      (code,display,version) =>
+        Coding[S](
+          code,
+          display,
+          cs.uri,
+          version
+        )
+    )
+
+/*
   implicit def readsEnumCoding[
     E <: Enumeration
   ](
@@ -401,7 +453,7 @@ object Coding
     )(
       coding => cs.concepts.exists(_.code.value == coding.code.value)
     )
-
+*/
 
   implicit def readsCoding[S: Coding.System]: Reads[Coding[S]] =
     (

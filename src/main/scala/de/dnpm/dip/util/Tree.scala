@@ -126,7 +126,8 @@ object Tree
 
 
   // Custom Reads/Writes so that the JSON representation of a Tree[T]
-  // is identical to T's JSON representation with a meta-data field "_children" 
+  // is identical to T's JSON representation with a meta-data field "children" 
+  // Hence the restriction to OWrites[T] to ensure that T is a JsObject, not a primitive type
 
   implicit def writesTree[T: OWrites]: OWrites[Tree[T]] =
     (
