@@ -67,6 +67,7 @@ final case class Coding[+S]
       .parentOf(code)
       .map(_.toCoding(system))
 
+
 //  @deprecated
   def expand[Spr >: S](
     implicit csp: CodeSystemProvider[Spr,Id,Applicative[Id]]
@@ -74,7 +75,7 @@ final case class Coding[+S]
     version
       .flatMap(csp.get)
       .getOrElse(csp.latest)
-      .descendantTree(code)
+      .descendants(code)
       .map(_.map(_.toCoding(system)))
 
 }
@@ -256,7 +257,7 @@ object Coding
       coding.version
         .flatMap(csp.get)
         .getOrElse(csp.latest)
-        .descendantTree(coding.code)
+        .descendants(coding.code)
         .map(_.map(_.toCoding(coding.system)))
         .getOrElse(Tree(coding))
 

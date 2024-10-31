@@ -3,14 +3,18 @@ package de.dnpm.dip.coding
 
 import java.net.URI
 import java.time.LocalDateTime
+import scala.collection.{
+  WithFilter => StdWithFilter
+}
+import scala.collection.concurrent.{
+  Map => MutableMap,
+  TrieMap
+}
 import cats.Eval
 import play.api.libs.json.{
   Json,
   OFormat,
   OWrites
-}
-import scala.collection.{
-  WithFilter => StdWithFilter
 }
 import de.dnpm.dip.util.Tree
 
@@ -43,8 +47,18 @@ final case class CodeSystem[S]
   }
 
 
-  def concept(c: Code[S]): Option[CodeSystem.Concept[S]] =
-    this.concepts.find(_.code == c)
+
+  private val conceptMap: Map[Code[S],CodeSystem.Concept[S]] =
+    concepts.map(c => (c.code, c))
+      .toMap
+
+  private lazy val descendantTrees: MutableMap[Code[S],Tree[CodeSystem.Concept[S]]] =
+    TrieMap.empty
+
+
+
+  def concept(code: Code[S]): Option[CodeSystem.Concept[S]] =
+    conceptMap.get(code)
 
   def conceptWithCode(c: String): Option[CodeSystem.Concept[S]] =
     this.concept(Code[S](c))
@@ -124,6 +138,7 @@ final case class CodeSystem[S]
   def childrenOf(p: CodeSystem.Concept[S]): Set[CodeSystem.Concept[S]] =
     childrenOf(p.code)
 
+
   @deprecated
   def descendantsOf(p: Code[S]): Set[CodeSystem.Concept[S]] = { 
 
@@ -139,16 +154,32 @@ final case class CodeSystem[S]
     descendantsOf(p.code)
 
 
-  def descendantTree(code: Code[S]): Option[Tree[CodeSystem.Concept[S]]] =
+  def descendants(code: Code[S]): Option[Tree[CodeSystem.Concept[S]]] =
+    concept(code)
+      .map(
+        cpt =>
+          descendantTrees.getOrElseUpdate(
+            cpt.code,
+            Tree(
+              cpt,
+              Option(childrenOf(cpt).toSeq.flatMap(c => descendants(c.code)))
+                .filter(_.nonEmpty)
+            )
+          )
+      )
+
+/*
+  def descendants(code: Code[S]): Option[Tree[CodeSystem.Concept[S]]] =
     concept(code)
       .map(
         cpt =>
           Tree(
             cpt,
-            Option(childrenOf(cpt).toSeq.flatMap(c => descendantTree(c.code)))
+            Option(childrenOf(cpt).toSeq.flatMap(c => descendants(c.code)))
               .filter(_.nonEmpty)
           )
       )
+*/
 
 
   def displayOf(c: Code[S]): Option[String] =
@@ -161,6 +192,7 @@ final case class CodeSystem[S]
     new WithFilter(concepts.withFilter(f))
 
 }
+
 
 object CodeSystem
 {
