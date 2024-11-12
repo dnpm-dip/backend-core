@@ -287,7 +287,7 @@ object CodeSystem
       this.toCoding(cs.uri)
 
 
-    import shapeless.{Coproduct}
+    import shapeless.Coproduct
     import shapeless.ops.coproduct.Selector
 
     def toCodingOf[T <: Coproduct](

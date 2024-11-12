@@ -54,5 +54,15 @@ class CodeTests extends AnyFlatSpec
 
   }
 
+  "Coding hashCode check" must "be well-behaved" in {
+
+    coding1.hashCode must equal (coding1pr.hashCode)
+
+    coding1.hashCode must equal (coding1ppr.hashCode)
+
+    coding1.hashCode must not equal coding2.hashCode
+
+  }
+
 
 }

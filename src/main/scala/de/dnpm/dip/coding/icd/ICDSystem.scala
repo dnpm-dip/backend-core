@@ -51,9 +51,8 @@ object ICD
       ): Option[Coding[T]] =
         csp.get(coding.version.getOrElse(csp.latestVersion))
           .flatMap(_.parentOf(coding.code))
-          .flatMap {
-            case c if c.classKind == kind => Some(c.toCoding)
-            case _                        => None
+          .collect {
+            case c if c.classKind == kind => c.toCoding
           }
 
     }
