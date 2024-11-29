@@ -6,18 +6,15 @@ import cats.{
   Id,
   Applicative
 }
-import shapeless.Witness
 import shapeless.{
   Coproduct,
   :+:,
   CNil
 }
-import shapeless.ops.coproduct.Selector
 import play.api.libs.json.{
   Json,
   Reads,
   OWrites,
-  OFormat,
   JsPath,
   JsonValidationError
 }
@@ -324,7 +321,6 @@ object Coding
     )
 
 
-  import scala.language.implicitConversions
 
   implicit def fromConcept[S: System](
     concept: CodeSystem.Concept[S]
@@ -338,7 +334,6 @@ object Coding
 
 
   import play.api.libs.functional.syntax._
-
 
   implicit def writesCoding[S]: OWrites[Coding[S]] = 
     Json.writes[Coding[S]]
@@ -457,13 +452,5 @@ object Coding
       )(
         coding => css.values.contains(coding.system)
       )
-
-
-  implicit def codingToCoproductCoding[S, C <: Coproduct](
-    coding: Coding[S]
-  )(
-    implicit sel: Selector[C,S]
-  ): Coding[C] =
-    coding.asInstanceOf[Coding[C]]
 
 }

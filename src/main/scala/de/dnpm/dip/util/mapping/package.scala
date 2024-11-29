@@ -9,9 +9,8 @@ import cats.Monoid
 
 import shapeless.{
   HList, HNil, ::,
-  Generic, LabelledGeneric,
+  LabelledGeneric,
   Lazy,
-  Poly, Poly1
 }
 import shapeless.labelled.{
   field, FieldType
@@ -26,7 +25,6 @@ import shapeless.ops.hlist
 
   https://underscore.io/training/courses/advanced-shapeless/
 */
-
 
 
   // Type alias needed because variance of Function[-A,+B]
@@ -62,7 +60,7 @@ import shapeless.ops.hlist
     aGen   : LabelledGeneric.Aux[A,Apr],
     bGen   : LabelledGeneric.Aux[B,Bpr],
     inter  : hlist.Intersection.Aux[Apr,Bpr,Common],
-    diff   : hlist.Diff.Aux[Bpr,Common,Added],
+    @annotation.unused diff : hlist.Diff.Aux[Bpr,Common,Added],
     monoid : Monoid[Added],
     prepend: hlist.Prepend.Aux[Added,Common,Unaligned],
     align  : hlist.Align[Unaligned,Bpr]
@@ -72,6 +70,5 @@ import shapeless.ops.hlist
 
 
   def of[A,B](implicit f: Mapping[A,B]) = f
-
 
 }

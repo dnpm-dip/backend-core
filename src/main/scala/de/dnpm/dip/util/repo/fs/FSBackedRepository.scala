@@ -5,15 +5,9 @@ import java.io.{
   File,
   FileWriter,
   InputStream,
-  IOException,
   FileInputStream
 }
 import java.nio.file.Files
-import java.util.UUID.randomUUID
-import scala.util.{
-  Failure,
-  Success
-}
 import scala.collection.concurrent.{
   Map,
   TrieMap
@@ -23,7 +17,6 @@ import play.api.libs.json.{
   Format
 }
 import cats.Monad
-import cats.MonadError
 import cats.syntax.functor._
 import cats.syntax.flatMap._
 import de.dnpm.dip.util.Logging
@@ -83,52 +76,6 @@ object FSBackedRepository
 
   }
 
-/*
-  // Ensure only one Repository instance is created for a given data dir
-  private val repos: Map[File,Any] =
-    TrieMap.empty[File,Any]
-
-  def apply[F[_],T,Id](
-    dataDir: File,
-    prefix: String,
-    cached: Boolean,
-    idOf: T => Id,
-    id2str: Id => String
-  )(
-    implicit
-    f: Format[T]
-  ): FSBackedRepository[F,T,Id] = {
-
-    if (!dataDir.exists) dataDir.mkdirs
-
-    val cache =
-      if (cached)
-        Some(
-          dataDir.list
-            .to(LazyList)
-            .map(new File(dataDir,_))
-            .map(toFileInputStream)
-            .map(Json.parse)
-            .map(Json.fromJson[T](_))
-            .map(_.get)
-            .map(t => idOf(t) -> t)
-        )
-      else None
-
-    repos.getOrElseUpdate(
-      dataDir,
-      new Impl[F,T,Id](
-        dataDir,
-        prefix,
-        idOf,
-        id2str,
-        cache.map(TrieMap.from)
-      )
-    )
-    .asInstanceOf[FSBackedRepository[F,T,Id]]
-
-  }
-*/
 
   private class Impl[F[_],T: Format,Id]
   (

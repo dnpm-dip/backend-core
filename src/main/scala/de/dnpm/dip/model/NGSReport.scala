@@ -6,11 +6,9 @@ import cats.Applicative
 import de.dnpm.dip.coding.{
   Coding,
   CodedEnum,
-  CodeSystem,
   DefaultCodeSystem,
   CodeSystemProvider,
   CodeSystemProviderSPI,
-  SingleCodeSystemProvider
 }
 
 

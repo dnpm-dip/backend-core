@@ -2,13 +2,6 @@ package de.dnpm.dip.util
 
 
 import cats.data.NonEmptyList
-import shapeless.{
-  HList,
-  ::,
-  HNil,
-  Generic,
-  Lazy
-}
 
 
 @annotation.implicitNotFound(
@@ -38,8 +31,6 @@ object Completer
       override def apply(t: T) = f(t)
     }
 
-
-  import scala.language.implicitConversions
 
   implicit def fromFunction[T](f: T => T): Completer[T] =
     Completer.of(f)

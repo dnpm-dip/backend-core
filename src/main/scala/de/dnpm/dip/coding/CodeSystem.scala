@@ -10,7 +10,7 @@ import scala.collection.concurrent.{
   Map => MutableMap,
   TrieMap
 }
-import cats.Eval
+//import cats.Eval
 import play.api.libs.json.{
   Json,
   OFormat,
@@ -139,7 +139,7 @@ final case class CodeSystem[S]
     childrenOf(p.code)
 
 
-  @deprecated
+  @deprecated("Might be removed in favour of method CodeSystem.descendants returning Tree","")
   def descendantsOf(p: Code[S]): Set[CodeSystem.Concept[S]] = { 
 
     val children = childrenOf(p)
@@ -149,7 +149,7 @@ final case class CodeSystem[S]
       children.flatMap(descendantsOf)
   }
 
-  @deprecated
+  @deprecated("Might be removed in favour of method CodeSystem.descendants returning Tree","")
   def descendantsOf(p: CodeSystem.Concept[S]): Set[CodeSystem.Concept[S]] =
     descendantsOf(p.code)
 
@@ -286,7 +286,7 @@ object CodeSystem
     def toCoding(implicit cs: Coding.System[S]): Coding[S] =
       this.toCoding(cs.uri)
 
-
+/*
     import shapeless.Coproduct
     import shapeless.ops.coproduct.Selector
 
@@ -296,7 +296,7 @@ object CodeSystem
       sel: Selector[T,S]
     ): Coding[T] =
       this.toCoding.asInstanceOf[Coding[T]]
-
+*/
   }
 
   object Concept
@@ -471,6 +471,7 @@ object CodeSystem
     def filters: List[Filter[T]]
   }
 
+
   object Publisher
   {
     implicit def apply[T](
@@ -489,8 +490,6 @@ object CodeSystem
   implicit def formatCodeSystem[S]: OFormat[CodeSystem[S]] =
     Json.format[CodeSystem[S]]
 
-
-  import scala.language.implicitConversions
 
   implicit def toAnyCodeSystem[S,T >: S](cs: CodeSystem[S]): CodeSystem[T] =
     cs.asInstanceOf[CodeSystem[T]]

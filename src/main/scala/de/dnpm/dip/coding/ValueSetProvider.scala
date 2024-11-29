@@ -63,8 +63,6 @@ object ValueSetProvider extends SPILoaderF[ValueSetProviderSPI]
     Json.writes[Info]
 
 
-  import scala.language.implicitConversions
-
   implicit def toAnyValueSetProvider[S,Spr >: S,F[_],Env](
     vsp: ValueSetProvider[S,F,Env]
   ): ValueSetProvider[Spr,F,Env] =

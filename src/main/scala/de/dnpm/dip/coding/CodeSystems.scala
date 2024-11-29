@@ -10,7 +10,6 @@ import shapeless.{
   Coproduct,
   :+:,
   CNil,
-  Generic
 }
 
 

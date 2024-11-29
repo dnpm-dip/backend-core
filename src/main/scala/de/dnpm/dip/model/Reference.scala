@@ -2,13 +2,11 @@ package de.dnpm.dip.model
 
 
 import java.net.URI
-import cats.data.Ior
 import play.api.libs.json.{
   Json,
   JsObject,
   JsString,
   JsonValidationError,
-  OFormat,
   Reads,
   OWrites
 }
@@ -29,7 +27,6 @@ final case class Reference[+T]
     resolver(this)
 
 
-//  def resolveOn[TT >: T <: { def id: Id[TT] }](
   def resolveOn[TT >: T <: { def id: Id[_] }](
     ts: Iterable[TT]
   ): Option[TT] =
@@ -95,8 +92,6 @@ object Reference
 
   object Resolver
   {
- 
-    import scala.language.implicitConversions
 
     implicit def fromFunction[T](f: Reference[T] => Option[T]): Resolver[T] =
       new Resolver[T]{
@@ -111,14 +106,6 @@ object Reference
     ): Resolver[TT] =
       _.id.flatMap(id => ts.find(_.id == id))
       
-/*
-    def apply[T](implicit res: Resolver[T]) = res
-  
-    implicit def on[T <: { def id: Id[_] }](
-      implicit ts: Iterable[T]
-    ): Resolver[T] =
-      _.id.flatMap(id => ts.find(_.id == id))
-*/
   }
 
 
@@ -127,7 +114,7 @@ object Reference
       .filter(
         JsonValidationError("At least one of 'id', 'extId' or 'uri' must be defined on a Reference")
       )(
-        ref => ref.id.isDefined || ref.extId.isDefined || ref.uri.isDefined
+        ref => ref.id.isDefined | ref.extId.isDefined | ref.uri.isDefined
       )
 
   implicit def writesReference[T: TypeName]: OWrites[Reference[T]] =
@@ -137,3 +124,26 @@ object Reference
       )
 
 }
+
+
+/*
+import de.dnpm.dip.coding.Coding
+
+final case class CodeableReference[+C,+T]
+(
+  concept: Coding[C],
+  reference: Option[Reference[T]]
+)
+
+object CodeableReference
+{
+
+  implicit def reads[C,T: Reference.TypeName](
+    implicit readsCoding: Reads[Coding[C]]
+  ): Reads[CodeableReference[C,T]] =
+    Json.reads[CodeableReference[C,T]]
+
+  implicit def writes[C,T: Reference.TypeName]: OWrites[CodeableReference[C,T]] =
+    Json.writes[CodeableReference[C,T]]
+}
+*/

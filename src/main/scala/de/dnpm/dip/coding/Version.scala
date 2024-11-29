@@ -1,7 +1,6 @@
 package de.dnpm.dip.coding
 
 
-import java.time.temporal.Temporal
 import java.time.{
   LocalDate,
   Year

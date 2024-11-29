@@ -1,8 +1,6 @@
 package de.dnpm.dip.model
 
 
-
-import java.net.URI
 import java.time.temporal.ChronoUnit
 import play.api.libs.json.{
   Json,

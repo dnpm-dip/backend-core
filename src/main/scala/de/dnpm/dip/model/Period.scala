@@ -10,7 +10,6 @@ import play.api.libs.json.{
   Format,
   OFormat,
   Reads,
-  Writes,
   OWrites
 }
 

@@ -1,6 +1,7 @@
 package de.dnpm.dip.model
 
 
+import annotation.unused
 import de.dnpm.dip.coding.{
   Coding
 }
@@ -27,7 +28,7 @@ object Observation
   @annotation.implicitNotFound("${T} is not a valid Observation.value type")
   sealed abstract class ValidValue[T]
 
-  private object ValidValue
+  object ValidValue
   {
 
     def apply[T](implicit v: ValidValue[T]) = v
@@ -64,7 +65,8 @@ object Observation
     sealed trait ValueTypeOf[T]{ type Result }
     object ValueTypeOf
     {
-      import shapeless.{HList, ::, HNil, Generic}
+
+      import shapeless.{::, HNil, Generic}
  
       type Aux[T,V] = ValueTypeOf[T]{ type Result = V }
 
@@ -72,8 +74,8 @@ object Observation
 
       implicit def generic[T,Tpr,V](
         implicit
-        gen: Generic.Aux[T,Tpr],
-        vt: Aux[Tpr,V] 
+        @unused gen: Generic.Aux[T,Tpr],
+        @unused vt: Aux[Tpr,V] 
       ): Aux[T,V] =
         new ValueTypeOf[T]{ type Result = V }
 
@@ -83,12 +85,10 @@ object Observation
     }
 
       
-    implicit def validValueType[
-      T, V
-    ](
+    implicit def validValueType[T, V](
       implicit
-      vt: ValueTypeOf.Aux[T,V],
-      valid: ValidValue[V]
+      @unused vt: ValueTypeOf.Aux[T,V],
+      @unused valid: ValidValue[V]
     ): ValidValue[T] =
       new ValidValue[T]{}
 

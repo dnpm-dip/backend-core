@@ -1,8 +1,6 @@
 package de.dnpm.dip.coding
 
 
-import cats.Applicative
-
 
 
 abstract class CodedEnum

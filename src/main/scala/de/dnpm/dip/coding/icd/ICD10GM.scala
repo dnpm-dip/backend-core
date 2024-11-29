@@ -1,15 +1,12 @@
 package de.dnpm.dip.coding.icd
 
 
-
-import scala.util.matching.Regex
 import cats.{
   Applicative,
   Id
 }
 import de.dnpm.dip.coding.{
   Coding,
-  CodeSystem,
   CodeSystemProvider
 }
 import de.dnpm.dip.util.{

@@ -5,7 +5,6 @@ import java.time.LocalDate
 import cats.Applicative
 import de.dnpm.dip.coding.{
   Coding,
-  CodeSystem,
   CodeSystemProvider,
   CodeSystemProviderSPI,
   CodedEnum,
@@ -56,6 +55,35 @@ trait Procedure[CS] extends Therapy
 
 object Therapy
 {
+
+/*
+  object Type
+  extends CodedEnum("dnpm-dip/therapy/type")
+  with DefaultCodeSystem
+  {
+
+    val CH, HO, IM, ZS, SZ, WW, AS, WS, OP, ST, KW, SO = Value
+ 
+    override val display =
+      Map(
+        CH -> "Chemotherapie",
+        HO -> "Hormontherapie",
+        IM -> "Immun-/Antikörpertherapie",
+        ZS -> "zielgerichtete Substanzen",
+        SZ -> "Stammzelltransplantation (inklusive Knochenmarktransplantation)",
+        WW -> "Watchful Waiting",
+        AS -> "Active Surveillance",
+        WS -> "Wait and see",
+        OP -> "Operation",
+        ST -> "Strahlentherapie",
+        KW -> "keine weitere tumorspezifische Therapie empfohlen",
+        SO -> "Sonstiges"
+      )
+ 
+    implicit val format: Format[Value] =
+        Json.formatEnum(this)
+  }
+*/
 
   object Status
   extends CodedEnum("dnpm-dip/therapy/status")

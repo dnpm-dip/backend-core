@@ -1,10 +1,8 @@
 package de.dnpm.dip.coding.icd
 
 
-import scala.util.matching.Regex
 import cats.Applicative
 import de.dnpm.dip.coding.{
-  Code,
   Coding,
   CodeSystem,
   CodeSystemProvider,

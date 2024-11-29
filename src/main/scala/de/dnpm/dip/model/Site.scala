@@ -5,7 +5,6 @@ import scala.util.{
   Try,
   Failure
 }
-import play.api.libs.json.Json
 import de.dnpm.dip.util.Logging
 import de.dnpm.dip.coding.Coding
 

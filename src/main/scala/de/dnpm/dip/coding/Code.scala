@@ -1,7 +1,6 @@
 package de.dnpm.dip.coding
 
 
-import java.net.URI
 import de.dnpm.dip.util.Displays
 import play.api.libs.json.{
   Json,

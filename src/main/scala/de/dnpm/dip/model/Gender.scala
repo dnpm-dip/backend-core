@@ -1,7 +1,6 @@
 package de.dnpm.dip.model
 
 
-import java.net.URI
 import cats.Applicative
 import de.dnpm.dip.coding.{
   CodedEnum,

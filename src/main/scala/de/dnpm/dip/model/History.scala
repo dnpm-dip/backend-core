@@ -6,7 +6,6 @@ import java.time.temporal.Temporal
 import cats.data.NonEmptyList
 import play.api.libs.json.{
   Json,
-  JsonValidationError,
   Reads,
   Writes,
   OWrites

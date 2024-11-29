@@ -12,13 +12,13 @@ import de.dnpm.dip.coding.{
 }
 
 
-
 trait Recommendation
 {
   val id: Id[Recommendation]
   val patient: Reference[Patient]
   val issuedOn: LocalDate
   val supportingVariants: Option[List[Reference[_]]]
+//  val supportingAlterations: Option[List[GeneAlterationReference[_]]]
 }
 
 
@@ -28,9 +28,9 @@ trait TherapyRecommendation extends Recommendation
   val priority: Option[Coding[TherapyRecommendation.Priority.Value]]
 }
 
-trait MedicationRecommendation[Medication] extends TherapyRecommendation
+trait MedicationRecommendation[M] extends TherapyRecommendation
 {
-  val medication: Set[Coding[Medication]]
+  val medication: Set[Coding[M]]
 }
 
 
@@ -59,7 +59,7 @@ object TherapyRecommendation
 
 trait StudyEnrollmentRecommendation extends Recommendation
 {
+//  val studies: NonEmptyList[ExternalId[Study]]
   val studies: Option[List[ExternalId[Study]]]
 }
-
 

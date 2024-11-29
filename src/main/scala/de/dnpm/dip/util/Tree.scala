@@ -3,9 +3,7 @@ package de.dnpm.dip.util
 
 
 import play.api.libs.json.{
-  Json,
   JsPath,
-  JsObject,
   Reads,
   OWrites
 }

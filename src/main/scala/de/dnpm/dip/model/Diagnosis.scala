@@ -4,14 +4,11 @@ package de.dnpm.dip.model
 import java.time.LocalDate
 import cats.Applicative
 import de.dnpm.dip.coding.{
-  Coding,
-  CodeSystem,
   CodedEnum,
   DefaultCodeSystem,
   CodeSystemProvider,
   CodeSystemProviderSPI
 }
-import de.dnpm.dip.coding.icd.ICD10GM
 
 
 trait Diagnosis

@@ -2,7 +2,6 @@ package de.dnpm.dip.model
 
 
 import java.net.URI
-import java.util.UUID
 import play.api.libs.json.{
   Json,
   Format,

@@ -11,7 +11,6 @@ import play.api.libs.json.{
   Reads,
   OWrites
 }
-import de.dnpm.dip.util.Completer.syntax._
 
 
 final case class Patient

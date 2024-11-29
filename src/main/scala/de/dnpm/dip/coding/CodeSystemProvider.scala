@@ -7,8 +7,9 @@ import cats.data.NonEmptyList
 import cats.{
   Applicative,
   Functor,
-  Monad
 }
+import cats.syntax.functor._
+//import cats.syntax.flatMap._
 import de.dnpm.dip.util.{
   SPIF,
   SPILoaderF
@@ -23,9 +24,6 @@ import play.api.libs.json.{
 trait CodeSystemProvider[S,F[_],-Env]
 {
   self =>
-
-  import cats.syntax.functor._
-  import cats.syntax.flatMap._
 
   val uri: URI
 
@@ -91,8 +89,6 @@ object CodeSystemProvider extends SPILoaderF[CodeSystemProviderSPI]
   def apply[S](implicit csp: CodeSystemProvider[S,cats.Id,Applicative[cats.Id]]) =
     csp
 
-
-  import scala.language.implicitConversions
 
   implicit def toAnyCodeSystemProvider[S,Spr >: S,F[_],Env](
     csp: CodeSystemProvider[S,F,Env]

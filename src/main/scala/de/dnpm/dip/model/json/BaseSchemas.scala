@@ -5,31 +5,23 @@ import java.time.{
   LocalDate,
   YearMonth
 }
-import java.time.temporal.Temporal
 import scala.reflect.ClassTag
 import scala.util.chaining._
-import cats.data.NonEmptyList
-import play.api.libs.json.JsObject
 import json.{
   Json,
   Schema
 }
 import com.github.andyglow.json.Value
 import com.github.andyglow.jsonschema.AsPlay._
-import com.github.andyglow.jsonschema.CatsSupport._
 import Schema.`object`.Field
-import json.schema.Version._
 import de.dnpm.dip.coding.{
   Code,
-  CodedEnum,
   Coding,
-  CodeSystem
 }
 import de.dnpm.dip.model.{
   Age,
   ExternalId,
   Id,
-  Patient,
   Period,
   Publication,
   PubMed,
@@ -39,7 +31,6 @@ import de.dnpm.dip.model.{
 }
 import shapeless.{
   Coproduct,
-  =:!=,
   Witness
 }
 

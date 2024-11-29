@@ -3,7 +3,6 @@ package de.dnpm.dip.coding.ask
 
 import cats.Applicative
 import de.dnpm.dip.coding.{
-  Code,
   Coding,
   CodeSystem,
   CodeSystemProvider

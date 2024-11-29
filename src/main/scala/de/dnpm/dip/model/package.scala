@@ -7,7 +7,6 @@ import cats.{
   Id
 }
 import shapeless.{ 
-  Coproduct,
   :+:,
   CNil
 }
@@ -15,10 +14,7 @@ import de.dnpm.dip.coding.{
   Coding,
   CodeSystemProvider
 }
-import de.dnpm.dip.coding.atc.{
-  ATC,
-  Kinds
-}
+import de.dnpm.dip.coding.atc.ATC
 import de.dnpm.dip.coding.UnregisteredMedication
 
   
@@ -29,7 +25,7 @@ object Medications
 
   implicit class MedicationCodingProperties(val coding: Coding[Medications]) extends AnyVal
   {
-    import Kinds._
+
     import ATC.extensions._
     
     // Get the current group an ATC Entry is classified into,

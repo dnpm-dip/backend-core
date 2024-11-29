@@ -11,7 +11,6 @@ import shapeless.{
   CNil
 }
 import de.dnpm.dip.util.Completer
-import de.dnpm.dip.util.Tree
 import de.dnpm.dip.coding.{
   Code,
   Coding,
@@ -21,9 +20,6 @@ import de.dnpm.dip.coding.{
   UnregisteredMedication
 }
 import de.dnpm.dip.coding.hgvs.HGVS
-import de.dnpm.dip.coding.atc.ATC
-import de.dnpm.dip.coding.UnregisteredMedication
-
 
 
 trait BaseCompleters
@@ -57,24 +53,6 @@ trait BaseCompleters
       )
     )
 
-/*
-  implicit def medicationsCodingExpander(
-    implicit csp: CodeSystemProvider[ATC,Id,Applicative[Id]]
-  ): Tree.Expander[Coding[Medications]] = {
-
-    import Tree.Expander.syntax._
-
-    coding =>
-      coding.system match {
-        case sys if sys == Coding.System[ATC].uri =>
-          coding.asInstanceOf[Coding[ATC]]
-           .expand
-           .asInstanceOf[Tree[Coding[Medications]]]
-
-        case _ => Tree(coding.complete)
-      }
-  }
-*/
 
   implicit def coproductCodingCompleter[
     H: Coding.System,
@@ -95,29 +73,14 @@ trait BaseCompleters
         .asInstanceOf[Coding[H :+: T]]
     }
 
-  implicit def terminalCoproductCodingCompleter[
-    H: Coding.System
-  ](
-    implicit
-    compH: Completer[Coding[H]],
+  implicit def terminalCoproductCodingCompleter[H: Coding.System](
+    implicit compH: Completer[Coding[H]],
   ): Completer[Coding[H :+: CNil]] =
     compH.asInstanceOf[Completer[Coding[H :+: CNil]]]
 
 
 
-  @deprecated
-  private def expandDescendantCodings[T,U >: T](
-    code: Code[T],
-    cs: CodeSystem[U]
-  ): Set[Coding[T]] =
-    (cs.concept(code).toSet ++ cs.descendantsOf(code))
-      .map(
-        _.toCoding(cs.uri)
-         .asInstanceOf[Coding[T]]
-      )
-
-
-  @deprecated
+  @deprecated("Might be removed in favour of descendant Tree handling","")
   private def expandDescendants[T,U >: T](
     coding: Coding[T],
     cs: CodeSystem[U]
@@ -128,7 +91,7 @@ trait BaseCompleters
          .asInstanceOf[Coding[T]]
       )
 
-  @deprecated
+  @deprecated("Might be removed in favour of descendant Tree handling","")
   def expandDescendants[T,U >: T](
     coding: Coding[T],
     csp: CodeSystemProvider[U,Id,Applicative[Id]]
@@ -141,7 +104,7 @@ trait BaseCompleters
     )
 
 
-  @deprecated
+  @deprecated("Might be removed in favour of descendant Tree handling","")
   def expandDescendantCodings[T: Coding.System](
     code: Code[T]
   )(
@@ -154,7 +117,7 @@ trait BaseCompleters
       .map(_.toCoding)
   }
 
-  @deprecated
+  @deprecated("Might be removed in favour of descendant Tree handling","")
   def expandDescendants[T](
     coding: Coding[T]
   )(
@@ -171,7 +134,7 @@ trait BaseCompleters
   // By-name csp parameter (i.e. "lazy" as only evaluated upon being referenced)
   // is required because in traits, the value is usually not yet initialized at this point,
   // resulting in weird null pointer exception
-  @deprecated
+  @deprecated("Might be removed in favour of descendant Tree handling","")
   def descendantExpander[T: Coding.System](
     implicit csp: => CodeSystemProvider[T,Id,Applicative[Id]]
   ): Completer[Set[Coding[T]]] =
@@ -183,7 +146,7 @@ trait BaseCompleters
   // By-name csps parameter (i.e. "lazy" as only evaluated upon being referenced)
   // is required because in traits, the value is usually not yet initialized at this point,
   // resulting in weird null pointer exception
-  @deprecated
+  @deprecated("Might be removed in favour of descendant Tree handling","")
   def descendantExpanderOf[CS <: Coproduct](
     implicit csps: => CodeSystemProviders[CS]
   ): Completer[Set[Coding[CS]]] =

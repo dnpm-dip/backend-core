@@ -6,12 +6,6 @@ import java.time.{
   YearMonth
 }
 import java.time.format.DateTimeFormatter
-import scala.util.{
-  Either,
-  Left,
-  Right,
-  Try
-}
 import play.api.libs.json._
 import cats.data.NonEmptyList
 

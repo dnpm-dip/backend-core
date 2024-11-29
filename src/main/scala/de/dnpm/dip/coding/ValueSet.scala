@@ -8,8 +8,6 @@ import cats.Applicative
 import play.api.libs.json.{
   Json,
   OWrites,
-  Reads,
-  OFormat
 }
 
 
@@ -98,7 +96,7 @@ object ValueSet
     ): Composer =
       self.include(
         sys.uri,
-        (c: CodeSystem.Concept[Any]) => true
+        _ => true
       )
 
 

@@ -1,18 +1,10 @@
 package de.dnpm.dip.coding.hgvs
 
 
-import scala.util.chaining._
-import scala.util.matching.{Regex,UnanchoredRegex}
-import cats.Applicative
-import de.dnpm.dip.util.{
-  SPIF,
-  SPILoaderF
-}
+import scala.util.matching.UnanchoredRegex
 import de.dnpm.dip.coding.{
   Coding,
-  Code,
   CodeSystem,
-  CodeSystemProvider
 }
 
 

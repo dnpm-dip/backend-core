@@ -8,7 +8,6 @@ import scala.util.{
   Failure
 }
 import scala.reflect.ClassTag
-import scala.collection.Factory
 
 
 trait ServiceProviderInterface

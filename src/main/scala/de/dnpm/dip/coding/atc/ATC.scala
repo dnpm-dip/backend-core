@@ -6,7 +6,6 @@ import cats.{
   Id
 }
 import de.dnpm.dip.coding.{
-  Code,
   Coding,
   CodeSystem,
   CodeSystemProvider

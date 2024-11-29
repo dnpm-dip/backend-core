@@ -1,10 +1,11 @@
 package de.dnpm.dip.coding
 
 
-
 import java.net.URI
 import cats.data.NonEmptyList
 import cats.Applicative
+import cats.syntax.functor._
+import cats.syntax.applicative._
 
 
 abstract class BasicCodeSystemProvider[S: Coding.System](
@@ -22,9 +23,6 @@ abstract class BasicCodeSystemProvider[S: Coding.System](
   final class Facade[F[_]] extends CodeSystemProvider[S,F,Applicative[F]]
   {
     self =>
-
-    import cats.syntax.functor._
-    import cats.syntax.applicative._
 
     override val versionOrdering = versionOrder
 
@@ -79,9 +77,6 @@ abstract class SingleCodeSystemProvider[S: Coding.System](
   final class Facade[F[_]] extends CodeSystemProvider[S,F,Applicative[F]]
   {
     self =>
-
-    import cats.syntax.functor._
-    import cats.syntax.applicative._
 
     override val versionOrdering =
       Version.Unordered
