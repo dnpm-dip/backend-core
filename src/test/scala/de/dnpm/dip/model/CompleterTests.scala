@@ -6,8 +6,6 @@ import org.scalatest.matchers.must.Matchers._
 import de.dnpm.dip.util.Completer
 import de.dnpm.dip.coding.Coding
 import java.time.LocalDate
-import java.util.UUID.randomUUID
-
 
 
 class CompleterTests extends AnyFlatSpec

@@ -20,6 +20,8 @@ import de.dnpm.dip.coding.{
   UnregisteredMedication
 }
 import de.dnpm.dip.coding.hgvs.HGVS
+import de.dnpm.dip.coding.hgnc.HGNC
+
 
 
 trait BaseCompleters
@@ -158,5 +160,16 @@ trait BaseCompleters
             csps.values(coding.system))  // Map.apply safe here, because the code won't compile
           )                              // if not all CodeSystemProviders are in scope, so csps is sure to contain all systems
     )
+
+
+  implicit def geneAlterationReferenceCompleter[T](
+    implicit hgnc: CodeSystemProvider[HGNC,Id,Applicative[Id]]
+  ): Completer[GeneAlterationReference[T]] =
+    Completer.of(
+      ref => ref.copy(
+        gene = ref.gene.complete
+      )
+    )
+
 
 }

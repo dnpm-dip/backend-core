@@ -453,4 +453,10 @@ object Coding
         coding => css.values.contains(coding.system)
       )
 
+
+  implicit def codingToCoproductCoding[S, C <: Coproduct](coding: Coding[S])(
+    implicit sel: shapeless.ops.coproduct.Selector[C,S]
+  ): Coding[C] =
+    coding.asInstanceOf[Coding[C]]
+
 }

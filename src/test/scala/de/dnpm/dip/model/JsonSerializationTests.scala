@@ -4,11 +4,7 @@ package de.dnpm.dip.model
 import scala.util.chaining._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers._
-import play.api.libs.json.{
-  Json,
-  JsError,
-  JsSuccess
-}
+import play.api.libs.json.Json
 import de.dnpm.dip.coding.Coding
 
 

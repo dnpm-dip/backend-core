@@ -18,6 +18,7 @@ import de.dnpm.dip.coding.{
   Code,
   Coding,
 }
+import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.model.{
   Age,
   ExternalId,
@@ -27,6 +28,7 @@ import de.dnpm.dip.model.{
   PubMed,
   OpenEndPeriod,
   Reference,
+  GeneAlterationReference,
   UnitOfTime
 }
 import shapeless.{
@@ -84,6 +86,14 @@ trait BaseSchemas
       Field("type",Schema.`string`,false),
     )
     .toDefinition("Reference")
+
+
+  implicit def geneAlterationReferenceSchema[T]: Schema[GeneAlterationReference[T]] =
+    Schema.`object`[GeneAlterationReference[T]](
+      Field("gene",Json.schema[Coding[HGNC]],false),
+      Field("variant",Json.schema[Reference[T]],true)
+    )
+    .toDefinition("GeneAlterationReference")
 
 
   implicit val publicationReferenceSchema: Schema[Reference[Publication]] =
