@@ -10,12 +10,13 @@ import scala.collection.concurrent.{
   Map => MutableMap,
   TrieMap
 }
-//import cats.Eval
 import play.api.libs.json.{
   Json,
   OFormat,
   OWrites
 }
+import shapeless.Coproduct
+import shapeless.ops.coproduct.Selector
 import de.dnpm.dip.util.Tree
 
 
@@ -286,17 +287,12 @@ object CodeSystem
     def toCoding(implicit cs: Coding.System[S]): Coding[S] =
       this.toCoding(cs.uri)
 
-/*
-    import shapeless.Coproduct
-    import shapeless.ops.coproduct.Selector
-
     def toCodingOf[T <: Coproduct](
       implicit
       cs: Coding.System[S],
       sel: Selector[T,S]
     ): Coding[T] =
       this.toCoding.asInstanceOf[Coding[T]]
-*/
   }
 
   object Concept
