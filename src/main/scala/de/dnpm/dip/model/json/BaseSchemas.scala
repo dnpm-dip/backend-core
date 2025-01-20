@@ -22,6 +22,7 @@ import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.model.{
   Age,
   ExternalId,
+  HealthInsurance,
   Id,
   Period,
   Publication,
@@ -120,12 +121,14 @@ trait BaseSchemas
     .toDefinition("Reference_Publication")
 
 
-/*
-  implicit val yearMonthSchema: Schema[YearMonth] =
-    Json.schema[LocalDate]
-      .asInstanceOf[Schema[YearMonth]]
-      .toDefinition("YearMonth")
-*/
+  implicit val healthInsuranceReferenceSchema: Schema[Reference[HealthInsurance]] =
+    Schema.`object`[Reference[HealthInsurance]](
+      Field("extId", externalIdSchema[HealthInsurance]),
+      Field("display",Schema.`string`,false),
+      Field("type",Schema.`string`,false),
+    )
+    .toDefinition("Reference_HealthInsurance")
+
 
   implicit val yearMonthSchema: Schema[YearMonth] = {
     

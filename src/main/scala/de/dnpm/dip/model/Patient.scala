@@ -13,6 +13,9 @@ import play.api.libs.json.{
 }
 
 
+sealed trait HealthInsurance extends Organization
+
+
 final case class Patient
 (
   id: Id[Patient],
@@ -20,7 +23,8 @@ final case class Patient
   birthDate: LocalDate,
   dateOfDeath: Option[LocalDate],
   managingSite: Option[Coding[Site]],
-  healthInsurance: Option[Reference[Organization]],
+  healthInsurance: Option[Reference[HealthInsurance]],
+//  healthInsurance: Option[Reference[Organization]],
   address: Option[Address]
 )
 {
