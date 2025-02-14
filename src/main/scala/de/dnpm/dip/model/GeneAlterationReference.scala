@@ -22,7 +22,7 @@ import play.api.libs.json.{
 
 final case class GeneAlterationReference[+Variant]
 (
-  gene: Option[Coding[HGNC]],
+  gene: Option[Coding[HGNC]],  // TODO: make required, just kept optional to be potentially backward compatible when only Reference[Variant] is defined
   variant: Reference[Variant],
   display: Option[String]
 )

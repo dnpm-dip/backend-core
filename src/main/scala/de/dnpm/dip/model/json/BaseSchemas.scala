@@ -239,7 +239,6 @@ trait BaseSchemas
       UnitOfTime.values.map(_.name).map(Value.str)  
     )
     .toDefinition("UnitOfTime")
-  
 
 }
 
