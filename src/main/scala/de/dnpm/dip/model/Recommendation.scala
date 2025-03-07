@@ -3,6 +3,7 @@ package de.dnpm.dip.model
 
 import java.time.LocalDate
 import cats.Applicative
+import cats.data.NonEmptyList
 import de.dnpm.dip.coding.{
   Coding,
   CodedEnum,
@@ -17,28 +18,15 @@ trait Recommendation
   val id: Id[Recommendation]
   val patient: Reference[Patient]
   val issuedOn: LocalDate
-//  val supportingVariants: Option[List[GeneAlterationReference[_]]]
-  val supportingVariants: Option[List[Reference[_]]]
+  val supportingVariants: Option[List[GeneAlterationReference[_]]]
+//  val supportingVariants: Option[List[Reference[_]]]
 }
 
-
-trait TherapyRecommendation extends Recommendation
-{
-  val indication: Option[Reference[Diagnosis]]
-  val priority: Option[Coding[TherapyRecommendation.Priority.Value]]
-}
-
-trait MedicationRecommendation[M] extends TherapyRecommendation
-{
-  val medication: Set[Coding[M]]
-}
-
-
-object TherapyRecommendation
+object Recommendation
 {
 
   object Priority
-  extends CodedEnum("dnpm-dip/therapy-recommendation/priority")
+  extends CodedEnum("dnpm-dip/recommendation/priority")
   with DefaultCodeSystem
   {
     val One   = Value("1")
@@ -57,9 +45,21 @@ object TherapyRecommendation
 }
 
 
+trait TherapyRecommendation extends Recommendation
+{
+  val indication: Option[Reference[Diagnosis]]
+  val priority: Option[Coding[Recommendation.Priority.Value]]
+}
+
+trait MedicationRecommendation[M] extends TherapyRecommendation
+{
+  val medication: Set[Coding[M]]
+}
+
+
 trait StudyEnrollmentRecommendation extends Recommendation
 {
-//  val studies: NonEmptyList[ExternalId[Study]]
-  val studies: Option[List[ExternalId[Study]]]
+  val study: NonEmptyList[Reference[Study]]
+//  val study: Option[List[ExternalId[Study]]]
 }
 

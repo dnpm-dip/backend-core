@@ -22,7 +22,7 @@ import play.api.libs.json.{
 
 final case class GeneAlterationReference[+Variant]
 (
-  gene: Option[Coding[HGNC]],  // TODO: make required, just kept optional to be potentially backward compatible when only Reference[Variant] is defined
+  gene: Option[Coding[HGNC]], 
   variant: Reference[Variant],
   display: Option[String]
 )
@@ -44,9 +44,9 @@ object GeneAlterationReference
   implicit def reads[T]: Reads[GeneAlterationReference[T]] =
     Json.reads[GeneAlterationReference[T]]
       // For (temporary) backward compatibility, fall back to parsing as a normal reference
-      .orElse(
-        Reads.of[Reference[T]].map(GeneAlterationReference(None,_,None))
-      )
+      //.orElse(
+      //  Reads.of[Reference[T]].map(GeneAlterationReference(None,_,None))
+      //)
 
   implicit def writes[T: Reference.TypeName]: OWrites[GeneAlterationReference[T]] =
     Json.writes[GeneAlterationReference[T]]

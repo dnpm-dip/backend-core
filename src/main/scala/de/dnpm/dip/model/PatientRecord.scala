@@ -11,11 +11,15 @@ trait PatientRecord
 
   val episodesOfCare: NonEmptyList[EpisodeOfCare]
 
+  val diagnoses: NonEmptyList[Diagnosis]
+
   val ngsReports: Option[List[NGSReport]]
 
   val carePlans: Option[List[CarePlan]]
 
-  val therapies: Option[List[History[MedicationTherapy[_]]]]
+  val followUps: Option[List[FollowUp]]
+
+  val systemicTherapies: Option[List[History[SystemicTherapy[_]]]]
 
 
   final def id: Id[Patient] =

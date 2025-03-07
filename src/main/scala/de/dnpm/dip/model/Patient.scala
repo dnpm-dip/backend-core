@@ -9,11 +9,9 @@ import de.dnpm.dip.coding.Coding
 import play.api.libs.json.{
   Json,
   Reads,
+  OFormat,
   OWrites
 }
-
-
-sealed trait HealthInsurance extends Organization
 
 
 final case class Patient
@@ -23,8 +21,7 @@ final case class Patient
   birthDate: LocalDate,
   dateOfDeath: Option[LocalDate],
   managingSite: Option[Coding[Site]],
-  healthInsurance: Option[Reference[HealthInsurance]],
-//  healthInsurance: Option[Reference[Organization]],
+  healthInsurance: Patient.Insurance,
   address: Option[Address]
 )
 {
@@ -59,9 +56,18 @@ final case class Patient
 object Patient
 {
 
+  final case class Insurance
+  (
+    `type`: Coding[HealthInsurance.Type.Value],
+    reference: Option[Reference[HealthInsurance]]
+  )
+
+
+  implicit val formatInsurance: OFormat[Insurance] =
+    Json.format[Insurance]
+
   implicit val reads: Reads[Patient] = 
     Json.reads[Patient]
-
 
   implicit val writes: OWrites[Patient] = {
 
