@@ -19,7 +19,6 @@ trait Recommendation
   val patient: Reference[Patient]
   val issuedOn: LocalDate
   val supportingVariants: Option[List[GeneAlterationReference[_]]]
-//  val supportingVariants: Option[List[Reference[_]]]
 }
 
 object Recommendation
@@ -47,7 +46,7 @@ object Recommendation
 
 trait TherapyRecommendation extends Recommendation
 {
-  val indication: Option[Reference[Diagnosis]]
+  val reason: Option[Reference[Diagnosis]]
   val priority: Option[Coding[Recommendation.Priority.Value]]
 }
 
@@ -60,6 +59,5 @@ trait MedicationRecommendation[M] extends TherapyRecommendation
 trait StudyEnrollmentRecommendation extends Recommendation
 {
   val study: NonEmptyList[Reference[Study]]
-//  val study: Option[List[ExternalId[Study]]]
 }
 

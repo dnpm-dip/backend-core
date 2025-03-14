@@ -28,6 +28,7 @@ object HealthInsurance
         GPV -> "gesetzliche Pflegeversicherung",
         PPV -> "private Pflegeversicherung",
         BEI -> "Beihilfe"
+//        UNK -> "Unbekannt"
       )
   }
 

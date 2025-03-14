@@ -4,7 +4,7 @@ package de.dnpm.dip.model
 import java.time.LocalDate
 
 
-trait CarePlan
+trait CarePlan extends Commentable
 {
   val id: Id[CarePlan]
   val patient: Reference[Patient]
@@ -13,6 +13,5 @@ trait CarePlan
   val therapyRecommendations: Option[List[TherapyRecommendation]]
   val medicationRecommendations: Option[List[MedicationRecommendation[_]]]
   val studyEnrollmentRecommendations: Option[List[StudyEnrollmentRecommendation]]
-  val notes: Option[List[String]]
 }
 

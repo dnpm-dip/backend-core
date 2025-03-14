@@ -46,13 +46,6 @@ package object json
       Json.formatEnum(e)
     )
 
-/*
-  implicit def writesEnumMap[K <: Enumeration, V: Writes]: OWrites[Map[K#Value,V]] =
-    OWrites.of[Map[String,V]]
-      .contramap(
-        _.map { case (k,v) => k.toString -> v }
-      )
-*/
 
   private val yyyyMM    = "yyyy-MM"
   private val yyyyMMFormatter = DateTimeFormatter.ofPattern(yyyyMM)

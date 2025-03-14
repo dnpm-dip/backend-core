@@ -28,7 +28,10 @@ class CompleterTests extends AnyFlatSpec
         LocalDate.now,
         None,
         None,
-        None,
+        Patient.Insurance(
+          Coding(HealthInsurance.Type.GKV),
+          None
+        ),
         None
       )
       

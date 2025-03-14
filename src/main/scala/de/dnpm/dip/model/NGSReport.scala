@@ -1,7 +1,6 @@
 package de.dnpm.dip.model
 
 
-import java.time.LocalDate
 import cats.Applicative
 import de.dnpm.dip.coding.{
   Coding,
@@ -12,36 +11,23 @@ import de.dnpm.dip.coding.{
 }
 
 
-trait NGSReport
+trait NGSReport extends DiagnosticReport
 {
-  val id: Id[NGSReport]
-  val patient: Reference[Patient]
-  val issuedOn: LocalDate
-  val sequencingType: Coding[NGSReport.SequencingType.Value]
+  val `type`: Coding[NGSReport.Type.Value]
 }
 
-//TODO: Add CodeSystemProviders to META-INF/services
 
 object NGSReport
 {
 
-  sealed trait SequencingType
-  object SequencingType
-  extends CodedEnum("dnpm-dip/ngs/sequencing-type")
+  object Type
+  extends CodedEnum("dnpm-dip/ngs/type")
+  with MolecularDiagnostics.Type
   with DefaultCodeSystem
   {
-    val Panel           = Value("panel")
-    val Exome           = Value("exome")
-    val GenomeShortRead = Value("genome-short-read")
-    val GenomeLongRead  = Value("genome-long-read")
 
     override val display =
-      Map(
-        Panel           -> "Panel",
-        Exome           -> "Exome",
-        GenomeShortRead -> "Genome short-read",
-        GenomeLongRead  -> "Genome long-read"
-      )
+      defaultDisplay
 
     final class ProviderSPI extends CodeSystemProviderSPI
     {
@@ -52,7 +38,6 @@ object NGSReport
   }
 
 
-  sealed trait Platform
   object Platform
   extends CodedEnum("dnpm-dip/ngs/sequencing-platform")
   with DefaultCodeSystem

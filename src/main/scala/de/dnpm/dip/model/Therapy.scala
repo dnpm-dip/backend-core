@@ -12,7 +12,7 @@ import de.dnpm.dip.coding.{
 }
 
 
-sealed trait Therapy
+sealed trait Therapy extends Commentable
 {
   val id: Id[Therapy]
   val patient: Reference[Patient]
@@ -22,23 +22,17 @@ sealed trait Therapy
   val category: Option[Coding[_]]
   val therapyLine: Option[Int]
   val status: Coding[Therapy.Status.Value]
-  val statusReason: Option[Coding[Therapy.StatusReason.Value]]
+  val statusReason: Option[Coding[_]]
   val period: Option[Period[LocalDate]]
-  val notes: Option[List[String]]
+//  val notes: Option[List[String]]
 
-/*
+
   final def statusValue: Therapy.Status.Value =
     status match {
       case Therapy.Status(s) => s
       case _ => Therapy.Status.Unknown
     }
 
-  final def statusReasonValue: Therapy.StatusReason.Value =
-    statusReason match {
-      case Some(Therapy.StatusReason(s)) => s
-      case _ => Therapy.StatusReason.Unknown
-    }
-*/  
 }
 
 trait SystemicTherapy[Med] extends Therapy
@@ -55,35 +49,6 @@ trait Procedure extends Therapy
 object Therapy
 {
 
-/*
-  object Type
-  extends CodedEnum("dnpm-dip/therapy/type")
-  with DefaultCodeSystem
-  {
-
-    val CH, HO, IM, ZS, SZ, WW, AS, WS, OP, ST, KW, SO = Value
- 
-    override val display =
-      Map(
-        CH -> "Chemotherapie",
-        HO -> "Hormontherapie",
-        IM -> "Immun-/Antikörpertherapie",
-        ZS -> "zielgerichtete Substanzen",
-        SZ -> "Stammzelltransplantation (inklusive Knochenmarktransplantation)",
-        WW -> "Watchful Waiting",
-        AS -> "Active Surveillance",
-        WS -> "Wait and see",
-        OP -> "Operation",
-        ST -> "Strahlentherapie",
-        KW -> "keine weitere tumorspezifische Therapie empfohlen",
-        SO -> "Sonstiges"
-      )
- 
-    implicit val format: Format[Value] =
-        Json.formatEnum(this)
-  }
-*/
-
   object Status
   extends CodedEnum("dnpm-dip/therapy/status")
   with DefaultCodeSystem
@@ -93,7 +58,7 @@ object Therapy
     val Ongoing   = Value("on-going")
     val Stopped   = Value("stopped")
     val Completed = Value("completed")
-//    val Unknown   = Value("unknown")
+    val Unknown   = Value("unknown")
 
     override val display =
       Map(
@@ -101,6 +66,7 @@ object Therapy
         Ongoing   -> "Laufend",
         Stopped   -> "Abgebrochen",
         Completed -> "Abgeschlossen",
+        Unknown   -> "Unbekannt"
       )
 
 
@@ -113,8 +79,8 @@ object Therapy
   }
 
 
-  sealed trait StatusReason
-
+//  sealed trait StatusReason
+/*
   object StatusReason
   extends CodedEnum("dnpm-dip/therapy/status-reason")
   with DefaultCodeSystem
@@ -164,5 +130,5 @@ object Therapy
       )
 
   }
-
+*/
 }

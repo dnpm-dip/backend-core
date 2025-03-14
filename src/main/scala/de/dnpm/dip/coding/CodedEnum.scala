@@ -47,7 +47,6 @@ trait DefaultCodeSystem
   protected val name =
     Coding.System[Value].uri.toString
 
-
   protected val display: Value => String =
     v => {
       val s = v.toString

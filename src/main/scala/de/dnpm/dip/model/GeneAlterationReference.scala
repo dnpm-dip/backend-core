@@ -20,12 +20,29 @@ import play.api.libs.json.{
  *
  */
 
-final case class GeneAlterationReference[+Variant]
+final case class GeneAlterationReference[+T]
 (
   gene: Option[Coding[HGNC]], 
-  variant: Reference[Variant],
+  variant: Reference[T],
   display: Option[String]
 )
+{
+
+  def resolve[TT >: T](
+    implicit resolver: Reference.Resolver[TT]
+  ): Option[TT] =
+    resolver(variant)
+
+  def resolveOn[TT >: T <: { def id: Id[_] }](
+    ts: Iterable[TT]
+  ): Option[TT] =
+    Reference.Resolver.on(ts)(variant)
+
+  def withDisplay(d: String): GeneAlterationReference[T] =
+    this.copy(display = Some(d))
+
+}
+
 
 object GeneAlterationReference
 {

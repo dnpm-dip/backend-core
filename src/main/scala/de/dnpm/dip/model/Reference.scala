@@ -2,6 +2,7 @@ package de.dnpm.dip.model
 
 
 import java.net.URI
+//import cats.data.NonEmptyList
 import play.api.libs.json.{
   Json,
   JsObject,
@@ -26,12 +27,10 @@ final case class Reference[+T]
   ): Option[TT] =
     resolver(this)
 
-
   def resolveOn[TT >: T <: { def id: Id[_] }](
     ts: Iterable[TT]
   ): Option[TT] =
     Reference.Resolver.on(ts)(this)
-
 
   def withDisplay(d: String): Reference[T] =
     this.copy(display = Some(d))
@@ -100,9 +99,20 @@ object Reference
       
 
     def apply[T,TT >: T](implicit res: Resolver[TT]) = res
-  
+/*  
     implicit def on[T,TT >: T <: { def id: Id[_] }](
       implicit ts: Iterable[TT]
+    ): Resolver[TT] =
+      _.id.flatMap(id => ts.find(_.id == id))
+      
+    implicit def onNonEmptyList[T,TT >: T <: { def id: Id[_] }](
+      implicit ts: NonEmptyList[TT]
+    ): Resolver[TT] =
+      _.id.flatMap(id => ts.find(_.id == id))
+*/
+    
+    implicit def on[T,TT >: T <: { def id: Id[_] }](
+      implicit ts: { def find(f: TT => Boolean): Option[TT] }
     ): Resolver[TT] =
       _.id.flatMap(id => ts.find(_.id == id))
       
