@@ -10,16 +10,8 @@ import de.dnpm.dip.coding.{
   Coding,
   Code,
   CodeSystem,
-  CodeSystemProvider
-}
-
-
-sealed trait Ensembl
-object Ensembl
-{
-
-  implicit val codingSystem: Coding.System[Ensembl] =
-    Coding.System[Ensembl]("https://www.ensembl.org/index.html")
+  CodeSystemProvider,
+  Ensembl
 }
 
 

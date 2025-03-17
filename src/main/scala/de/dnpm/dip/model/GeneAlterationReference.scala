@@ -11,12 +11,11 @@ import play.api.libs.json.{
 
 /*
  * Conceptually equivalent to FHIR "CodeableReference", to specify the
- * (clinically) relevant gene in a variant supporting a recommendation
+ * clinically relevant gene in a variant supporting a recommendation
  *
  * Gene is kept optional because in SNVs it is already implicitly defined,
  * and thus needn't be specified again, but for CNVs or Fusions, which can
- * affect multiple or 2 genes, respectively,
- * it should be specified to remove ambiguity
+ * affect multiple or 2 genes, respectively, it should be specified to remove ambiguity
  *
  */
 
@@ -48,8 +47,8 @@ object GeneAlterationReference
 {
 
   def apply[T <: { def id: Id[T] }](
-    gene: Option[Coding[HGNC]],
-    variant: T
+    variant: T,
+    gene: Option[Coding[HGNC]] = None
   ): GeneAlterationReference[T] =
     GeneAlterationReference(
       gene,
