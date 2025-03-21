@@ -30,4 +30,7 @@ object Code
   implicit def format[S]: Format[Code[S]] =
     Json.valueFormat[Code[S]]
 
+    
+  implicit def fromString[S](c: String): Code[S] =
+    Code[S](c)
 }

@@ -19,7 +19,7 @@ trait PatientRecord
 
   val followUps: Option[List[FollowUp]]
 
-  val systemicTherapyHistories: Option[List[History[SystemicTherapy[_]]]]
+  val systemicTherapies: Option[List[History[SystemicTherapy[_]]]]
 
 
   final def id: Id[Patient] =

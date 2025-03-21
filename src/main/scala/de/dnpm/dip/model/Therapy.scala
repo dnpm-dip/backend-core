@@ -24,8 +24,6 @@ sealed trait Therapy extends Commentable
   val status: Coding[Therapy.Status.Value]
   val statusReason: Option[Coding[_]]
   val period: Option[Period[LocalDate]]
-//  val notes: Option[List[String]]
-
 
   final def statusValue: Therapy.Status.Value =
     status match {
@@ -78,57 +76,4 @@ object Therapy
 
   }
 
-
-//  sealed trait StatusReason
-/*
-  object StatusReason
-  extends CodedEnum("dnpm-dip/therapy/status-reason")
-  with DefaultCodeSystem
-  {
-
-    val PaymentRefused                       = Value("payment-refused")
-    val PaymentPending                       = Value("payment-pending")
-    val PaymentEnded                         = Value("payment-ended")
-    val NoIndication                         = Value("no-indication")
-    val MedicalReasons                       = Value("medical-reasons")
-    val PatientRefusal                       = Value("patient-refusal")
-    val PatientWish                          = Value("patient-wish")
-    val PatientDeath                         = Value("patient-death")
-    val LostToFU                             = Value("lost-to-fu")
-    val Remission                            = Value("chronic-remission")
-    val Progression                          = Value("progression")
-    val Toxicity                             = Value("toxicity")
-    val OtherTherapyChosen                   = Value("other-therapy-chosen")
-    val Deterioration                        = Value("deterioration")
-    val BestSupportiveCare                   = Value("best-supportive-care")
-    val RegularCompletion                    = Value("regular-completion")
-    val RegularCompletionWithDosageReduction = Value("regular-completion-with-dosage-reduction")
-    val RegularCompletionWithSubstanceChange = Value("regular-completion-with-substance-change")
-    val Other                                = Value("other")
-
-    override val display =
-      Map(
-        PaymentRefused                       -> "Kostenübernahme abgelehnt",
-        PaymentPending                       -> "Kostenübernahme noch ausstehend",
-        PaymentEnded                         -> "Ende der Kostenübernahme",
-        NoIndication                         -> "Klinisch keine Indikation",
-        MedicalReasons                       -> "Medizinische Gründe",
-        PatientRefusal                       -> "Therapie durch Patient abgelehnt",
-        PatientWish                          -> "Auf Wunsch des Patienten",
-        PatientDeath                         -> "Tod",
-        LostToFU                             -> "Lost to follow-up",
-        Remission                            -> "Anhaltende Remission",
-        Progression                          -> "Progression",
-        Toxicity                             -> "Toxizität",
-        OtherTherapyChosen                   -> "Wahl einer anderen Therapie durch Behandler",
-        Deterioration                        -> "Zustandsverschlechterung",
-        BestSupportiveCare                   -> "Best Supportive Care",
-        RegularCompletion                    -> "Reguläres Ende",
-        RegularCompletionWithDosageReduction -> "Reguläres Ende mit Dosisreduktion",
-        RegularCompletionWithSubstanceChange -> "Reguläres Ende mit Substanzwechsel",
-        Other                                -> "Weitere Gründe"
-      )
-
-  }
-*/
 }

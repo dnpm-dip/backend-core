@@ -46,6 +46,7 @@ final case class GeneAlterationReference[+T]
 object GeneAlterationReference
 {
 
+//  def apply[T <: BaseVariant](
   def apply[T <: { def id: Id[T] }](
     variant: T,
     gene: Option[Coding[HGNC]] = None

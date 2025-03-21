@@ -11,6 +11,7 @@ import shapeless.{
   :+:,
   CNil
 }
+import shapeless.ops.coproduct.Selector
 import play.api.libs.json.{
   Json,
   Reads,
@@ -22,7 +23,6 @@ import de.dnpm.dip.util.{
   Completer,
   Tree
 }
-
 
 
 final case class Coding[+S]
@@ -71,7 +71,6 @@ final case class Coding[+S]
       .map(_.toCoding(system))
 
 
-//  @deprecated
   def expand[Spr >: S](
     implicit csp: CodeSystemProvider[Spr,Id,Applicative[Id]]
   ): Option[Tree[Coding[Spr]]] = 
@@ -181,6 +180,40 @@ object Coding
       system,
       Some(version)
     )
+
+
+
+  sealed abstract class Converter[C <: Coproduct]
+  {
+    def from[S](
+      code: Code[S],
+      display: Option[String] = None,
+      version: Option[String] = None
+    )(
+      implicit
+      sys: Coding.System[S],
+      sel: Selector[C,S]
+    ): Coding[C] =
+      Coding[C](
+        Code(code.value),
+        display,
+        sys.uri,
+        version
+      )
+
+    def from[S](
+      coding: Coding[S]
+    )(
+      implicit sel: Selector[C,S]
+    ): Coding[C] =
+      coding.asInstanceOf[Coding[C]]
+  }
+
+  def apply[C <: Coproduct](
+    implicit sys: Coding.System.UriSet[C],
+  ): Coding.Converter[C] =
+    new Converter[C]{}
+
 
 
   @annotation.implicitNotFound("Couldn't find Coding.System instance for ${S}")
@@ -322,17 +355,6 @@ object Coding
 
 
 
-  implicit def fromConcept[S: System](
-    concept: CodeSystem.Concept[S]
-  ): Coding[S] =
-    Coding(
-      concept.code,
-      Some(concept.display),
-      System[S].uri,
-      concept.version
-    )
-
-
   import play.api.libs.functional.syntax._
 
   implicit def writesCoding[S]: OWrites[Coding[S]] = 
@@ -454,9 +476,22 @@ object Coding
       )
 
 
-  implicit def codingToCoproductCoding[S, C <: Coproduct](coding: Coding[S])(
-    implicit sel: shapeless.ops.coproduct.Selector[C,S]
+  implicit def codingToCoproductCoding[S, C <: Coproduct](
+    coding: Coding[S]
+  )(
+    implicit sel: Selector[C,S]
   ): Coding[C] =
     coding.asInstanceOf[Coding[C]]
+
+
+  implicit def fromConcept[S: System](
+    concept: CodeSystem.Concept[S]
+  ): Coding[S] =
+    Coding(
+      concept.code,
+      Some(concept.display),
+      System[S].uri,
+      concept.version
+    )
 
 }

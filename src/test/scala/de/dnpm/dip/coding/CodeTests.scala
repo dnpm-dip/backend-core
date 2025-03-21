@@ -3,22 +3,33 @@ package de.dnpm.dip.coding
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers._
+import shapeless.{
+  :+:,
+  CNil
+}
 
 
-sealed trait Dummy
-
-object Dummy
+sealed trait Foo
+object Foo
 {
-  implicit val system: Coding.System[Dummy] =
-    Coding.System("dummy-codesystem")
+  implicit val system: Coding.System[Foo] =
+    Coding.System("foo-code-system")
+}
+
+sealed trait Bar
+object Bar
+{
+  implicit val system: Coding.System[Bar] =
+    Coding.System("bar-code-system")
 }
 
 
 class CodeTests extends AnyFlatSpec
 {
 
+
   val coding1 =
-    Coding[Dummy](
+    Coding[Foo](
       "Code1",
       "Display for Code1",
       "1.0"
@@ -35,7 +46,7 @@ class CodeTests extends AnyFlatSpec
     )
 
   val coding2 =
-    Coding[Dummy](
+    Coding[Foo](
       "Code2",
       "Display for Code2",
       "1.0"
@@ -61,6 +72,23 @@ class CodeTests extends AnyFlatSpec
     coding1.hashCode must not equal coding2.hashCode
 
   }
+
+
+
+  type FooOrBar = Foo :+: Bar :+: CNil
+
+  "Conversion of Coding[S] to Coding[CodeSystem Union]" must "have compiled" in {
+    assertCompiles(
+    """
+      val codings: List[Coding[FooOrBar]] =
+        List(
+          Coding[FooOrBar].from(Code[Foo]("foo-code")),
+          Coding[FooOrBar].from(Code[Bar]("bar-code"))
+        )
+    """
+    )
+  }
+
 
 
 }

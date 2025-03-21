@@ -5,6 +5,7 @@ import cats.Applicative
 import de.dnpm.dip.coding.{
   CodedEnum,
   DefaultCodeSystem,
+//  HasValueUnknown,
   CodeSystemProvider,
   CodeSystemProviderSPI
 }
@@ -16,6 +17,7 @@ import play.api.libs.json.{
 
 object Gender
 extends CodedEnum("Gender")
+//with HasValueUnknown
 with DefaultCodeSystem
 {
 

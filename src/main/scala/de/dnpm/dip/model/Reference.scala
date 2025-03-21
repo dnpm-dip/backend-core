@@ -104,11 +104,6 @@ object Reference
       implicit ts: Iterable[TT]
     ): Resolver[TT] =
       _.id.flatMap(id => ts.find(_.id == id))
-      
-    implicit def onNonEmptyList[T,TT >: T <: { def id: Id[_] }](
-      implicit ts: NonEmptyList[TT]
-    ): Resolver[TT] =
-      _.id.flatMap(id => ts.find(_.id == id))
 */
     
     implicit def on[T,TT >: T <: { def id: Id[_] }](
@@ -135,25 +130,3 @@ object Reference
 
 }
 
-
-/*
-import de.dnpm.dip.coding.Coding
-
-final case class CodeableReference[+C,+T]
-(
-  concept: Coding[C],
-  reference: Option[Reference[T]]
-)
-
-object CodeableReference
-{
-
-  implicit def reads[C,T: Reference.TypeName](
-    implicit readsCoding: Reads[Coding[C]]
-  ): Reads[CodeableReference[C,T]] =
-    Json.reads[CodeableReference[C,T]]
-
-  implicit def writes[C,T: Reference.TypeName]: OWrites[CodeableReference[C,T]] =
-    Json.writes[CodeableReference[C,T]]
-}
-*/

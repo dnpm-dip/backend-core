@@ -18,7 +18,7 @@ lazy val root =
       libraryDependencies ++= Seq(
         "org.scalatest"       %% "scalatest"                  % "3.2.18" % Test,
         "org.slf4j"           %  "slf4j-api"                  % "2.0.9",
-        "com.chuusai"         %% "shapeless"                  % "2.3.10",
+        "com.chuusai"         %% "shapeless"                  % "2.3.13",
         "org.typelevel"       %% "cats-core"                  % "2.9.0",
         "com.typesafe.play"   %% "play-json"                  % "2.9.4",
         "com.github.andyglow" %% "scala-jsonschema"           % "0.7.11",

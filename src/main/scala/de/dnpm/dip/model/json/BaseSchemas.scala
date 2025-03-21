@@ -11,6 +11,7 @@ import json.{
   Json,
   Schema
 }
+import json.schema.validation._
 import com.github.andyglow.json.Value
 import com.github.andyglow.jsonschema.AsPlay._
 import Schema.`object`.Field
@@ -63,7 +64,7 @@ trait BaseSchemas
          if (name endsWith "$") name.substring(0,name.length - 1)
          else name
      }
-     .pipe(_.replace("$","."))
+     .pipe(_.replace("$","_"))
 
 
 
@@ -130,10 +131,7 @@ trait BaseSchemas
     .toDefinition("Reference_HealthInsurance")
 
 
-  implicit val yearMonthSchema: Schema[YearMonth] = {
-    
-    import json.schema.validation._
-    
+  implicit val yearMonthSchema: Schema[YearMonth] =
     Json.schema[LocalDate]
       .asInstanceOf[Schema[YearMonth]]
       .toDefinition("YearMonth")
@@ -142,7 +140,6 @@ trait BaseSchemas
       )(
         Magnet.mk[YearMonth,String]
       )
-  }
 
 
   implicit def enumCodingSchema[E <: Enumeration](
@@ -228,7 +225,7 @@ trait BaseSchemas
           Schema.`string`,
           Set(Months,Years).map(_.name).map(Value.str)
         )
-      ),
+      )
     )
     .toDefinition("Age")
 
@@ -240,5 +237,18 @@ trait BaseSchemas
     )
     .toDefinition("UnitOfTime")
 
+/*
+  implicit def historySchema[T](
+    implicit tSch: Schema[T]
+  ): Schema[History[T]] =
+    Schema.`object`[History[T]](
+      Field[List[T]](
+        "history",
+        Schema.`array`[T,List](tSch)
+          .withValidation(
+            Instance.minItems := 1
+          )
+      )
+    )
+  */
 }
-

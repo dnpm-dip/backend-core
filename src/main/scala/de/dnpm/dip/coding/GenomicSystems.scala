@@ -43,3 +43,12 @@ object RefSeq
 
 }
 
+
+sealed trait SequenceOntology
+object SequenceOntology
+{
+  implicit val codingSystem: Coding.System[SequenceOntology] =
+    Coding.System("http://www.sequenceontology.org")
+}
+
+

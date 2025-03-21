@@ -1,6 +1,7 @@
 package de.dnpm.dip.coding
 
 
+import de.dnpm.dip.util.Default
 
 
 abstract class CodedEnum
@@ -67,4 +68,15 @@ trait DefaultCodeSystem
         .map(v => v -> display(v)): _*
     )
 
+}
+
+
+trait HasValueUnknown
+{
+  self: CodedEnum =>
+
+  val Unknown = Value("unknown")
+
+  implicit val defaultValue: Default[self.Value] =
+    Default(Unknown)
 }

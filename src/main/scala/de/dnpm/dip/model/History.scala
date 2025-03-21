@@ -44,7 +44,10 @@ final case class History[+T]
 
 object History
 {
-  import de.dnpm.dip.util.json._
+  import de.dnpm.dip.util.json.{ 
+    readsNel,
+    writesNel
+  }
 
   def apply[T](t: T, ts: T*): History[T] =
     History(NonEmptyList.one(t) ++ ts.toList)
