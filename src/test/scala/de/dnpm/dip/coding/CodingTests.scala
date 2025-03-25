@@ -24,7 +24,7 @@ object Bar
 }
 
 
-class CodeTests extends AnyFlatSpec
+class CodingTests extends AnyFlatSpec
 {
 
 

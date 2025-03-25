@@ -35,7 +35,12 @@ trait BaseCompleters
       pat =>
         pat.copy(
           gender       = pat.gender.complete,
-          managingSite = Some(Site.local)
+          managingSite = Some(Site.local),
+          healthInsurance = pat.healthInsurance.copy(
+            reference = pat.healthInsurance.reference.collect { 
+              case ref: InternalReference[HealthInsurance] => ref.in[IK]
+            }
+          )
         )
     )
 
@@ -162,7 +167,7 @@ trait BaseCompleters
     )
 
 
-  implicit def geneAlterationReferenceCompleter[T](
+  implicit def geneAlterationReferenceCompleter[T <: BaseVariant](
     implicit hgnc: CodeSystemProvider[HGNC,Id,Applicative[Id]]
   ): Completer[GeneAlterationReference[T]] =
     Completer.of(

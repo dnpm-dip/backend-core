@@ -2,6 +2,10 @@ package de.dnpm.dip.model
 
 
 import de.dnpm.dip.coding.Coding
+import shapeless.{ 
+  :+:,
+  CNil
+}
 
 
 sealed trait Study
@@ -26,7 +30,7 @@ object Study
     sealed trait EudraCT
     object EudraCT
     {
-      implicit val system: Coding.System[EudraCT] = Coding.System("EudraCT")
+      implicit val system: Coding.System[EudraCT] = Coding.System("Eudra-CT")
     }
     
     sealed trait EUDAMED
@@ -37,5 +41,8 @@ object Study
 
   }
 
-}
+  import Registries._
 
+  type Registries = NCT :+: DRKS :+: EudraCT :+: EUDAMED :+: CNil
+
+}

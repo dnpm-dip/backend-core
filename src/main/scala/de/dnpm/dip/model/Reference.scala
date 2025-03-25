@@ -2,17 +2,158 @@ package de.dnpm.dip.model
 
 
 import java.net.URI
-//import cats.data.NonEmptyList
+import scala.language.reflectiveCalls
 import play.api.libs.json.{
   Json,
   JsObject,
   JsString,
-  JsonValidationError,
   Reads,
   OWrites
 }
+import de.dnpm.dip.coding.Coding
 
 
+sealed trait Reference[+T]
+{
+
+  val id: Id[T]
+
+  def resolveOn[TT >: T <: { def id: Id[_] }](
+    ts: { def find(f: TT => Boolean): Option[TT] }
+  ): Option[TT] =
+     ts.find(_.id == id)
+
+
+  def resolve[TT >: T](
+    implicit resolver: Reference.Resolver[TT]
+  ): Option[TT] =
+    resolver(this)
+
+}
+
+final case class InternalReference[+T]
+(
+  id: Id[T],
+  display: Option[String] = None,
+  href: Option[URI] = None  // For potential use in a hypermedia-based context, to "augment" the reference with an URI for an API call
+)
+extends Reference[T]
+{
+
+  def withDisplay(d: String) =
+    copy(display = Some(d))
+
+  def in[S](implicit sys: Coding.System[S]) =
+    ExternalReference[T](
+      id,
+      sys.uri,
+      display
+    )
+}
+
+final case class ExternalReference[+T]
+(
+  id: Id[T],
+  system: URI,               // Identifier of the system in which the ID is defined/resolvable
+  display: Option[String] = None,
+  href: Option[URI] = None   // For potential use in a hypermedia-based context, to "augment" the reference with an URI for an API call
+)
+extends Reference[T]
+{
+  def withDisplay(d: String) =
+    copy(display = Some(d))
+}
+
+
+object Reference
+{
+
+
+  def apply[T](
+    id: Id[T]
+  ): InternalReference[T] =
+    InternalReference(id)
+
+  def to[T <: { def id: Id[T] }](
+    t: T,
+    display: Option[String] = None
+  ): InternalReference[T] =
+    InternalReference(t.id,display)
+
+
+  final case class TypeName[T](value: String)
+  object TypeName
+  {
+    import scala.reflect.ClassTag
+
+    def apply[T](implicit t: TypeName[T]) = t
+
+    implicit def typeName[T](implicit tag: ClassTag[T]): TypeName[T] =
+      TypeName[T](tag.runtimeClass.asInstanceOf[Class[T]].getSimpleName)
+  }
+
+
+  @annotation.implicitNotFound("Couldn't find a Resolver[${T}], define one or ensure it is in implicit scope")
+  trait Resolver[T]{
+    def apply(ref: Reference[T]): Option[T]
+  }
+
+  object Resolver
+  {
+
+    implicit def from[T](f: Reference[T] => Option[T]): Resolver[T] =
+      new Resolver[T]{
+        override def apply(ref: Reference[T]) = f(ref)
+      }
+      
+
+    def apply[T](implicit res: Resolver[T]) = res
+    
+    
+    implicit def onCollection[T,TT >: T <: { def id: Id[_] }](
+      implicit ts: { def find(f: TT => Boolean): Option[TT] }
+    ): Resolver[TT] =
+      ref => ts.find(_.id == ref.id)
+      
+  }
+
+
+  implicit def readsInternalReference[T]: Reads[InternalReference[T]] =
+    Json.reads[InternalReference[T]]
+
+  implicit def readsExternalReference[T]: Reads[ExternalReference[T]] =
+    Json.reads[ExternalReference[T]]
+
+  implicit def readsReference[T]: Reads[Reference[T]] =
+    Reads { 
+      js => (js \ "system").isDefined match {
+        case true  => Json.fromJson[ExternalReference[T]](js)
+        case false => Json.fromJson[InternalReference[T]](js)
+      }
+    }
+
+  implicit def writesInternalReference[T: TypeName]: OWrites[InternalReference[T]] =
+    Json.writes[InternalReference[T]]
+      .transform(
+        (js: JsObject) => js + ("type" -> JsString(TypeName[T].value))
+      )
+
+  implicit def writesExternalReference[T: TypeName]: OWrites[ExternalReference[T]] =
+    Json.writes[ExternalReference[T]]
+      .transform(
+        (js: JsObject) => js + ("type" -> JsString(TypeName[T].value))
+      )
+
+  implicit def writesReference[T: TypeName]: OWrites[Reference[T]] =
+    OWrites { 
+      case ref: InternalReference[T] => Json.toJsObject(ref)
+      case ref: ExternalReference[T] => Json.toJsObject(ref)
+    }
+
+}
+
+
+/*
 final case class Reference[+T]
 (
   id: Option[Id[T]],
@@ -28,9 +169,10 @@ final case class Reference[+T]
     resolver(this)
 
   def resolveOn[TT >: T <: { def id: Id[_] }](
-    ts: Iterable[TT]
+//    ts: Iterable[TT]
+    ts: { def find(f: TT => Boolean): Option[TT] }
   ): Option[TT] =
-    Reference.Resolver.on(ts)(this)
+    Reference.Resolver.onCollection(ts)(this)
 
   def withDisplay(d: String): Reference[T] =
     this.copy(display = Some(d))
@@ -99,14 +241,9 @@ object Reference
       
 
     def apply[T,TT >: T](implicit res: Resolver[TT]) = res
-/*  
-    implicit def on[T,TT >: T <: { def id: Id[_] }](
-      implicit ts: Iterable[TT]
-    ): Resolver[TT] =
-      _.id.flatMap(id => ts.find(_.id == id))
-*/
     
-    implicit def on[T,TT >: T <: { def id: Id[_] }](
+    
+    implicit def onCollection[T,TT >: T <: { def id: Id[_] }](
       implicit ts: { def find(f: TT => Boolean): Option[TT] }
     ): Resolver[TT] =
       _.id.flatMap(id => ts.find(_.id == id))
@@ -129,4 +266,4 @@ object Reference
       )
 
 }
-
+*/

@@ -19,53 +19,43 @@ import play.api.libs.json.{
  *
  */
 
-final case class GeneAlterationReference[+T]
+final case class GeneAlterationReference[+T <: BaseVariant]
 (
+  variant: InternalReference[T],
+//  variant: Reference[T],
   gene: Option[Coding[HGNC]], 
-  variant: Reference[T],
-  display: Option[String]
+  display: Option[String] = None
 )
 {
 
-  def resolve[TT >: T](
-    implicit resolver: Reference.Resolver[TT]
-  ): Option[TT] =
-    resolver(variant)
-
   def resolveOn[TT >: T <: { def id: Id[_] }](
-    ts: Iterable[TT]
+    ts: { def find(f: TT => Boolean): Option[TT] }
   ): Option[TT] =
-    Reference.Resolver.on(ts)(variant)
+    Reference.Resolver.onCollection(ts)(variant)
 
   def withDisplay(d: String): GeneAlterationReference[T] =
     this.copy(display = Some(d))
 
 }
 
-
 object GeneAlterationReference
 {
 
-//  def apply[T <: BaseVariant](
-  def apply[T <: { def id: Id[T] }](
+  def to[T <: BaseVariant { def id: Id[T] }](
     variant: T,
     gene: Option[Coding[HGNC]] = None
   ): GeneAlterationReference[T] =
     GeneAlterationReference(
-      gene,
       Reference.to(variant),
-      None
+      gene
     )
 
 
-  implicit def reads[T]: Reads[GeneAlterationReference[T]] =
+  implicit def reads[T <: BaseVariant]: Reads[GeneAlterationReference[T]] =
     Json.reads[GeneAlterationReference[T]]
-      // For (temporary) backward compatibility, fall back to parsing as a normal reference
-      //.orElse(
-      //  Reads.of[Reference[T]].map(GeneAlterationReference(None,_,None))
-      //)
 
-  implicit def writes[T: Reference.TypeName]: OWrites[GeneAlterationReference[T]] =
+  implicit def writes[T <: BaseVariant: Reference.TypeName]: OWrites[GeneAlterationReference[T]] =
     Json.writes[GeneAlterationReference[T]]
 
 }
+

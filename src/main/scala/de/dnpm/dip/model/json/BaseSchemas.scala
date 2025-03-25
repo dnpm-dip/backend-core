@@ -13,7 +13,7 @@ import json.{
 }
 import json.schema.validation._
 import com.github.andyglow.json.Value
-import com.github.andyglow.jsonschema.AsPlay._
+//import com.github.andyglow.jsonschema.AsPlay._
 import Schema.`object`.Field
 import de.dnpm.dip.coding.{
   Code,
@@ -22,15 +22,18 @@ import de.dnpm.dip.coding.{
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.model.{
   Age,
+  BaseVariant,
   ExternalId,
-  HealthInsurance,
+//  HealthInsurance,
+  GeneAlterationReference,
   Id,
   Period,
   Publication,
-  PubMed,
   OpenEndPeriod,
   Reference,
-  GeneAlterationReference,
+  InternalReference,
+  ExternalReference,
+  Study,
   UnitOfTime
 }
 import shapeless.{
@@ -81,21 +84,33 @@ trait BaseSchemas
     .toDefinition("ExternalId")
 
 
-  implicit def defaultReferenceSchema[T]: Schema[Reference[T]] =
-    Schema.`object`[Reference[T]](
-      Field("id",Schema.`string`),
-      Field("display",Schema.`string`,false),
+/*
+  implicit val studyReferenceSchema: Schema[Reference[Study]] =
+    Schema.`object`[Reference[Study]](
+      Field(
+        "extId",
+        Schema.`object`[ExternalId[Study]](
+          Field("value",Schema.`string`),
+          Field(
+            "system",
+            Schema.`enum`[String](
+              Schema.`string`,
+              Set(
+                Coding.System[Study.Registries.NCT].uri.toString,
+                Coding.System[Study.Registries.DRKS].uri.toString,
+                Coding.System[Study.Registries.EudraCT].uri.toString,
+                Coding.System[Study.Registries.EUDAMED].uri.toString,
+              )
+              .map(Value.str)
+            ),
+            false
+          ),
+        ),
+        false
+      ),
       Field("type",Schema.`string`,false),
     )
-    .toDefinition("Reference")
-
-
-  implicit def geneAlterationReferenceSchema[T]: Schema[GeneAlterationReference[T]] =
-    Schema.`object`[GeneAlterationReference[T]](
-      Field("gene",Json.schema[Coding[HGNC]],false),
-      Field("variant",Json.schema[Reference[T]],true)
-    )
-    .toDefinition("GeneAlterationReference")
+    .toDefinition("Reference_Study")
 
 
   implicit val publicationReferenceSchema: Schema[Reference[Publication]] =
@@ -129,6 +144,111 @@ trait BaseSchemas
       Field("type",Schema.`string`,false),
     )
     .toDefinition("Reference_HealthInsurance")
+
+
+  implicit def defaultReferenceSchema[T]: Schema[Reference[T]] =
+    Schema.`object`[Reference[T]](
+      Field("id",Schema.`string`),
+      Field("display",Schema.`string`,false),
+      Field("type",Schema.`string`,false),
+    )
+    .toDefinition("Reference")
+*/
+
+  protected def externalReference[T, Systems <: Coproduct](
+    definition: String
+  )(
+    implicit systems: Coding.System.UriSet[Systems]
+  ): Schema[ExternalReference[T]] =
+    Schema.`object`[ExternalReference[T]](
+      Field("id",Schema.`string`),
+      Field(
+        "system",
+        Schema.`enum`[String](
+          Schema.`string`,
+          systems.values.map(uri => Value.str(uri.toString))
+        )
+      ),
+      Field("type",Schema.`string`,false),
+    )
+    .toDefinition(definition)
+
+
+  implicit val studyReferenceSchema: Schema[ExternalReference[Study]] =
+    externalReference[Study,Study.Registries]("Study_Reference")
+
+  implicit val publicationReferenceSchema: Schema[ExternalReference[Publication]] =
+    externalReference[Publication,Publication.Systems]("Publication_Reference")
+
+/*
+  implicit val studyReferenceSchema: Schema[ExternalReference[Study]] =
+    Schema.`object`[ExternalReference[Study]](
+      Field("id",Schema.`string`),
+      Field(
+        "system",
+        Schema.`enum`[String](
+          Schema.`string`,
+          Set(
+            Coding.System[Study.Registries.NCT].uri,
+            Coding.System[Study.Registries.DRKS].uri,
+            Coding.System[Study.Registries.EudraCT].uri,
+            Coding.System[Study.Registries.EUDAMED].uri,
+          )
+          .map(uri => Value.str(uri.toString))
+        )
+      ),
+      Field("type",Schema.`string`,false),
+    )
+    .toDefinition("Study_Reference")
+
+
+  implicit val publicationReferenceSchema: Schema[ExternalReference[Publication]] =
+    Schema.`object`[ExternalReference[Publication]](
+      Field("id",Schema.`string`),
+      Field(
+        "system",
+        Schema.`enum`[String](
+          Schema.`string`,
+          Set(
+            Coding.System[PubMed].uri,
+            Coding.System[DOI].uri
+          )
+          .map(uri => Value.str(uri.toString))
+        )
+      ),
+      Field("type",Schema.`string`,false)
+    )
+    .toDefinition("Publication_Reference")
+*/
+
+  implicit def externalReferenceSchema[T]: Schema[ExternalReference[T]] =
+    Schema.`object`[ExternalReference[T]](
+      Field("id",Schema.`string`),
+      Field("system",Schema.`string`),
+      Field("type",Schema.`string`,false),
+    )
+    .toDefinition("External_Reference")
+
+  implicit def internalReferenceSchema[T]: Schema[InternalReference[T]] =
+    Schema.`object`[InternalReference[T]](
+      Field("id",Schema.`string`),
+      Field("type",Schema.`string`,false),
+    )
+    .toDefinition("Reference")
+
+
+  implicit def defaultReferenceSchema[T]: Schema[Reference[T]] =
+    internalReferenceSchema[T]
+      .asInstanceOf[Schema[Reference[T]]]
+
+
+  implicit def geneAlterationReferenceSchema[T <: BaseVariant]: Schema[GeneAlterationReference[T]] =
+    Schema.`object`[GeneAlterationReference[T]](
+      Field("variant",Json.schema[InternalReference[T]],true),
+      Field("gene",Json.schema[Coding[HGNC]],false)
+    )
+    .toDefinition("GeneAlterationReference")
+
 
 
   implicit val yearMonthSchema: Schema[YearMonth] =
