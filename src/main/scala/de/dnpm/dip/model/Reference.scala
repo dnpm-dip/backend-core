@@ -7,9 +7,11 @@ import play.api.libs.json.{
   Json,
   JsObject,
   JsString,
+  JsonValidationError,
   Reads,
   OWrites
 }
+import shapeless.Coproduct
 import de.dnpm.dip.coding.Coding
 
 
@@ -29,7 +31,9 @@ sealed trait Reference[+T]
   ): Option[TT] =
     resolver(this)
 
+  def withDisplay(d: String): Reference[T]
 }
+
 
 final case class InternalReference[+T]
 (
@@ -44,14 +48,15 @@ extends Reference[T]
     copy(display = Some(d))
 
   def in[S](implicit sys: Coding.System[S]) =
-    ExternalReference[T](
+    ExternalReference[T,S](
       id,
       sys.uri,
       display
     )
 }
 
-final case class ExternalReference[+T]
+
+final case class ExternalReference[+T,+S]
 (
   id: Id[T],
   system: URI,               // Identifier of the system in which the ID is defined/resolvable
@@ -68,11 +73,18 @@ extends Reference[T]
 object Reference
 {
 
-
   def apply[T](
     id: Id[T]
   ): InternalReference[T] =
     InternalReference(id)
+
+  def apply[T,S](
+    extId: ExternalId[T,S]
+  ): ExternalReference[T,S] =
+    ExternalReference(
+      Id(extId.value),
+      extId.system
+    )
 
   def to[T <: { def id: Id[T] }](
     t: T,
@@ -121,13 +133,28 @@ object Reference
   implicit def readsInternalReference[T]: Reads[InternalReference[T]] =
     Json.reads[InternalReference[T]]
 
-  implicit def readsExternalReference[T]: Reads[ExternalReference[T]] =
-    Json.reads[ExternalReference[T]]
+  implicit def readsAnyExternalReference[T]: Reads[ExternalReference[T,Any]] =
+    Json.reads[ExternalReference[T,Any]]
+
+  implicit def readsExternalReference[T,S: Coding.System]: Reads[ExternalReference[T,S]] =
+    Reads.of[InternalReference[T]]
+      .map(_.in[S])
+
+  implicit def readsExternalReferenceInSystems[T,S <: Coproduct](
+    implicit uris: Coding.System.UriSet[S]
+  ): Reads[ExternalReference[T,S]] =
+    readsAnyExternalReference[T].asInstanceOf[Reads[ExternalReference[T,S]]]
+      .filter(
+        JsonValidationError(s"Invalid 'system' value, expected one of {${uris.values.mkString(", ")}}")
+      )(
+        ref => uris.values.contains(ref.system)
+      )
+
 
   implicit def readsReference[T]: Reads[Reference[T]] =
     Reads { 
       js => (js \ "system").isDefined match {
-        case true  => Json.fromJson[ExternalReference[T]](js)
+        case true  => Json.fromJson[ExternalReference[T,Any]](js)
         case false => Json.fromJson[InternalReference[T]](js)
       }
     }
@@ -138,16 +165,16 @@ object Reference
         (js: JsObject) => js + ("type" -> JsString(TypeName[T].value))
       )
 
-  implicit def writesExternalReference[T: TypeName]: OWrites[ExternalReference[T]] =
-    Json.writes[ExternalReference[T]]
+  implicit def writesExternalReference[T: TypeName,S]: OWrites[ExternalReference[T,S]] =
+    Json.writes[ExternalReference[T,S]]
       .transform(
         (js: JsObject) => js + ("type" -> JsString(TypeName[T].value))
       )
 
   implicit def writesReference[T: TypeName]: OWrites[Reference[T]] =
     OWrites { 
-      case ref: InternalReference[T] => Json.toJsObject(ref)
-      case ref: ExternalReference[T] => Json.toJsObject(ref)
+      case ref: InternalReference[T]   => Json.toJsObject(ref)
+      case ref: ExternalReference[T,_] => Json.toJsObject(ref)
     }
 
 }

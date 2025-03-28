@@ -27,20 +27,6 @@ object RefSeq
   implicit val codingSystem: Coding.System[RefSeq] =
     Coding.System[RefSeq]("https://www.ncbi.nlm.nih.gov/refseq")
 
-  sealed trait NM
-  object NM
-  {
-    implicit val codingSystem: Coding.System[NM] =
-      Coding.System[NM]("https://www.ncbi.nlm.nih.gov/refseq/nm")
-  }
-
-  sealed trait NP
-  object NP
-  {
-    implicit val codingSystem: Coding.System[NP] =
-      Coding.System[NP]("https://www.ncbi.nlm.nih.gov/refseq/np")
-  }
-
 }
 
 

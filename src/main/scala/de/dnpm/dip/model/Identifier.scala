@@ -4,9 +4,14 @@ package de.dnpm.dip.model
 import java.net.URI
 import play.api.libs.json.{
   Json,
+  JsonValidationError,
+  JsPath,
   Format,
-  OFormat
+  Reads,
+  OWrites
 }
+import play.api.libs.functional.syntax._
+import shapeless.Coproduct
 import de.dnpm.dip.coding.Coding
 
 
@@ -34,34 +39,61 @@ object Id
 }
 
 
-final case class ExternalId[+T]
+final case class ExternalId[+T,+S]
 (
   value: String,
-  system: Option[URI]
+  system: URI
 )
 
 object ExternalId
 {
 
-  def apply[T](
-    value: String,
-    system: String
-  ): ExternalId[T] =
-    ExternalId(
-      value,
-      Some(URI.create(system))
-    )
-
   def apply[T, S: Coding.System](
     value: String
-  ): ExternalId[T] =
+  ): ExternalId[T,S] =
     ExternalId(
       value,
-      Some(Coding.System[S].uri)
+      Coding.System[S].uri
     )
 
 
-  implicit def format[T]: OFormat[ExternalId[T]] =
-    Json.format[ExternalId[T]]
+  implicit def writes[T,S]: OWrites[ExternalId[T,S]] =
+    Json.writes[ExternalId[T,S]]
+
+  implicit def readsAnyExtId[T]: Reads[ExternalId[T,Any]] =
+    (
+      (JsPath \ "value").read[String] and
+      (JsPath \ "system").read[URI]
+    )(
+      ExternalId[T,Any](_,_)
+    )
+
+
+  implicit def readsExtId[T,S](
+    implicit sys: Coding.System[S]
+  ): Reads[ExternalId[T,S]] =
+    (
+      (JsPath \ "value").read[String] and
+      (JsPath \ "system").readNullable[URI] 
+    )(
+      (v,_) => ExternalId[T,S](v)
+    )
+
+  implicit def readsSystemUnionExtId[T,S <: Coproduct](
+    implicit uris: Coding.System.UriSet[S]
+  ): Reads[ExternalId[T,S]] =
+    (
+      (JsPath \ "value").read[String] and
+      (JsPath \ "system").read[URI] 
+    )(
+      (v,sys) => ExternalId[T,S](v,sys)
+    )
+    .filter(
+      JsonValidationError(s"Invalid 'system' value, expected one of {${uris.values.mkString(", ")}}")
+    )(
+      extId => uris.values.contains(extId.system)
+    )
+
 
 }
+

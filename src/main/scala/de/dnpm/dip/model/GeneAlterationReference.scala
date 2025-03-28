@@ -21,8 +21,8 @@ import play.api.libs.json.{
 
 final case class GeneAlterationReference[+T <: BaseVariant]
 (
-  variant: InternalReference[T],
-//  variant: Reference[T],
+//  variant: InternalReference[T],
+  variant: Reference[T],
   gene: Option[Coding[HGNC]], 
   display: Option[String] = None
 )

@@ -13,7 +13,6 @@ import json.{
 }
 import json.schema.validation._
 import com.github.andyglow.json.Value
-//import com.github.andyglow.jsonschema.AsPlay._
 import Schema.`object`.Field
 import de.dnpm.dip.coding.{
   Code,
@@ -24,17 +23,21 @@ import de.dnpm.dip.model.{
   Age,
   BaseVariant,
   ExternalId,
-//  HealthInsurance,
   GeneAlterationReference,
   Id,
+  OpenEndPeriod,
+  Patient,
   Period,
   Publication,
-  OpenEndPeriod,
   Reference,
-  InternalReference,
   ExternalReference,
   Study,
-  UnitOfTime
+  UnitOfTime,
+  VitalStatus
+}
+import de.dnpm.dip.model.UnitOfTime.{
+  Months,
+  Years
 }
 import shapeless.{
   Coproduct,
@@ -49,6 +52,24 @@ trait BaseSchemas
 
     def toSimpleNameDefinition(implicit ct: ClassTag[T]): Schema[T] =
       sch.toDefinition(ct.runtimeClass.getSimpleName)
+
+    def addField[V](
+      name: String,
+      fieldSch: Schema[V],
+      required: Boolean = true
+    ): Schema[T] =
+      sch match {
+        case obj: Schema.`object`[_] =>
+          obj.withField(name,fieldSch,required)
+
+        case x => x
+      }
+
+    def addOptField[V](
+      name: String,
+      fieldSch: Schema[V]
+    ): Schema[T] =
+      addField(name,fieldSch,false)
   }
 
 
@@ -76,85 +97,32 @@ trait BaseSchemas
       .toDefinition("Id")
 
 
-  implicit def externalIdSchema[T]: Schema[ExternalId[T]] =
-    Schema.`object`[ExternalId[T]](
+  protected def externalIdSchemaOf[T,S <: Coproduct](
+    definition: String
+  )(
+    implicit uris: Coding.System.UriSet[S],
+  ): Schema[ExternalId[T,S]] =
+    Schema.`object`[ExternalId[T,S]](
       Field("value",Schema.`string`),
-      Field("system",Schema.`string`,false),
+      Field(
+        "system",
+        Schema.`enum`[String](
+          Schema.`string`,
+          uris.values.map(uri => Value.str(uri.toString))
+        )
+      )
     )
-    .toDefinition("ExternalId")
+    .toDefinition(definition)
+
+
+  implicit def externalIdSchema[T,S: Coding.System]: Schema[ExternalId[T,S]] =
+    Schema.`object`[ExternalId[T,S]](
+      Field("value",Schema.`string`)
+    )
+    .toDefinition(s"ExternalId")
 
 
 /*
-  implicit val studyReferenceSchema: Schema[Reference[Study]] =
-    Schema.`object`[Reference[Study]](
-      Field(
-        "extId",
-        Schema.`object`[ExternalId[Study]](
-          Field("value",Schema.`string`),
-          Field(
-            "system",
-            Schema.`enum`[String](
-              Schema.`string`,
-              Set(
-                Coding.System[Study.Registries.NCT].uri.toString,
-                Coding.System[Study.Registries.DRKS].uri.toString,
-                Coding.System[Study.Registries.EudraCT].uri.toString,
-                Coding.System[Study.Registries.EUDAMED].uri.toString,
-              )
-              .map(Value.str)
-            ),
-            false
-          ),
-        ),
-        false
-      ),
-      Field("type",Schema.`string`,false),
-    )
-    .toDefinition("Reference_Study")
-
-
-  implicit val publicationReferenceSchema: Schema[Reference[Publication]] =
-    Schema.`object`[Reference[Publication]](
-      Field(
-        "extId",
-        Schema.`object`[ExternalId[Publication]](
-          Field("value",Schema.`string`),
-          Field(
-            "system",
-            Schema.`enum`[String](
-              Schema.`string`,
-              Set(Coding.System[PubMed].uri.toString).map(Value.str)
-            ),
-            false,
-            Coding.System[PubMed].uri.toString
-          ),
-        ),
-        false
-      ),
-      Field("uri",Schema.`string`,false),
-      Field("type",Schema.`string`,false),
-    )
-    .toDefinition("Reference_Publication")
-
-
-  implicit val healthInsuranceReferenceSchema: Schema[Reference[HealthInsurance]] =
-    Schema.`object`[Reference[HealthInsurance]](
-      Field("extId", externalIdSchema[HealthInsurance]),
-      Field("display",Schema.`string`,false),
-      Field("type",Schema.`string`,false),
-    )
-    .toDefinition("Reference_HealthInsurance")
-
-
-  implicit def defaultReferenceSchema[T]: Schema[Reference[T]] =
-    Schema.`object`[Reference[T]](
-      Field("id",Schema.`string`),
-      Field("display",Schema.`string`,false),
-      Field("type",Schema.`string`,false),
-    )
-    .toDefinition("Reference")
-*/
-
   protected def externalReference[T, Systems <: Coproduct](
     definition: String
   )(
@@ -180,46 +148,6 @@ trait BaseSchemas
   implicit val publicationReferenceSchema: Schema[ExternalReference[Publication]] =
     externalReference[Publication,Publication.Systems]("Publication_Reference")
 
-/*
-  implicit val studyReferenceSchema: Schema[ExternalReference[Study]] =
-    Schema.`object`[ExternalReference[Study]](
-      Field("id",Schema.`string`),
-      Field(
-        "system",
-        Schema.`enum`[String](
-          Schema.`string`,
-          Set(
-            Coding.System[Study.Registries.NCT].uri,
-            Coding.System[Study.Registries.DRKS].uri,
-            Coding.System[Study.Registries.EudraCT].uri,
-            Coding.System[Study.Registries.EUDAMED].uri,
-          )
-          .map(uri => Value.str(uri.toString))
-        )
-      ),
-      Field("type",Schema.`string`,false),
-    )
-    .toDefinition("Study_Reference")
-
-
-  implicit val publicationReferenceSchema: Schema[ExternalReference[Publication]] =
-    Schema.`object`[ExternalReference[Publication]](
-      Field("id",Schema.`string`),
-      Field(
-        "system",
-        Schema.`enum`[String](
-          Schema.`string`,
-          Set(
-            Coding.System[PubMed].uri,
-            Coding.System[DOI].uri
-          )
-          .map(uri => Value.str(uri.toString))
-        )
-      ),
-      Field("type",Schema.`string`,false)
-    )
-    .toDefinition("Publication_Reference")
-*/
 
   implicit def externalReferenceSchema[T]: Schema[ExternalReference[T]] =
     Schema.`object`[ExternalReference[T]](
@@ -228,23 +156,49 @@ trait BaseSchemas
       Field("type",Schema.`string`,false),
     )
     .toDefinition("External_Reference")
+*/
 
-  implicit def internalReferenceSchema[T]: Schema[InternalReference[T]] =
-    Schema.`object`[InternalReference[T]](
+  protected def externalReferenceSchemaOf[T,S <: Coproduct](
+    definition: String
+  )(
+    implicit
+    uris: Coding.System.UriSet[S],
+  ): Schema[ExternalReference[T,S]] =
+    Schema.`object`[ExternalReference[T,S]](
       Field("id",Schema.`string`),
+      Field(
+        "system",
+        Schema.`enum`[String](
+          Schema.`string`,
+          uris.values.map(uri => Value.str(uri.toString))
+        )
+      ),
+      Field("display",Schema.`string`,false),
       Field("type",Schema.`string`,false),
+    )
+    .toDefinition(definition)
+
+
+  implicit val studyReferenceSchema: Schema[ExternalReference[Study,Study.Registries]] =
+    externalReferenceSchemaOf[Study,Study.Registries]("Study_Reference")
+
+  implicit val publicationReferenceSchema: Schema[ExternalReference[Publication,Publication.Systems]] =
+    externalReferenceSchemaOf[Publication,Publication.Systems]("Publication_Reference")
+
+  implicit def defaultReferenceSchema[T]: Schema[Reference[T]] =
+    Schema.`object`[Reference[T]](
+      Field("id",Schema.`string`),
+      Field("display",Schema.`string`,false),
+      Field("system",Schema.`string`,false),
+      Field("type",Schema.`string`,false)
     )
     .toDefinition("Reference")
 
 
-  implicit def defaultReferenceSchema[T]: Schema[Reference[T]] =
-    internalReferenceSchema[T]
-      .asInstanceOf[Schema[Reference[T]]]
-
-
   implicit def geneAlterationReferenceSchema[T <: BaseVariant]: Schema[GeneAlterationReference[T]] =
     Schema.`object`[GeneAlterationReference[T]](
-      Field("variant",Json.schema[InternalReference[T]],true),
+      Field("variant",Json.schema[Reference[T]],true),
+      Field("display",Schema.`string`,false),
       Field("gene",Json.schema[Coding[HGNC]],false)
     )
     .toDefinition("GeneAlterationReference")
@@ -334,8 +288,6 @@ trait BaseSchemas
       .toDefinition("Period_Date")
 
 
-  import de.dnpm.dip.model.UnitOfTime.{Months,Years}
-
   implicit val ageSchema: Schema[Age] =
     Schema.`object`[Age](
       Field[Double]("value",Schema.`number`[Double]),
@@ -358,17 +310,23 @@ trait BaseSchemas
     .toDefinition("UnitOfTime")
 
 /*
-  implicit def historySchema[T](
-    implicit tSch: Schema[T]
-  ): Schema[History[T]] =
-    Schema.`object`[History[T]](
-      Field[List[T]](
-        "history",
-        Schema.`array`[T,List](tSch)
-          .withValidation(
-            Instance.minItems := 1
-          )
-      )
-    )
-  */
+  implicit val healthInsuranceRefSchema: Schema[ExternalReference[HealthInsurance,IK]] =
+    defaultReferenceSchema[HealthInsurance]
+      .asInstanceOf[Schema[ExternalReference[HealthInsurance,IK]]]
+      .addOptField("system",Schema.`string`)
+      .toDefinition("HealthInsurance_Reference")
+
+
+  implicit val healthInsuranceRefSchema: Schema[Reference[HealthInsurance]] =
+    defaultReferenceSchema[HealthInsurance]
+      .addOptField("system",Schema.`string`)
+      .toDefinition("HealthInsurance_Reference")
+*/
+
+  implicit val patientSchema: Schema[Patient] =
+    Json.schema[Patient]
+      .addOptField("age",Json.schema[Age])
+      .addOptField("vitalStatus",Json.schema[Coding[VitalStatus.Value]])
+      .toSimpleNameDefinition
+
 }

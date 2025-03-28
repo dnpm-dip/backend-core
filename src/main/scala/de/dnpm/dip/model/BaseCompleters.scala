@@ -36,11 +36,6 @@ trait BaseCompleters
         pat.copy(
           gender       = pat.gender.complete,
           managingSite = Some(Site.local),
-          healthInsurance = pat.healthInsurance.copy(
-            reference = pat.healthInsurance.reference.collect { 
-              case ref: InternalReference[HealthInsurance] => ref.in[IK]
-            }
-          )
         )
     )
 

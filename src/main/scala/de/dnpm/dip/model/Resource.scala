@@ -10,7 +10,7 @@ trait Resource[T]
 
   val id: Id[T]
 
-  val extIds: Set[ExternalId[T]]
+  val extIds: Set[ExternalId[T,_]]
 
   val lastUpdate: Instant
 }

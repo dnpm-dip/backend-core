@@ -11,7 +11,7 @@ import de.dnpm.dip.coding.{
 trait BaseVariant
 {
   val id: Id[BaseVariant]
-  val externalIds: Option[List[ExternalId[BaseVariant]]]
+  val externalIds: Option[List[ExternalId[BaseVariant,_]]]
   val patient: Reference[Patient]
   val localization: Option[Set[Coding[BaseVariant.Localization.Value]]]
 }
