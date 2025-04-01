@@ -13,7 +13,6 @@ import cats.data.NonEmptyList
 package object json
 {
 
-
   implicit def writesNel[T: Writes](
     implicit
     writes: Writes[List[T]]

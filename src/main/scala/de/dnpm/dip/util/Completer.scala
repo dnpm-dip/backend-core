@@ -40,7 +40,8 @@ object Completer
   import syntax._
 
   implicit def optionCompleter[T: Completer]: Completer[Option[T]] =
-    opt => opt.map(_.complete)
+    _.map(_.complete)
+
 
   implicit def iterableCompleter[
     T: Completer,

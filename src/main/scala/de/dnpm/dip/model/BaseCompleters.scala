@@ -30,29 +30,13 @@ trait BaseCompleters
   import Completer.syntax._
 
 
-  implicit val patientCompleter: Completer[Patient] =
-    Completer.of(
-      pat =>
-        pat.copy(
-          gender       = pat.gender.complete,
-          managingSite = Some(Site.local),
-        )
-    )
-
-
   implicit def hgvsCompleter[S <: HGVS]: Completer[Coding[S]] =
-    Completer.of(
-      coding => coding.copy(
-        display = coding.display.orElse(Some(coding.code.value))
-      )
-    )
+    Coding.completeDisplayWithCode
 
 
   implicit val unregisteredCodingCompleter: Completer[Coding[UnregisteredMedication]] =
-    Completer.of(
-      coding => coding.copy(
-        display = coding.display.orElse(Some(coding.code.value))
-      )
+    coding => coding.copy(
+      display = coding.display.orElse(Some(coding.code.value))
     )
 
 
@@ -64,16 +48,14 @@ trait BaseCompleters
     compH: Completer[Coding[H]],
     compT: Completer[Coding[T]]
   ): Completer[Coding[H :+: T]] =
-    Completer.of {
-      coding =>
-        (
-          if (coding.system == Coding.System[H].uri)
-            compH(coding.asInstanceOf[Coding[H]])
-          else
-            compT(coding.asInstanceOf[Coding[T]])
-        )
-        .asInstanceOf[Coding[H :+: T]]
-    }
+    coding =>
+      (
+        if (coding.system == Coding.System[H].uri)
+          compH(coding.asInstanceOf[Coding[H]])
+        else
+          compT(coding.asInstanceOf[Coding[T]])
+      )
+      .asInstanceOf[Coding[H :+: T]]
 
   implicit def terminalCoproductCodingCompleter[H: Coding.System](
     implicit compH: Completer[Coding[H]],
@@ -165,11 +147,23 @@ trait BaseCompleters
   implicit def geneAlterationReferenceCompleter[T <: BaseVariant](
     implicit hgnc: CodeSystemProvider[HGNC,Id,Applicative[Id]]
   ): Completer[GeneAlterationReference[T]] =
-    Completer.of(
-      ref => ref.copy(
-        gene = ref.gene.complete
+    ref => ref.copy(
+      gene = ref.gene.complete
+    )
+
+
+  implicit val patientCompleter: Completer[Patient] =
+    pat => pat.copy(
+      gender       = pat.gender.complete,
+      managingSite = Some(Site.local),
+      healthInsurance = pat.healthInsurance.copy(
+        `type` = pat.healthInsurance.`type`.complete
       )
     )
 
+  implicit val followUpCompleter: Completer[FollowUp] =
+    fu => fu.copy(
+      patientStatus = fu.patientStatus.complete
+    )
 
 }

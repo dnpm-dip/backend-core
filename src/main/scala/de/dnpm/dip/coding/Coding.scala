@@ -353,6 +353,14 @@ object Coding
           .getOrElse(coding)
     )
 
+  def completeDisplayWithCode[S]: Completer[Coding[S]] =
+    Completer.of(
+      coding => 
+        coding.display match {
+          case None => coding.copy(display = Some(coding.code.value))
+          case Some(_) => coding
+        }
+    )
 
 
   import play.api.libs.functional.syntax._

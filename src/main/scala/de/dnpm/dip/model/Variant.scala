@@ -20,7 +20,6 @@ trait BaseVariant
 object BaseVariant
 {
 
-  sealed trait Localization
   object Localization
   extends CodedEnum("dnpm-dip/variant/localization")
   with DefaultCodeSystem

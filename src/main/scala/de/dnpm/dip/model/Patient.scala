@@ -60,7 +60,6 @@ object Patient
   (
     `type`: Coding[HealthInsurance.Type.Value],
     reference: Option[Reference[HealthInsurance]]
-//    reference: Option[ExternalReference[HealthInsurance,IK]]
   )
 
 

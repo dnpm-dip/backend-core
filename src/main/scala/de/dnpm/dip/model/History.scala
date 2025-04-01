@@ -10,6 +10,7 @@ import play.api.libs.json.{
   Writes,
   OWrites
 }
+import de.dnpm.dip.util.Completer
 
 
 final case class History[+T]
@@ -63,6 +64,16 @@ object History
         h => h.history.forall(_.id == h.history.head.id)
       )
 */
+
+
+  import Completer.syntax._
+
+  implicit def historyCompleter[T: Completer]: Completer[History[T]] =
+    Completer.of(
+      h => h.copy(
+        history = h.history.complete
+      )
+    )
 
   implicit def reads[T: Reads]: Reads[History[T]] =
     Json.reads[History[T]]

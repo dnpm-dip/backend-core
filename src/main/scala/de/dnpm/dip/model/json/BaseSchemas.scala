@@ -25,6 +25,7 @@ import de.dnpm.dip.model.{
   ExternalId,
   GeneAlterationReference,
   Id,
+  Medications,
   OpenEndPeriod,
   Patient,
   Period,
@@ -322,6 +323,9 @@ trait BaseSchemas
       .addOptField("system",Schema.`string`)
       .toDefinition("HealthInsurance_Reference")
 */
+
+  implicit val medicationsCodingSchema: Schema[Coding[Medications]] =
+    coproductCodingSchema[Medications]
 
   implicit val patientSchema: Schema[Patient] =
     Json.schema[Patient]

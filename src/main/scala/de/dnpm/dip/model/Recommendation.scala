@@ -47,7 +47,7 @@ object Recommendation
 trait TherapyRecommendation extends Recommendation
 {
   val reason: Option[Reference[Diagnosis]]
-  val priority: Option[Coding[Recommendation.Priority.Value]]
+  val priority: Coding[Recommendation.Priority.Value]
 }
 
 trait MedicationRecommendation[M] extends TherapyRecommendation
@@ -58,7 +58,7 @@ trait MedicationRecommendation[M] extends TherapyRecommendation
 
 trait StudyEnrollmentRecommendation extends Recommendation
 {
+//  val study: ExternalReference[Study,Study.Registries]
   val study: NonEmptyList[ExternalReference[Study,Study.Registries]]
-//  val study: NonEmptyList[ExternalReference[Study]]
 }
 
