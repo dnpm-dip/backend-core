@@ -7,18 +7,22 @@ import de.dnpm.dip.coding.{
   CodedEnum
 }
 
+
 trait CarePlan extends Commentable
 {
+
+  type StatusReason <: CodedEnum with CarePlan.NonInclusionReason
+
   val id: Id[CarePlan]
   val patient: Reference[Patient]
   val issuedOn: LocalDate
   val reason: Option[Reference[Diagnosis]]
-  val statusReason: Option[Coding[_]]
+  val statusReason: Option[Coding[StatusReason#Value]]
+//  val statusReason: Option[Coding[_]]
   val therapyRecommendations: Option[List[TherapyRecommendation]]
   val medicationRecommendations: Option[List[MedicationRecommendation[_]]]
   val studyEnrollmentRecommendations: Option[List[StudyEnrollmentRecommendation]]
 }
-
 
 object CarePlan
 {
@@ -40,7 +44,6 @@ object CarePlan
         NotRareDisease                 -> "Wahrscheinlich häufige Erkrankung",
         NonGeneticCause                -> "Wahrscheinlich nicht genetische Ursache",
         Other                          -> "Anderer Grund"
-
       )
   }
 

@@ -133,12 +133,12 @@ object Reference
   implicit def readsInternalReference[T]: Reads[InternalReference[T]] =
     Json.reads[InternalReference[T]]
 
-  implicit def readsAnyExternalReference[T]: Reads[ExternalReference[T,Any]] =
-    Json.reads[ExternalReference[T,Any]]
-
   implicit def readsExternalReference[T,S: Coding.System]: Reads[ExternalReference[T,S]] =
     Reads.of[InternalReference[T]]
       .map(_.in[S])
+
+  implicit def readsAnyExternalReference[T]: Reads[ExternalReference[T,Any]] =
+    Json.reads[ExternalReference[T,Any]]
 
   implicit def readsExternalReferenceInSystems[T,S <: Coproduct](
     implicit uris: Coding.System.UriSet[S]
@@ -178,6 +178,29 @@ object Reference
     }
 
 }
+
+
+
+final case class CodeableReference[S,T]
+(
+  coding: Option[Coding[S]],
+  reference: Option[Reference[T]]
+)
+
+object CodeableReference
+{
+  implicit def writes[S,T: Reference.TypeName]: OWrites[CodeableReference[S,T]] =
+    Json.writes[CodeableReference[S,T]]
+
+  implicit def reads[S: Coding.System,T]: Reads[CodeableReference[S,T]] =
+    Json.reads[CodeableReference[S,T]]
+
+  implicit def readsAny[S,T]: Reads[CodeableReference[Any,T]] =
+    Json.reads[CodeableReference[Any,T]]
+}
+
+
+
 
 
 /*
