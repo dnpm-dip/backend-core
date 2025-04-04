@@ -8,6 +8,6 @@ trait Diagnosis extends Commentable
 {
   val id: Id[Diagnosis]
   val patient: Reference[Patient]
-  val recordedOn: Option[LocalDate]
+  val recordedOn: LocalDate
 }
 
