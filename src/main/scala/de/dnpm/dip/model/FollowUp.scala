@@ -16,6 +16,8 @@ import de.dnpm.dip.coding.{
 final case class FollowUp
 (
   date: LocalDate,
+  patient: Reference[Patient],
+  lastContactDate: Option[LocalDate],
   patientStatus: Option[Coding[FollowUp.PatientStatus.Value]]
 )
 

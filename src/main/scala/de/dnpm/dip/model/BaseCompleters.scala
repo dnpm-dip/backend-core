@@ -164,6 +164,15 @@ trait BaseCompleters
   implicit val followUpCompleter: Completer[FollowUp] =
     fu => fu.copy(
       patientStatus = fu.patientStatus.complete
+/*      
+        fu.patientStatus.complete
+          .orElse(
+            fu.lastContactDate match { 
+              case Some(_) => None
+              case None => Some(Coding(FollowUp.PatientStatus.LostToFU))
+            }
+          )
+*/        
     )
 
 }

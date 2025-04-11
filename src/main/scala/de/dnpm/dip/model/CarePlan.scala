@@ -18,7 +18,6 @@ trait CarePlan extends Commentable
   val issuedOn: LocalDate
   val reason: Option[Reference[Diagnosis]]
   val statusReason: Option[Coding[StatusReason#Value]]
-//  val statusReason: Option[Coding[_]]
   val therapyRecommendations: Option[List[TherapyRecommendation]]
   val medicationRecommendations: Option[List[MedicationRecommendation[_]]]
   val studyEnrollmentRecommendations: Option[List[StudyEnrollmentRecommendation]]
