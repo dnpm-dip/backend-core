@@ -11,7 +11,7 @@ import de.dnpm.dip.coding.{
 trait CarePlan extends Commentable
 {
 
-  type StatusReason <: CodedEnum with CarePlan.NonInclusionReason
+  type StatusReason <: CodedEnum with CarePlan.NoSequencingPerformedReason
 
   val id: Id[CarePlan]
   val patient: Reference[Patient]
@@ -26,7 +26,7 @@ trait CarePlan extends Commentable
 object CarePlan
 {
 
-  trait NonInclusionReason
+  trait NoSequencingPerformedReason
   {
     this: CodedEnum =>
 

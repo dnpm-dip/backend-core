@@ -14,9 +14,7 @@ class CompleterTests extends AnyFlatSpec
   import Completer.syntax._
 
   implicit val completer: Completer[Patient] =
-    Completer.of(
-      pat => pat.copy(gender = pat.gender.complete)
-    )
+    pat => pat.copy(gender = pat.gender.complete)
 
 
   "Completer[Patient]" must "have worked correctly" in {
@@ -32,7 +30,7 @@ class CompleterTests extends AnyFlatSpec
           Coding(HealthInsurance.Type.GKV),
           None
         ),
-        None
+        Address("12345")
       )
       
 

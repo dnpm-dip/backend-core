@@ -3,6 +3,7 @@ package de.dnpm.dip.coding.hgvs
 
 import scala.util.matching.UnanchoredRegex
 import de.dnpm.dip.coding.{
+  Code,
   Coding,
   CodeSystem,
 }
@@ -38,11 +39,19 @@ object HGVS extends CodeSystem.Publisher[HGVS]
   object extensions
   {
 
+    implicit class HGVSCodeExtensions[C <: HGVS](val code: Code[C])
+    {
+      def matches(criterion: Code[C]): Boolean =
+        code.value.toLowerCase contains criterion.value.toLowerCase 
+    }
+
+/*    
     implicit class HGVSCodingExtensions[C <: HGVS](val coding: Coding[C]) extends AnyVal
     {
       def matches(criterion: Coding[C]): Boolean =
         coding.code.value.toLowerCase contains criterion.code.value.toLowerCase 
     }
+*/    
   }
 
 

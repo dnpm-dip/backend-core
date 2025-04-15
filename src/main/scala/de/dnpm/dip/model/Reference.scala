@@ -65,6 +65,9 @@ final case class ExternalReference[+T,+S]
 )
 extends Reference[T]
 {
+  lazy val extId =
+    ExternalId[T,S](id.value,system)
+
   def withDisplay(d: String) =
     copy(display = Some(d))
 }
