@@ -16,7 +16,7 @@ object HealthInsurance
   extends CodedEnum("http://fhir.de/CodeSystem/versicherungsart-de-basis")
   with DefaultCodeSystem
   {
-    val GKV, PKV, BG, SEL, SOZ, GPV, PPV, BEI, UNK = Value
+    val GKV, PKV, BG, SEL, SOZ, GPV, PPV, BEI, SKT, UNK = Value
 
     override val display =
       Map(
@@ -28,6 +28,7 @@ object HealthInsurance
         GPV -> "gesetzliche Pflegeversicherung",
         PPV -> "private Pflegeversicherung",
         BEI -> "Beihilfe",
+        SKT -> "Sonstige Kostenträger",
         UNK -> "Unbekannt"
       )
   }

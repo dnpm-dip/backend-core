@@ -58,7 +58,6 @@ trait MedicationRecommendation[M] extends TherapyRecommendation
 
 trait StudyEnrollmentRecommendation extends Recommendation
 {
-//  val study: ExternalReference[Study,Study.Registries]
   val study: NonEmptyList[ExternalReference[Study,Study.Registries]]
 }
 
