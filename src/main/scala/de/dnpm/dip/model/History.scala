@@ -20,7 +20,15 @@ final case class History[+T]
 {
   import scala.language.reflectiveCalls
   import cats.Order
-  
+
+
+  def ::[TT >: T](t: TT): History[TT] =
+    copy(history = t :: history)
+
+
+  def :+[TT >: T](t: TT): History[TT] =
+    copy(history = history :+ t)
+
 
   def latestBy[U <: Temporal: Ordering](f: T => U) =
     history.toList.maxBy(f)
@@ -52,6 +60,7 @@ object History
 
   def apply[T](t: T, ts: T*): History[T] =
     History(NonEmptyList.one(t) ++ ts.toList)
+
 
 /*
   import scala.language.reflectiveCalls
