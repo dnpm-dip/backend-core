@@ -4,20 +4,18 @@ package de.dnpm.dip.model
 import java.time.LocalDate
 import de.dnpm.dip.coding.{
   Coding,
-  CodedEnum
+  CodedEnum,
+  DefaultCodeSystem
 }
 
 
 trait CarePlan extends Commentable
 {
-
-  type StatusReason <: CodedEnum with CarePlan.NoSequencingPerformedReason
-
   val id: Id[CarePlan]
   val patient: Reference[Patient]
   val issuedOn: LocalDate
   val reason: Option[Reference[Diagnosis]]
-  val statusReason: Option[Coding[StatusReason#Value]]
+  val noSequencingPerformedReason: Option[Coding[CarePlan.NoSequencingPerformedReason.Value]]
   val therapyRecommendations: Option[List[TherapyRecommendation]]
   val medicationRecommendations: Option[List[MedicationRecommendation[_]]]
   val studyEnrollmentRecommendations: Option[List[StudyEnrollmentRecommendation]]
@@ -26,9 +24,10 @@ trait CarePlan extends Commentable
 object CarePlan
 {
 
-  trait NoSequencingPerformedReason
+  object NoSequencingPerformedReason
+  extends CodedEnum("dnpm-dip/careplan/no-sequencing-performed-reason")
+  with DefaultCodeSystem
   {
-    this: CodedEnum =>
 
     val TargetedDiagnosticsRecommended = Value("targeted-diagnostics-recommended")
     val Pyschosomatic                  = Value("psychosomatic")
@@ -36,7 +35,7 @@ object CarePlan
     val NonGeneticCause                = Value("non-genetic-cause")
     val Other                          = Value("other")
 
-    protected val defaultDisplay =
+    override val display =
       Map(
         TargetedDiagnosticsRecommended -> "Zieldiagnostik empfohlen",
         Pyschosomatic                  -> "Wahrscheinlich psychosomatische Erkrankung",
@@ -47,4 +46,3 @@ object CarePlan
   }
 
 }
-
