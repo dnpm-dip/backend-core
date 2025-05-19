@@ -14,15 +14,13 @@ package object json
 {
 
   implicit def writesNel[T: Writes](
-    implicit
-    writes: Writes[List[T]]
+    implicit writes: Writes[List[T]]
   ): Writes[NonEmptyList[T]] =
     writes.contramap(_.toList)
 
 
   implicit def readsNel[T: Reads](
-    implicit
-    reads: Reads[List[T]],
+    implicit reads: Reads[List[T]],
   ): Reads[NonEmptyList[T]] =
     reads
       .filterNot(JsonValidationError("Found empty list where non-empty list expected"))(_.isEmpty)
@@ -31,9 +29,7 @@ package object json
 
   // Custom implementation of Format[Enum] because the implementation
   // in Play JSON Lib Json.formatEnum() doesn't return the valueset in its error message
-  def enumFormat[E <: Enumeration](
-    e: E
-  ): Format[E#Value] =
+  def enumFormat[E <: Enumeration](e: E): Format[e.Value] =
     Format(
       Reads.of[String]
         .filter(
@@ -61,5 +57,17 @@ package object json
   implicit val writesYearMonth: Writes[YearMonth] =
     Writes.of[String].contramap(yyyyMMFormatter.format)
 
+
+/*
+  implicit def readsSome[T](
+    implicit reads: Reads[T]
+  ): Reads[Some[T]] =
+    reads.map(Some(_))
+
+  implicit def writesSome[T](
+    implicit writes: Writes
+  ): Writes[Some[T]] =
+    writes.contramap(_.get)
+*/
 
 }
