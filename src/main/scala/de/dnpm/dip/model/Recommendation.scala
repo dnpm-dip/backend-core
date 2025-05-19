@@ -18,7 +18,7 @@ trait Recommendation
   val id: Id[Recommendation]
   val patient: Reference[Patient]
   val issuedOn: LocalDate
-  val supportingVariants: Option[List[GeneAlterationReference[_]]]
+  val supportingVariants: Option[List[GeneAlterationReference[BaseVariant]]]
 }
 
 object Recommendation
