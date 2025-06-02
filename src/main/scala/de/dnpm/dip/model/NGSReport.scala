@@ -14,6 +14,8 @@ import de.dnpm.dip.coding.{
 trait NGSReport extends DiagnosticReport
 {
   val `type`: Coding[NGSReport.Type.Value]
+
+  def variants: Seq[BaseVariant]
 }
 
 
