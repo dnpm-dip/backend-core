@@ -1,9 +1,9 @@
 package de.dnpm.dip.model
 
 
+import scala.util.Try
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers._
-
 
 
 class SiteLoadingTests extends AnyFlatSpec
@@ -14,7 +14,7 @@ class SiteLoadingTests extends AnyFlatSpec
 
   "Local site" must "have been correctly loaded" in {
 
-    println(Site.local)
+    assert(Try(Site.local).isSuccess)
 
   }
 

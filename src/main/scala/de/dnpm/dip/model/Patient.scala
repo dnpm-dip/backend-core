@@ -29,11 +29,19 @@ final case class Patient
   def ageOnDate(
     date: LocalDate,
     ch: ChronoUnit = YEARS
-  ): Age =
+  ): Age = {
+
+    // Use the minimum of date of death (if defined) and given date as 'reference date',
+    // as the age of Patient who died before the given date is defined by his date of death
+    val refDate =
+      dateOfDeath.map(Ordering[LocalDate].min(_,date))
+        .getOrElse(date)
+
     Age(
-      ch.between(birthDate,date).toDouble,
+      ch.between(birthDate,refDate).toDouble,
       UnitOfTime.of(ch)
     )
+  }
 
   def ageIn(ch: ChronoUnit): Age =
     ageOnDate(dateOfDeath.getOrElse(LocalDate.now),ch)
@@ -50,6 +58,7 @@ final case class Patient
       .map(_ => VitalStatus.Deceased)
       .getOrElse(VitalStatus.Alive)
       .pipe(Coding(_))
+
 }
 
 
