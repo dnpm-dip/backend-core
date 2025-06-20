@@ -207,7 +207,7 @@ trait BaseSchemas
 
 
   implicit val yearMonthSchema: Schema[YearMonth] =
-    Json.schema[LocalDate]
+    Schema.`string`
       .asInstanceOf[Schema[YearMonth]]
       .toDefinition("YearMonth")
       .withValidation(
@@ -310,19 +310,6 @@ trait BaseSchemas
     )
     .toDefinition("UnitOfTime")
 
-/*
-  implicit val healthInsuranceRefSchema: Schema[ExternalReference[HealthInsurance,IK]] =
-    defaultReferenceSchema[HealthInsurance]
-      .asInstanceOf[Schema[ExternalReference[HealthInsurance,IK]]]
-      .addOptField("system",Schema.`string`)
-      .toDefinition("HealthInsurance_Reference")
-
-
-  implicit val healthInsuranceRefSchema: Schema[Reference[HealthInsurance]] =
-    defaultReferenceSchema[HealthInsurance]
-      .addOptField("system",Schema.`string`)
-      .toDefinition("HealthInsurance_Reference")
-*/
 
   implicit val medicationsCodingSchema: Schema[Coding[Medications]] =
     coproductCodingSchema[Medications]
