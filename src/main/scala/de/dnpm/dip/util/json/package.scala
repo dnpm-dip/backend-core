@@ -57,17 +57,4 @@ package object json
   implicit val writesYearMonth: Writes[YearMonth] =
     Writes.of[String].contramap(yyyyMMFormatter.format)
 
-
-/*
-  implicit def readsSome[T](
-    implicit reads: Reads[T]
-  ): Reads[Some[T]] =
-    reads.map(Some(_))
-
-  implicit def writesSome[T](
-    implicit writes: Writes
-  ): Writes[Some[T]] =
-    writes.contramap(_.get)
-*/
-
 }

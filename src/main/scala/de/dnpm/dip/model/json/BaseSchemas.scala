@@ -23,6 +23,7 @@ import de.dnpm.dip.model.{
   Age,
   BaseVariant,
   ExternalId,
+  FollowUp,
   GeneAlterationReference,
   Id,
   Medications,
@@ -314,10 +315,16 @@ trait BaseSchemas
   implicit val medicationsCodingSchema: Schema[Coding[Medications]] =
     coproductCodingSchema[Medications]
 
+
   implicit val patientSchema: Schema[Patient] =
     Json.schema[Patient]
       .addOptField("age",Json.schema[Age])
       .addOptField("vitalStatus",Json.schema[Coding[VitalStatus.Value]])
+      .toSimpleNameDefinition
+
+
+  implicit val followUpSchema: Schema[FollowUp] =
+    Json.schema[FollowUp]
       .toSimpleNameDefinition
 
 }

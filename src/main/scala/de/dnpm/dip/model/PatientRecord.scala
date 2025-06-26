@@ -15,7 +15,7 @@ trait PatientRecord
 
   val ngsReports: Option[List[NGSReport]]
 
-  val carePlans: Option[List[CarePlan]]
+//  val carePlans: Option[List[CarePlan]]
 
   val followUps: Option[List[FollowUp]]
 
@@ -24,5 +24,8 @@ trait PatientRecord
 
   final def id: Id[Patient] =
     patient.id
+
+
+  def getCarePlans: List[CarePlan]
 
 }

@@ -39,10 +39,16 @@ object Study
       implicit val system: Coding.System[EUDAMED] = Coding.System("EUDAMED")
     }
 
+    sealed trait Unspecified
+    object Unspecified
+    {
+      implicit val system: Coding.System[Unspecified] = Coding.System("other")
+    }
+
   }
 
   import Registries._
 
-  type Registries = NCT :+: DRKS :+: EudraCT :+: EUDAMED :+: CNil
+  type Registries = NCT :+: DRKS :+: EudraCT :+: EUDAMED :+: Unspecified :+: CNil
 
 }
