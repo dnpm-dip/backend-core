@@ -39,11 +39,11 @@ object ICDO3 extends ICDSystem[ICDO3]
 
   // Match either C**-C** or C**.*  where * = digit
   private val topographyRegex =
-    """(C\d{2}-C\d{2}|C\d{2}(.\d{1})?)""".r
+    """(C\d{2}-C\d{2}|C\d{2}(.\d{1})?|T)""".r
 
   // Match either ***-*** or ****/*  where * = digit
   private val morphologyRegex =
-    """(\d{3}-\d{3}|\d{4}/\d{1})""".r
+    """(\d{3}-\d{3}|\d{4}/\d{1}|M)""".r
 
 
   val topographyFilter =
