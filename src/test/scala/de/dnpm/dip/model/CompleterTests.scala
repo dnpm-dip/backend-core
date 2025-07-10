@@ -30,7 +30,7 @@ class CompleterTests extends AnyFlatSpec
           Coding(HealthInsurance.Type.GKV),
           None
         ),
-        Address("12345")
+        Some(Address(Address.MunicipalityCode("12345")))
       )
       
 

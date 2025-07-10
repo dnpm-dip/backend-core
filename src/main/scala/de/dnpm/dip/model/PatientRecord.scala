@@ -15,8 +15,6 @@ trait PatientRecord
 
   val ngsReports: Option[List[NGSReport]]
 
-//  val carePlans: Option[List[CarePlan]]
-
   val followUps: Option[List[FollowUp]]
 
   val systemicTherapies: Option[List[History[SystemicTherapy[_]]]]

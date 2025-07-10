@@ -20,6 +20,7 @@ import de.dnpm.dip.coding.{
 }
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.model.{
+  Address,
   Age,
   BaseVariant,
   ExternalId,
@@ -314,6 +315,16 @@ trait BaseSchemas
 
   implicit val medicationsCodingSchema: Schema[Coding[Medications]] =
     coproductCodingSchema[Medications]
+
+
+  implicit val municipalityCodeSchema: Schema[Address.MunicipalityCode] =
+    Json.schema[Address.MunicipalityCode]
+      .toDefinition("MunicipalityCode")
+      .withValidation(
+        Instance.pattern := "^\\d{5}$"
+      )(
+        Magnet.mk[Address.MunicipalityCode,String]
+      )
 
 
   implicit val patientSchema: Schema[Patient] =
