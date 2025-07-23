@@ -11,6 +11,13 @@ import play.api.libs.json.{
 final case class Code[+S](value: String) extends AnyVal
 {
   override def toString = value
+
+  def enumValue[E <: CodedEnum](
+    implicit
+    isCodedEnum: S <:< E#Value,
+    companion: shapeless.Witness.Aux[E]
+  ): E#Value =
+    companion.value.withName(value)
 }
 
 object Code
@@ -33,4 +40,5 @@ object Code
     
   implicit def fromString[S](c: String): Code[S] =
     Code[S](c)
+
 }

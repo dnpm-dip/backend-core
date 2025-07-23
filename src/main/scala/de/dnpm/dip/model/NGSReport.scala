@@ -28,8 +28,7 @@ object NGSReport
   with DefaultCodeSystem
   {
 
-    override val display =
-      defaultDisplay
+    override val display = defaultDisplay
 
     final class ProviderSPI extends CodeSystemProviderSPI
     {

@@ -24,6 +24,9 @@ extends Enumeration
   def unapply(coding: Coding[Value]): Option[Value] =
     self.unapply(coding.code.value)
 
+  implicit def toEnumValue(code: Code[Value]): Value =
+    self.withName(code.value)
+
 
   object Provider extends SingleCodeSystemProvider[Value]
 

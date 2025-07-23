@@ -11,7 +11,6 @@ import play.api.libs.json.{
 final case class Address
 (
   municipalityCode: Address.MunicipalityCode
-//  municipalityCode: String
 )
 
 object Address
