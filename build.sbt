@@ -8,26 +8,10 @@ name := "core"
 ThisBuild / organization := "de.dnpm.dip"
 ThisBuild / scalaVersion := "2.13.16"
 ThisBuild / version      := envOrElse("VERSION","1.0.0")
-//ThisBuild / version      := "1.0"
 
 
 githubOwner       := "dnpm-dip"
 githubRepository  := "backend-core"
-//githubTokenSource := TokenSource.Environment("GITHUB_TOKEN")
-
-/*
-credentials ++= (
-  for { 
-    username <- envOrElse("GITHUB_USER"," ")
-    token    <- envOrElse("GITHUB_TOKEN"," ")
-  } yield Credentials(
-    "GitHub Package Registry",
-    "maven.pkg.github.com",
-    username,
-    token
-  )
-)
-*/
 
 
 //-----------------------------------------------------------------------------
@@ -109,10 +93,9 @@ lazy val compilerOptions = Seq(
 
 lazy val commonSettings = Seq(
   scalacOptions ++= compilerOptions,
-  resolvers ++= 
-    Seq("Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository") :+
+  resolvers ++= Seq(
+    "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
     Resolver.sonatypeCentralSnapshots
-//    Resolver.sonatypeOssRepos("releases") ++
-//    Resolver.sonatypeOssRepos("snapshots")
+  )
 )
 
