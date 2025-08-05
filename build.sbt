@@ -1,17 +1,14 @@
-import scala.util.Properties.{
-  envOrElse,
-  envOrNone
-}
+import scala.util.Properties.envOrElse
 
 
-name := "core"
+name         := "core"
 ThisBuild / organization := "de.dnpm.dip"
 ThisBuild / scalaVersion := "2.13.16"
 ThisBuild / version      := envOrElse("VERSION","1.0.0")
 
-
-githubOwner       := "dnpm-dip"
-githubRepository  := "backend-core"
+val ownerRepo  = envOrElse("REPOSITORY","dnpm-dip/backend-core").split("/")
+ThisBuild / githubOwner      := ownerRepo(0)
+ThisBuild / githubRepository := ownerRepo(1)
 
 
 //-----------------------------------------------------------------------------
@@ -40,7 +37,6 @@ lazy val root =
 //-----------------------------------------------------------------------------
 
 lazy val settings = commonSettings
-
 
 // Compiler options from: https://alexn.org/blog/2020/05/26/scala-fatal-warnings/
 lazy val compilerOptions = Seq(
@@ -84,10 +80,6 @@ lazy val compilerOptions = Seq(
   "-Wunused:patvars",
   "-Wunused:privates",
   "-Wvalue-discard",
-
-  // Deactivated to avoid many false positives from 'evidence' parameters in context bounds
-//  "-Wunused:params",
-//  "-Wunused:implicits",
 )
 
 
@@ -98,4 +90,3 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeCentralSnapshots
   )
 )
-

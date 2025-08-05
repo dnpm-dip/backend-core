@@ -47,5 +47,6 @@ jobs:
           if: steps.release.outputs.releases_created == 'true'
           env: 
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            REPOSITORY: ${{ github.repository }}  
             VERSION: ${{ steps.release.outputs['major'] }}.${{ steps.release.outputs['minor'] }}.${{ steps.release.outputs['patch'] }}    
           run: sbt publish
