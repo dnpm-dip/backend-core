@@ -27,3 +27,25 @@ jobs:
           id: release
           with:
             token: ${{ secrets.GITHUB_TOKEN }}
+
+      -   name: Checkout
+          if: steps.release.outputs.releases_created == 'true'
+          uses: actions/checkout@v4
+
+      -   name: Setup JDK
+          if: steps.release.outputs.releases_created == 'true'
+          uses: actions/setup-java@v4
+          with:
+            distribution: temurin
+            java-version: 11
+
+      -   name: Setup sbt launcher
+          if: steps.release.outputs.releases_created == 'true'
+          uses: sbt/setup-sbt@v1
+
+      -   name: Publish
+          if: steps.release.outputs.releases_created == 'true'
+          env: 
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            VERSION: ${{ steps.release.outputs['major'] }}.${{ steps.release.outputs['minor'] }}.${{ steps.release.outputs['patch'] }}    
+          run: sbt publish
