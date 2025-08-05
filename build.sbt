@@ -4,7 +4,7 @@
 name := "core"
 ThisBuild / organization := "de.dnpm.dip"
 ThisBuild / scalaVersion := "2.13.16"
-ThisBuild / version      := "1.0-SNAPSHOT"
+ThisBuild / version      := "1.0"
 
 
 //-----------------------------------------------------------------------------
