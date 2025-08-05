@@ -24,7 +24,6 @@ jobs:
 
     steps:
       - name: Checkout
-        if: steps.release.outputs.releases_created == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -37,8 +36,6 @@ jobs:
 
       - name: Setup sbt launcher
         uses: sbt/setup-sbt@v1
-        with:
-          sbt-runner-version: 1.10.11
 
       - name: Build and Test
         run: sbt -v +test
