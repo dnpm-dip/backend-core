@@ -33,7 +33,7 @@ final case class CodeSystem[S]
   properties: List[CodeSystem.Property],
   concepts: Seq[CodeSystem.Concept[S]],
   // Allow specifying a custom look-up function for Concept by Code:
-  // By default, look-up is by exact code equality, but some CodeSystems make requires some custom logic,
+  // By default, look-up is by exact code equality, but some CodeSystems may require some custom logic,
   // e.g. fuzzy matching or in ICD-10, which allows code "modifiers", a concept could be looked up by modified code
   // (see below in def concept(...))
   customConceptLookup: Option[(Code[S] => Option[CodeSystem.Concept[S]])] = None
