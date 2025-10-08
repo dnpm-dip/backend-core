@@ -483,27 +483,20 @@ object CodeSystem
 
   import play.api.libs.functional.syntax._
 
-  implicit def writeCodeSystem[S, C <: CodeSystem[S]]: Writes[C] =
+  // Explicit Format[...] required because of constructor parameter "customConceptLookup"
+  implicit def formatCodeSystem[S]: Writes[CodeSystem[S]] =
     (
-      (JsPath \ "uri").write[URI] and
-      (JsPath \ "name").write[String] and
-      (JsPath \ "title").writeNullable[String] and
-      (JsPath \ "date").writeNullable[LocalDateTime] and
-      (JsPath \ "version").writeNullable[String] and
-      (JsPath \ "properties").write[List[CodeSystem.Property]] and
-      (JsPath \ "concepts").write[Seq[CodeSystem.Concept[S]]]
+      (JsPath \ "uri").format[URI] and
+      (JsPath \ "name").format[String] and
+      (JsPath \ "title").formatNullable[String] and
+      (JsPath \ "date").formatNullable[LocalDateTime] and
+      (JsPath \ "version").formatNullable[String] and
+      (JsPath \ "properties").format[List[CodeSystem.Property]] and
+      (JsPath \ "concepts").format[Seq[CodeSystem.Concept[S]]]
     )(
-      cs => (
-        cs.uri,
-        cs.name,
-        cs.title,
-        cs.date,
-        cs.version,
-        cs.properties,
-        cs.concepts
-      ) 
+      (uri,name,title,date,version,properties,concepts) => CodeSystem[S](uri,name,title,date,version,properties,concepts),
+      cs => (cs.uri,cs.name,cs.title,cs.date,cs.version,cs.properties,cs.concepts) 
     )
-
 
   implicit def toAnyCodeSystem[S,T >: S](cs: CodeSystem[S]): CodeSystem[T] =
     cs.asInstanceOf[CodeSystem[T]]
