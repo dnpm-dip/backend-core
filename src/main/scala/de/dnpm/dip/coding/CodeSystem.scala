@@ -3,6 +3,7 @@ package de.dnpm.dip.coding
 
 import java.net.URI
 import java.time.LocalDateTime
+import scala.util.chaining._
 import scala.collection.{
   WithFilter => StdWithFilter
 }
@@ -12,13 +13,14 @@ import scala.collection.concurrent.{
 }
 import play.api.libs.json.{
   Json,
+  JsPath,
   OFormat,
+  Writes,
   OWrites
 }
 import shapeless.Coproduct
 import shapeless.ops.coproduct.Selector
 import de.dnpm.dip.util.Tree
-
 
 
 final case class CodeSystem[S]
@@ -29,7 +31,12 @@ final case class CodeSystem[S]
   date: Option[LocalDateTime],
   version: Option[String],
   properties: List[CodeSystem.Property],
-  concepts: Seq[CodeSystem.Concept[S]]
+  concepts: Seq[CodeSystem.Concept[S]],
+  // Allow specifying a custom look-up function for Concept by Code:
+  // By default, look-up is by exact code equality, but some CodeSystems make requires some custom logic,
+  // e.g. fuzzy matching or in ICD-10, which allows code "modifiers", a concept could be looked up by modified code
+  // (see below in def concept(...))
+  customConceptLookup: Option[(Code[S] => Option[CodeSystem.Concept[S]])] = None
 )
 {
 
@@ -41,25 +48,29 @@ final case class CodeSystem[S]
   )
   {
     def value: CodeSystem[S] =
-      self.copy( concepts = wf map identity )
+      self.copy(concepts = wf map identity )
 
     def withFilter(f2: CodeSystem.Concept[S] => Boolean): WithFilter =
       new WithFilter(wf.withFilter(f2))
   }
 
 
-
-  private val conceptMap: Map[Code[S],CodeSystem.Concept[S]] =
-    concepts.map(c => (c.code, c))
-      .toMap
+  private val conceptMap: MutableMap[Code[S],CodeSystem.Concept[S]] =
+    TrieMap.from(
+      concepts.map(c => (c.code, c))
+    )
 
   private lazy val descendantTrees: MutableMap[Code[S],Tree[CodeSystem.Concept[S]]] =
     TrieMap.empty
 
 
 
-  def concept(code: Code[S]): Option[CodeSystem.Concept[S]] =
-    conceptMap.get(code)
+  def concept(code: Code[S]): Option[CodeSystem.Concept[S]] = 
+    customConceptLookup match {
+      case None         => conceptMap.get(code)
+      case Some(lookup) => conceptMap.get(code) orElse lookup(code).tap(_.foreach(c => conceptMap += c.code -> c)) // update the conceptMap for faster subsequent lookup
+    }
+
 
   def conceptWithCode(c: String): Option[CodeSystem.Concept[S]] =
     this.concept(Code[S](c))
@@ -168,19 +179,6 @@ final case class CodeSystem[S]
             )
           )
       )
-
-/*
-  def descendants(code: Code[S]): Option[Tree[CodeSystem.Concept[S]]] =
-    concept(code)
-      .map(
-        cpt =>
-          Tree(
-            cpt,
-            Option(childrenOf(cpt).toSeq.flatMap(c => descendants(c.code)))
-              .filter(_.nonEmpty)
-          )
-      )
-*/
 
 
   def displayOf(c: Code[S]): Option[String] =
@@ -459,7 +457,6 @@ object CodeSystem
 
   trait Publisher[T]
   {
-
     implicit val codingSystem: Coding.System[T]
 
     def properties: List[Property]
@@ -470,10 +467,7 @@ object CodeSystem
 
   object Publisher
   {
-    implicit def apply[T](
-      implicit csp: Publisher[T]
-    ): Publisher[T] =
-      csp
+    def apply[T](implicit csp: Publisher[T]): Publisher[T] = csp
   }
 
 
@@ -483,13 +477,36 @@ object CodeSystem
   implicit def formatConcept[S]: OFormat[Concept[S]] =
     Json.format[Concept[S]]
 
-  implicit def formatCodeSystem[S]: OFormat[CodeSystem[S]] =
-    Json.format[CodeSystem[S]]
+//  implicit def formatCodeSystem[S]: OFormat[CodeSystem[S]] =
+//    Json.format[CodeSystem[S]]
+
+
+  import play.api.libs.functional.syntax._
+
+  implicit def writeCodeSystem[S, C <: CodeSystem[S]]: Writes[C] =
+    (
+      (JsPath \ "uri").write[URI] and
+      (JsPath \ "name").write[String] and
+      (JsPath \ "title").writeNullable[String] and
+      (JsPath \ "date").writeNullable[LocalDateTime] and
+      (JsPath \ "version").writeNullable[String] and
+      (JsPath \ "properties").write[List[CodeSystem.Property]] and
+      (JsPath \ "concepts").write[Seq[CodeSystem.Concept[S]]]
+    )(
+      cs => (
+        cs.uri,
+        cs.name,
+        cs.title,
+        cs.date,
+        cs.version,
+        cs.properties,
+        cs.concepts
+      ) 
+    )
 
 
   implicit def toAnyCodeSystem[S,T >: S](cs: CodeSystem[S]): CodeSystem[T] =
     cs.asInstanceOf[CodeSystem[T]]
 
 }
-
 

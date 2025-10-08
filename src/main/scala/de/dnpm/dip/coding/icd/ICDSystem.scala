@@ -33,6 +33,7 @@ object ICD
       Some("Kind of ICD class")
     )
 
+
   object extensions 
   {
   
@@ -54,8 +55,8 @@ object ICD
           .collect {
             case c if c.classKind == kind => c.toCoding
           }
-
     }
+
   }
 
 }
@@ -64,7 +65,7 @@ object ICD
 trait ICDSystem[T <: ICD] extends CodeSystem.Publisher[T]
 {
 
-  override val properties =
+  override def properties =
     List(
       ICD.ClassKind
     )

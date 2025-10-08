@@ -7,6 +7,7 @@ import cats.{
 }
 import de.dnpm.dip.coding.{
   Coding,
+  CodeSystem,
   CodeSystemProvider
 }
 import de.dnpm.dip.util.{
@@ -22,6 +23,16 @@ object ICD10GM extends ICDSystem[ICD10GM]
 
   implicit val codingSystem: Coding.System[ICD10GM] =
     Coding.System[ICD10GM]("http://fhir.de/CodeSystem/bfarm/icd-10-gm")
+
+
+  val ValidModifierClasses =
+    CodeSystem.Property[String](
+      "ValidModifierClasses",
+      Some("Set of valid modifier classes for a given ICD-10-GM 'category'"),
+    )
+
+  override val properties =
+    ValidModifierClasses :: super.properties
 
 
   object ops
@@ -51,9 +62,7 @@ object ICD10GM extends ICDSystem[ICD10GM]
 
     }
 
-
   }
-
 
 
   trait Catalogs[F[_],Env] extends CodeSystemProvider[ICD10GM,F,Env]
@@ -64,4 +73,3 @@ object ICD10GM extends ICDSystem[ICD10GM]
 
   object Catalogs extends SPILoaderF[CatalogsSPI]
 }
-
