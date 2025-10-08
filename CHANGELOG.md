@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/dnpm-dip/backend-core/compare/v1.1.0...v1.1.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* Fixed CodeSystem JSON format ([5f23ee8](https://github.com/dnpm-dip/backend-core/commit/5f23ee8e55a90bbd05f9a744a288ab5739eb7c01))
+
 ## [1.1.0](https://github.com/dnpm-dip/backend-core/compare/v1.0.0...v1.1.0) (2025-10-08)
 
 
