@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/dnpm-dip/backend-core/compare/v1.0.0...v1.1.0) (2025-10-08)
+
+
+### Features
+
+* Adapted CodeSystem to allow specifying a custom look-up function for concepts by code ([7c90343](https://github.com/dnpm-dip/backend-core/commit/7c9034377c6a63d83ab32a60bc17e0b4bfa56f8a))
+* Added new ICD-10-GM property ([7c90343](https://github.com/dnpm-dip/backend-core/commit/7c9034377c6a63d83ab32a60bc17e0b4bfa56f8a))
+
 ## 1.0.0 (2025-08-05)
 
 
