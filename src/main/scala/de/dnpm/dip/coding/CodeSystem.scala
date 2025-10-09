@@ -15,7 +15,6 @@ import play.api.libs.json.{
   Json,
   JsPath,
   OFormat,
-  Writes,
   OWrites
 }
 import shapeless.Coproduct
@@ -477,14 +476,11 @@ object CodeSystem
   implicit def formatConcept[S]: OFormat[Concept[S]] =
     Json.format[Concept[S]]
 
-//  implicit def formatCodeSystem[S]: OFormat[CodeSystem[S]] =
-//    Json.format[CodeSystem[S]]
-
 
   import play.api.libs.functional.syntax._
 
   // Explicit Format[...] required because of constructor parameter "customConceptLookup"
-  implicit def formatCodeSystem[S]: Writes[CodeSystem[S]] =
+  implicit def formatCodeSystem[S]: OFormat[CodeSystem[S]] =
     (
       (JsPath \ "uri").format[URI] and
       (JsPath \ "name").format[String] and
