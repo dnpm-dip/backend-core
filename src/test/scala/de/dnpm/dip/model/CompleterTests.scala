@@ -5,7 +5,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers._
 import de.dnpm.dip.util.Completer
 import de.dnpm.dip.coding.Coding
-import java.time.LocalDate
+import java.time.YearMonth
 
 
 class CompleterTests extends AnyFlatSpec
@@ -23,7 +23,7 @@ class CompleterTests extends AnyFlatSpec
       Patient(
         Id[Patient]("1234567890"),
         Coding(Gender.Unknown).copy(display = None),
-        LocalDate.now,
+        YearMonth.now,
         None,
         None,
         Patient.Insurance(
