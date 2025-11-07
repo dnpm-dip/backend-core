@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/dnpm-dip/backend-core/compare/v1.1.2...v1.1.3) (2025-11-07)
+
+
+### Bug Fixes
+
+* Changed Patient.birthDate and .dateOfDeath to YearMonth, but in a tolerant fashion, so that dates in JSON input would be converted to YearMonth ([97c44aa](https://github.com/dnpm-dip/backend-core/commit/97c44aa8bbd6ba4ac81824c5178db23fd08f9068))
+
 ## [1.1.2](https://github.com/dnpm-dip/backend-core/compare/v1.1.1...v1.1.2) (2025-10-09)
 
 
