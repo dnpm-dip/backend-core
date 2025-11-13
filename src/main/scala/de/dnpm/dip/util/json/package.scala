@@ -1,11 +1,9 @@
 package de.dnpm.dip.util
 
 
-import java.time.{
-  LocalDate,
-  YearMonth
-}
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import scala.util.Try
 import play.api.libs.json._
 import cats.data.NonEmptyList
 
@@ -42,19 +40,21 @@ package object json
     )
 
 
-  private val yyyyMM    = "yyyy-MM"
-  private val yyyyMMFormatter = DateTimeFormatter.ofPattern(yyyyMM)
-
+  private val yyyyMM = DateTimeFormatter.ofPattern("yyyy-MM")
 
   implicit val readsYearMonth: Reads[YearMonth] =
-    Reads.of[String]
-      .map(YearMonth.parse(_,yyyyMMFormatter))
-      .orElse(
-        Reads.of[LocalDate]
-          .map(d => YearMonth.of(d.getYear,d.getMonth))
-      )
+    Reads.of[String].flatMapResult(
+      s =>
+        Try {
+          YearMonth.parse(s,yyyyMM)
+        }
+        .fold(
+          _ => JsError(Seq(JsPath -> Seq(JsonValidationError("error.expected.yearmonth.isoformat")))),
+          JsSuccess(_)
+        )
+    )
 
   implicit val writesYearMonth: Writes[YearMonth] =
-    Writes.of[String].contramap(yyyyMMFormatter.format)
+    Writes.of[String].contramap(yyyyMM.format)
 
 }

@@ -5,16 +5,13 @@ import java.time.{
   LocalDate,
   YearMonth
 }
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import ChronoUnit.YEARS
 import scala.util.chaining._
 import de.dnpm.dip.coding.Coding
 import play.api.libs.json.{
   Json,
-  Format,
   Reads,
-  Writes,
   OFormat,
   OWrites
 }
@@ -41,7 +38,6 @@ final case class Patient
     // as the age of Patient who died before the given date is defined by his date of death
     val refDate =
       dateOfDeath
-//        .map(_ atDay 1)
         .map(Ordering[YearMonth].min(_,date))
         .getOrElse(date)
 
@@ -84,13 +80,10 @@ object Patient
     Json.format[Insurance]
 
     
-  private val yyyyMM = DateTimeFormatter.ofPattern("yyyy-MM")
-
-  private implicit val formatYearMonth: Format[YearMonth] =
-    Format(
-      Reads.of[String].map(YearMonth.parse(_,yyyyMM)).orElse(Reads.of[LocalDate].map(YearMonth.from)),
-      Writes.of[String].contramap(_ format yyyyMM)
-    )
+  private[model] implicit val tolerantReadsYearMonth: Reads[YearMonth] =
+    de.dnpm.dip.util.json.readsYearMonth orElse Reads.of[LocalDate].map(YearMonth.from)
+      
+  import de.dnpm.dip.util.json.writesYearMonth
 
 
   implicit val reads: Reads[Patient] = 

@@ -1,10 +1,13 @@
 package de.dnpm.dip.model
 
-
+import java.time.YearMonth
 import scala.util.chaining._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers._
-import play.api.libs.json.Json
+import play.api.libs.json.{
+  Json,
+  JsString
+}
 import de.dnpm.dip.coding.Coding
 
 
@@ -22,6 +25,18 @@ class JsonSerializationTests extends AnyFlatSpec
        .pipe(Json.fromJson[Coding[Gender.Value]](_))
 
     coding.isError mustBe true
+
+  }
+
+  "Tolerant YearMonth deserialization" must "have worked" in { 
+
+    import Patient.tolerantReadsYearMonth
+
+    assert(Json.fromJson[YearMonth](JsString("2025-11")).isSuccess)
+    assert(Json.fromJson[YearMonth](JsString("2025-11-13")).isSuccess)
+
+    assert(Json.fromJson[YearMonth](JsString("2025-1")).isError)
+    assert(Json.fromJson[YearMonth](JsString("2025-1-13")).isError)
 
   }
 
