@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/dnpm-dip/backend-core/compare/v1.1.3...v1.1.4) (2025-11-13)
+
+
+### Bug Fixes
+
+* Corrected Reads[Patient] using fixed Reads[YearMonth] ([50df12c](https://github.com/dnpm-dip/backend-core/commit/50df12ceebe61cbf8e0b85f9f1be574f7d8d26cd))
+* Corrected Reads[YearMonth] ([50df12c](https://github.com/dnpm-dip/backend-core/commit/50df12ceebe61cbf8e0b85f9f1be574f7d8d26cd))
+
 ## [1.1.3](https://github.com/dnpm-dip/backend-core/compare/v1.1.2...v1.1.3) (2025-11-07)
 
 
