@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/dnpm-dip/backend-core/compare/v1.1.4...v1.2.0) (2025-11-21)
+
+
+### Features
+
+* Added utility to complete a Coding with a Code prefix ([03800fc](https://github.com/dnpm-dip/backend-core/commit/03800fc5945ed3657d0d2890c433b14040164de0))
+
 ## [1.1.4](https://github.com/dnpm-dip/backend-core/compare/v1.1.3...v1.1.4) (2025-11-13)
 
 
