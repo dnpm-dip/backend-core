@@ -353,6 +353,15 @@ object Coding
           .getOrElse(coding)
     )
 
+
+  def addCodePrefix[S](prefix: String): Completer[Coding[S]] =
+    (coding: Coding[S]) =>
+      coding.code.value match {
+        case code if code startsWith prefix => coding
+        case code => coding.copy(code = Code[S](s"$prefix$code"))
+      }
+
+
   def completeDisplayWithCode[S]: Completer[Coding[S]] =
     Completer.of(
       coding => 

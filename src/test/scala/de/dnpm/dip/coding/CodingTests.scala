@@ -7,6 +7,7 @@ import shapeless.{
   :+:,
   CNil
 }
+import de.dnpm.dip.util.Completer.syntax._
 
 
 sealed trait Foo
@@ -90,5 +91,10 @@ class CodingTests extends AnyFlatSpec
   }
 
 
+  "Prefix completion" must "have worked" in { 
+
+    coding1.complete(Coding.addCodePrefix("FOO:")).code.value must startWith ("FOO:")
+
+  }
 
 }
