@@ -40,4 +40,17 @@ class JsonSerializationTests extends AnyFlatSpec
 
   }
 
+
+  "Tolerant LocalDate deserialization" must "have worked" in { 
+
+    import Patient.tolerantReadsLocalDate
+
+    assert(tolerantReadsLocalDate.reads(JsString("2025-11")).isSuccess)
+    assert(tolerantReadsLocalDate.reads(JsString("2025-11-13")).isSuccess)
+
+    assert(tolerantReadsLocalDate.reads(JsString("2025-1")).isError)
+    assert(tolerantReadsLocalDate.reads(JsString("2025-1-13")).isError)
+
+  }
+
 }
