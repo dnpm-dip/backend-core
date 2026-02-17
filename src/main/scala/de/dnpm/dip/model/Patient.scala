@@ -22,7 +22,7 @@ final case class Patient
   id: Id[Patient],
   gender: Coding[Gender.Value],
   birthDate: YearMonth,
-  dateOfDeath: Option[YearMonth],
+  dateOfDeath: Option[LocalDate],
   managingSite: Option[Coding[Site]],
   healthInsurance: Patient.Insurance,
   address: Option[Address]
@@ -30,7 +30,7 @@ final case class Patient
 {
 
   def ageOnDate(
-    date: YearMonth,
+    date: LocalDate,
     ch: ChronoUnit = YEARS
   ): Age = {
 
@@ -38,7 +38,7 @@ final case class Patient
     // as the age of Patient who died before the given date is defined by his date of death
     val refDate =
       dateOfDeath
-        .map(Ordering[YearMonth].min(_,date))
+        .map(Ordering[LocalDate].min(_,date))
         .getOrElse(date)
 
     Age(
@@ -48,7 +48,7 @@ final case class Patient
   }
 
   def ageIn(ch: ChronoUnit): Age =
-    ageOnDate(dateOfDeath.getOrElse(YearMonth.now),ch)
+    ageOnDate(dateOfDeath.getOrElse(LocalDate.now),ch)
 
   def ageIn(t: UnitOfTime): Age =
     ageIn(UnitOfTime.chronoUnit(t))
