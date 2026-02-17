@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/dnpm-dip/backend-core/compare/v1.2.0...v1.2.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* Made deserialization of Patient.dateOfDeath LocalDate tolerant, to be backwards compatible with data containing only yyyy-MM ([88c78c4](https://github.com/dnpm-dip/backend-core/commit/88c78c4c26d677794f0c5d592d6a4665f19c16a4))
+
 ## [1.2.0](https://github.com/dnpm-dip/backend-core/compare/v1.1.4...v1.2.0) (2026-02-17)
 
 
