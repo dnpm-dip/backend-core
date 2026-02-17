@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/dnpm-dip/backend-core/compare/v1.1.4...v1.2.0) (2026-02-17)
+
+
+### Features
+
+* Added utility to complete a Coding with a Code prefix ([03800fc](https://github.com/dnpm-dip/backend-core/commit/03800fc5945ed3657d0d2890c433b14040164de0))
+
+
+### Bug Fixes
+
+* Reverted Patient.dateOfDeath to LocalDate to fulfil MV specs ([d3d61b3](https://github.com/dnpm-dip/backend-core/commit/d3d61b3959ab772cfd51c85c7cef4d572c7a6862))
+
 ## [1.1.4](https://github.com/dnpm-dip/backend-core/compare/v1.1.3...v1.1.4) (2025-11-13)
 
 
