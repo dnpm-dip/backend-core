@@ -86,7 +86,7 @@ object Patient
   import de.dnpm.dip.util.json.writesYearMonth
 
   private[model] val tolerantReadsLocalDate =
-    Reads.of[LocalDate] orElse de.dnpm.dip.util.json.readsYearMonth.map(_.atEndOfMonth)
+    Reads.of[LocalDate] orElse de.dnpm.dip.util.json.readsYearMonth.map(_.atDay(1))
 
 
   implicit val reads: Reads[Patient] = {
