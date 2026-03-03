@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/dnpm-dip/backend-core/compare/v1.2.1...v1.2.2) (2026-03-03)
+
+
+### Bug Fixes
+
+* Adapted tolerant Patient.dateOfDeath parsing from to first day of month (yyyy-MM -&gt; yyyy-MM-01) ([f1142af](https://github.com/dnpm-dip/backend-core/commit/f1142af48a36c04fec5162264991220bdc4d8f90))
+
 ## [1.2.1](https://github.com/dnpm-dip/backend-core/compare/v1.2.0...v1.2.1) (2026-02-17)
 
 
