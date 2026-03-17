@@ -9,7 +9,7 @@ import org.scalatest.matchers.must.Matchers._
 class SiteLoadingTests extends AnyFlatSpec
 {
 
-  System.setProperty(Site.property,"UKx:Musterlingen")
+  System.setProperty(Site.PROP,"UKx:Musterlingen")
 
 
   "Local site" must "have been correctly loaded" in {

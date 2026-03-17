@@ -5,6 +5,10 @@ import scala.util.{
   Try,
   Failure
 }
+import scala.util.Properties.{
+  envOrElse,
+  propOrNull
+}
 import de.dnpm.dip.util.Logging
 import de.dnpm.dip.coding.Coding
 
@@ -19,15 +23,18 @@ object Site extends Logging
     Coding.System[Site]("dnpm-dip/site")
 
 
-  val property = "dnpm.dip.site"
+  val ENV  = "BACKEND_LOCAL_SITE"
+  val PROP = "dnpm.dip.site"
 
 
-  lazy val local: Coding[Site] = {
-
-
+  lazy val local: Coding[Site] =
     Try {
       val csv = 
-        System.getProperty(property).split("[:\\|]")
+        envOrElse(
+          ENV,
+          propOrNull(PROP)
+        )
+        .split("[:\\|]")
       
       val code = csv(0).trim
       val name = csv(1).trim
@@ -37,13 +44,10 @@ object Site extends Logging
     .recoverWith { 
       case t => 
         log.error(
-          s"Failed to load local site. This most likely due to undefined or invalid value of system property '$property': expect format '<Site Code>:<Site Name>' (valid delimiters | : )", t
+          s"Failed to load local site. This is most likely due to undefined/invalid value of either ENV variable '$ENV' or system property '$PROP': expected format '<Site Code>:<Site Name>' (valid delimiters | : )", t
         )
         Failure(t)
     }
     .get
 
-  }
-
 }
-
