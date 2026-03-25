@@ -15,6 +15,7 @@ trait CarePlan extends Commentable
   val patient: Reference[Patient]
   val issuedOn: LocalDate
   val reason: Option[Reference[Diagnosis]]
+  val boardType: Option[Coding[CarePlan.BoardType.Value]]
   val noSequencingPerformedReason: Option[Coding[CarePlan.NoSequencingPerformedReason.Value]]
   val therapyRecommendations: Option[List[TherapyRecommendation]]
   val medicationRecommendations: Option[List[MedicationRecommendation[_]]]
@@ -23,6 +24,23 @@ trait CarePlan extends Commentable
 
 object CarePlan
 {
+
+  object BoardType
+  extends CodedEnum("dnpm-dip/careplan/board-type")
+  with DefaultCodeSystem
+  {
+
+    val IndicationBoard = Value("indication-board")
+    val TherapyBoard    = Value("therapy-board")
+
+    override val display =
+      Map(
+        IndicationBoard -> "Indikations-Board",
+        TherapyBoard    -> "Befund-Board" 
+      )
+
+  }
+
 
   object NoSequencingPerformedReason
   extends CodedEnum("dnpm-dip/careplan/no-sequencing-performed-reason")
