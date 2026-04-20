@@ -125,41 +125,6 @@ trait BaseSchemas
     .toDefinition(s"ExternalId")
 
 
-/*
-  protected def externalReference[T, Systems <: Coproduct](
-    definition: String
-  )(
-    implicit systems: Coding.System.UriSet[Systems]
-  ): Schema[ExternalReference[T]] =
-    Schema.`object`[ExternalReference[T]](
-      Field("id",Schema.`string`),
-      Field(
-        "system",
-        Schema.`enum`[String](
-          Schema.`string`,
-          systems.values.map(uri => Value.str(uri.toString))
-        )
-      ),
-      Field("type",Schema.`string`,false),
-    )
-    .toDefinition(definition)
-
-
-  implicit val studyReferenceSchema: Schema[ExternalReference[Study]] =
-    externalReference[Study,Study.Registries]("Study_Reference")
-
-  implicit val publicationReferenceSchema: Schema[ExternalReference[Publication]] =
-    externalReference[Publication,Publication.Systems]("Publication_Reference")
-
-
-  implicit def externalReferenceSchema[T]: Schema[ExternalReference[T]] =
-    Schema.`object`[ExternalReference[T]](
-      Field("id",Schema.`string`),
-      Field("system",Schema.`string`),
-      Field("type",Schema.`string`,false),
-    )
-    .toDefinition("External_Reference")
-*/
 
   protected def externalReferenceSchemaOf[T,S <: Coproduct](
     definition: String

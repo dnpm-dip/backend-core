@@ -12,6 +12,7 @@ import play.api.libs.json.{
 }
 import play.api.libs.functional.syntax._
 import shapeless.Coproduct
+import shapeless.ops.coproduct.Inject
 import de.dnpm.dip.coding.Coding
 
 
@@ -36,6 +37,14 @@ object Id
 {
   implicit def format[T]: Format[Id[T]] =
     Json.valueFormat[Id[T]]
+
+
+  implicit def widen[T,C <: Coproduct](
+    id: Id[T]
+  )(
+    implicit inject: Inject[C,T]
+  ): Id[C] =
+    id.asInstanceOf[Id[C]]
 }
 
 

@@ -12,6 +12,7 @@ import play.api.libs.json.{
   OWrites
 }
 import shapeless.Coproduct
+import shapeless.ops.coproduct.Inject
 import de.dnpm.dip.coding.Coding
 
 
@@ -32,6 +33,7 @@ sealed trait Reference[+T]
     resolver(this)
 
   def withDisplay(d: String): Reference[T]
+
 }
 
 
@@ -76,9 +78,7 @@ extends Reference[T]
 object Reference
 {
 
-  def apply[T](
-    id: Id[T]
-  ): InternalReference[T] =
+  def apply[T](id: Id[T]): InternalReference[T] =
     InternalReference(id)
 
   def apply[T,S](
@@ -95,6 +95,23 @@ object Reference
   ): InternalReference[T] =
     InternalReference(t.id,display)
 
+  
+  implicit def widen[T,C <: Coproduct](
+    ref: Reference[T]
+  )(
+    implicit inject: Inject[C,T]
+  ): Reference[C] =
+    ref.asInstanceOf[Reference[C]]
+
+
+  sealed trait UnionRefBuilder[C <: Coproduct]{ 
+    def apply[T <: { def id: Id[T] }](t: T)(implicit inject: Inject[C,T]): Reference[C] =
+      widen(Reference.to(t))
+  }
+
+  def apply[C <: Coproduct]: UnionRefBuilder[C] =
+    new UnionRefBuilder[C]{}
+
 
   final case class TypeName[T](value: String)
   object TypeName
@@ -109,14 +126,12 @@ object Reference
 
 
   @annotation.implicitNotFound("Couldn't find a Resolver[${T}], define one or ensure it is in implicit scope")
-  trait Resolver[T]{
-    def apply(ref: Reference[T]): Option[T]
-  }
+  trait Resolver[T] extends (Reference[T] => Option[T])
 
   object Resolver
   {
 
-    implicit def from[T](f: Reference[T] => Option[T]): Resolver[T] =
+    implicit def unlift[T](f: Reference[T] => Option[T]): Resolver[T] =
       new Resolver[T]{
         override def apply(ref: Reference[T]) = f(ref)
       }
@@ -125,11 +140,30 @@ object Reference
     def apply[T](implicit res: Resolver[T]) = res
     
     
+    /**
+     * Resolver[T] from a Collection[T], using id-based lookup
+     */
     implicit def onCollection[T,TT >: T <: { def id: Id[_] }](
       implicit ts: { def find(f: TT => Boolean): Option[TT] }
     ): Resolver[TT] =
       ref => ts.find(_.id == ref.id)
-      
+
+    
+    /**
+     * Convert a PartialFunction[Id[T],T] into Resolver[T]
+     * for use especially with a Map[Id[T],T], but kept generic as PF
+     * to also allow other case using an acutal PF 
+     */
+    implicit def fromIdPartialFunction[T](
+      implicit resolverPf: PartialFunction[Id[T],T]
+    ): Reference.Resolver[T] = {
+
+      val lifted = resolverPf.lift 
+
+      ref => lifted(ref.id)
+
+    }
+  
   }
 
 
