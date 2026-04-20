@@ -185,7 +185,7 @@ object Coding
 
   sealed abstract class Converter[C <: Coproduct]
   {
-    def from[S](
+    def apply[S](
       code: Code[S],
       display: Option[String] = None,
       version: Option[String] = None
@@ -204,7 +204,7 @@ object Coding
     def from[S](
       coding: Coding[S]
     )(
-      implicit sel: Inject[C,S]
+      implicit inject: Inject[C,S]
     ): Coding[C] =
       coding.asInstanceOf[Coding[C]]
   }
