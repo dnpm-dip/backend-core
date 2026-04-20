@@ -44,7 +44,7 @@ object Id
   )(
     implicit inj: Inject[C,T]
   ): Id[C] =
-    this.asInstanceOf[Id[C]]
+    id.asInstanceOf[Id[C]]
 }
 
 
