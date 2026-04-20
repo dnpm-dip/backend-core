@@ -78,8 +78,8 @@ extends Reference[T]
 object Reference
 {
 
-  def apply[T](id: Id[_]): InternalReference[T] =
-    InternalReference(id.asInstanceOf[Id[T]])
+  def apply[T](id: Id[T]): InternalReference[T] =
+    InternalReference(id)
 
   def apply[T,S](
     extId: ExternalId[T,S]
@@ -96,12 +96,21 @@ object Reference
     InternalReference(t.id,display)
 
   
-  implicit def widen[T, C <: Coproduct](
+  implicit def widen[T,C <: Coproduct](
     ref: Reference[T]
   )(
     implicit inj: Inject[C,T]
   ): Reference[C] =
     ref.asInstanceOf[Reference[C]]
+
+
+  sealed trait UnionRefBuilder[C <: Coproduct]{ 
+    def apply[T <: { def id: Id[T] }](t: T)(implicit inj: Inject[C,T]): Reference[C] =
+      widen(Reference.to(t))
+  }
+
+  def apply[C <: Coproduct]: UnionRefBuilder[C] =
+    new UnionRefBuilder[C]{}
 
 
   final case class TypeName[T](value: String)
