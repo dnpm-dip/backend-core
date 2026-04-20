@@ -185,7 +185,7 @@ object Coding
 
   sealed abstract class Converter[C <: Coproduct]
   {
-    def apply[S](
+    def from[S](
       code: Code[S],
       display: Option[String] = None,
       version: Option[String] = None
