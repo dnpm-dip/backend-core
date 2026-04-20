@@ -192,7 +192,7 @@ object Coding
     )(
       implicit
       sys: Coding.System[S],
-      sel: Inject[C,S]
+      inject: Inject[C,S]
     ): Coding[C] =
       Coding[C](
         Code(code.value),
@@ -496,7 +496,7 @@ object Coding
   implicit def widen[S, C <: Coproduct](
     coding: Coding[S]
   )(
-    implicit sel: Inject[C,S]
+    implicit inject: Inject[C,S]
   ): Coding[C] =
     coding.asInstanceOf[Coding[C]]
 

@@ -99,13 +99,13 @@ object Reference
   implicit def widen[T,C <: Coproduct](
     ref: Reference[T]
   )(
-    implicit inj: Inject[C,T]
+    implicit inject: Inject[C,T]
   ): Reference[C] =
     ref.asInstanceOf[Reference[C]]
 
 
   sealed trait UnionRefBuilder[C <: Coproduct]{ 
-    def apply[T <: { def id: Id[T] }](t: T)(implicit inj: Inject[C,T]): Reference[C] =
+    def apply[T <: { def id: Id[T] }](t: T)(implicit inject: Inject[C,T]): Reference[C] =
       widen(Reference.to(t))
   }
 
@@ -145,8 +145,9 @@ object Reference
     ): Resolver[TT] =
       ref => ts.find(_.id == ref.id)
 
+
     implicit def fromIdPartialFunction[T](
-      implicit pf: PartialFunction[Id[_],T]
+      implicit pf: PartialFunction[Id[T],T]
     ): Reference.Resolver[T] =
       ref => pf.unapply(ref.id)
   

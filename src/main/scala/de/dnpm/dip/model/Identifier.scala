@@ -42,7 +42,7 @@ object Id
   implicit def widen[T,C <: Coproduct](
     id: Id[T]
   )(
-    implicit inj: Inject[C,T]
+    implicit inject: Inject[C,T]
   ): Id[C] =
     id.asInstanceOf[Id[C]]
 }
