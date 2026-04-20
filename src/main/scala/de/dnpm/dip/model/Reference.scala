@@ -131,7 +131,7 @@ object Reference
   object Resolver
   {
 
-    implicit def from[T](f: Reference[T] => Option[T]): Resolver[T] =
+    implicit def unlift[T](f: Reference[T] => Option[T]): Resolver[T] =
       new Resolver[T]{
         override def apply(ref: Reference[T]) = f(ref)
       }
@@ -140,16 +140,29 @@ object Reference
     def apply[T](implicit res: Resolver[T]) = res
     
     
+    /**
+     * Resolver[T] from a Collection[T], using id-based lookup
+     */
     implicit def onCollection[T,TT >: T <: { def id: Id[_] }](
       implicit ts: { def find(f: TT => Boolean): Option[TT] }
     ): Resolver[TT] =
       ref => ts.find(_.id == ref.id)
 
-
+    
+    /**
+     * Convert a PartialFunction[Id[T],T] into Resolver[T]
+     * for use especially with a Map[Id[T],T], but kept generic as PF
+     * to also allow other case using an acutal PF 
+     */
     implicit def fromIdPartialFunction[T](
-      implicit pf: PartialFunction[Id[T],T]
-    ): Reference.Resolver[T] =
-      ref => pf.unapply(ref.id)
+      implicit resolverPf: PartialFunction[Id[T],T]
+    ): Reference.Resolver[T] = {
+
+      val lifted = resolverPf.lift 
+
+      ref => lifted(ref.id)
+
+    }
   
   }
 
