@@ -11,7 +11,7 @@ import shapeless.{
   :+:,
   CNil
 }
-import shapeless.ops.coproduct.Selector
+import shapeless.ops.coproduct.Inject
 import play.api.libs.json.{
   Json,
   Reads,
@@ -192,7 +192,7 @@ object Coding
     )(
       implicit
       sys: Coding.System[S],
-      sel: Selector[C,S]
+      sel: Inject[C,S]
     ): Coding[C] =
       Coding[C](
         Code(code.value),
@@ -204,7 +204,7 @@ object Coding
     def from[S](
       coding: Coding[S]
     )(
-      implicit sel: Selector[C,S]
+      implicit sel: Inject[C,S]
     ): Coding[C] =
       coding.asInstanceOf[Coding[C]]
   }
@@ -493,10 +493,10 @@ object Coding
       )
 
 
-  implicit def codingToCoproductCoding[S, C <: Coproduct](
+  implicit def widen[S, C <: Coproduct](
     coding: Coding[S]
   )(
-    implicit sel: Selector[C,S]
+    implicit sel: Inject[C,S]
   ): Coding[C] =
     coding.asInstanceOf[Coding[C]]
 

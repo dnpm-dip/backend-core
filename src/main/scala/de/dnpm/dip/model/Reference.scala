@@ -12,6 +12,7 @@ import play.api.libs.json.{
   OWrites
 }
 import shapeless.Coproduct
+import shapeless.ops.coproduct.Inject
 import de.dnpm.dip.coding.Coding
 
 
@@ -32,6 +33,7 @@ sealed trait Reference[+T]
     resolver(this)
 
   def withDisplay(d: String): Reference[T]
+
 }
 
 
@@ -76,10 +78,8 @@ extends Reference[T]
 object Reference
 {
 
-  def apply[T](
-    id: Id[T]
-  ): InternalReference[T] =
-    InternalReference(id)
+  def apply[T](id: Id[_]): InternalReference[T] =
+    InternalReference(id.asInstanceOf[Id[T]])
 
   def apply[T,S](
     extId: ExternalId[T,S]
@@ -95,6 +95,14 @@ object Reference
   ): InternalReference[T] =
     InternalReference(t.id,display)
 
+  
+  implicit def widen[T, C <: Coproduct](
+    ref: Reference[T]
+  )(
+    implicit inj: Inject[C,T]
+  ): Reference[C] =
+    this.asInstanceOf[Reference[C]]
+
 
   final case class TypeName[T](value: String)
   object TypeName
@@ -109,9 +117,7 @@ object Reference
 
 
   @annotation.implicitNotFound("Couldn't find a Resolver[${T}], define one or ensure it is in implicit scope")
-  trait Resolver[T]{
-    def apply(ref: Reference[T]): Option[T]
-  }
+  trait Resolver[T] extends (Reference[T] => Option[T])
 
   object Resolver
   {
@@ -129,7 +135,12 @@ object Reference
       implicit ts: { def find(f: TT => Boolean): Option[TT] }
     ): Resolver[TT] =
       ref => ts.find(_.id == ref.id)
-      
+
+    implicit def fromIdPartialFunction[T](
+      implicit pf: PartialFunction[Id[_],T]
+    ): Reference.Resolver[T] =
+      ref => pf.unapply(ref.id)
+  
   }
 
 
