@@ -101,7 +101,7 @@ object Reference
   )(
     implicit inj: Inject[C,T]
   ): Reference[C] =
-    this.asInstanceOf[Reference[C]]
+    ref.asInstanceOf[Reference[C]]
 
 
   final case class TypeName[T](value: String)
