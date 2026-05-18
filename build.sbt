@@ -24,7 +24,7 @@ lazy val root =
         "org.slf4j"           %  "slf4j-api"                  % "2.0.17",
         "com.chuusai"         %% "shapeless"                  % "2.3.13",
         "org.typelevel"       %% "cats-core"                  % "2.13.0",
-        "org.playframework"   %% "play-json"                  % "3.0.4",
+        "org.playframework"   %% "play-json"                  % "3.0.6",
         "com.github.andyglow" %% "scala-jsonschema"           % "0.7.11",
         "com.github.andyglow" %% "scala-jsonschema-cats"      % "0.7.11",
         "com.github.andyglow" %% "scala-jsonschema-play-json" % "0.7.11"
