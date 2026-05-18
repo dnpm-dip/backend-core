@@ -18,7 +18,7 @@ import play.api.libs.json.{
   OWrites
 }
 import shapeless.Coproduct
-import shapeless.ops.coproduct.Selector
+import shapeless.ops.coproduct.Inject
 import de.dnpm.dip.util.Tree
 
 
@@ -287,7 +287,7 @@ object CodeSystem
     def toCodingOf[T <: Coproduct](
       implicit
       cs: Coding.System[S],
-      sel: Selector[T,S]
+      sel: Inject[T,S]
     ): Coding[T] =
       this.toCoding.asInstanceOf[Coding[T]]
   }
