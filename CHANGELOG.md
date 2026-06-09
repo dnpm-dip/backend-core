@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/dnpm-dip/backend-core/compare/v1.3.0...v1.3.1) (2026-06-09)
+
+
+### Bug Fixes
+
+* Bump org.scalatest to 3.2.20, org.slf4j to 2.0.18 ([528ccf1](https://github.com/dnpm-dip/backend-core/commit/528ccf1033b126432f96796ada31507e18e239c2))
+* Bump play-json to 3.0.6 to attempt fixing dependency alert for jackson-core ([4689d54](https://github.com/dnpm-dip/backend-core/commit/4689d543a5210c6d4364ac42a8766ee64ea6a262))
+
 ## [1.3.0](https://github.com/dnpm-dip/backend-core/compare/v1.2.2...v1.3.0) (2026-04-21)
 
 
