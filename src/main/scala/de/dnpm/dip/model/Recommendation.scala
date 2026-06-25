@@ -48,7 +48,7 @@ object Recommendation
 trait TherapyRecommendation extends Recommendation
 {
   val reason: Option[Reference[Diagnosis]]
-  val priority: Coding[Recommendation.Priority.Value]
+  val priority: Coding[_]
 }
 
 trait MedicationRecommendation[M] extends TherapyRecommendation
