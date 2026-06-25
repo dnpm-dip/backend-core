@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/dnpm-dip/backend-core/compare/v1.3.1...v1.3.2) (2026-06-25)
+
+
+### Bug Fixes
+
+* Made Recommendation.Priority parameterizable on the Coding type ([#23](https://github.com/dnpm-dip/backend-core/issues/23)) ([a54b49f](https://github.com/dnpm-dip/backend-core/commit/a54b49feb21bbf8ba23e09672900ec3906ccb9b6))
+
 ## [1.3.1](https://github.com/dnpm-dip/backend-core/compare/v1.3.0...v1.3.1) (2026-06-09)
 
 
