@@ -48,7 +48,7 @@ trait BaseCompleters
       // 1. Attempt to resolve the Coding by code
       catalog.concept(coding.code)
         // 2. Else attempt resolution by display/name
-        .orElse(coding.display.flatMap(name =>catalog.concepts.find(_.display == name)))
+        .orElse(coding.display.flatMap(name => catalog.concepts.find(_.display == name)))
         .map(_.toCoding)
         // Else return the coding as is
         .getOrElse(coding)
