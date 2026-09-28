@@ -40,7 +40,7 @@ trait BaseCompleters
 
   // Custom Completer for Coding[ATC] due to discontinuities in ATC code versioning 
   implicit def atcCodingCompleter(
-    atcCatalogs: CodeSystemProvider[ATC,Id,Applicative[Id]]
+    implicit atcCatalogs: CodeSystemProvider[ATC,Id,Applicative[Id]]
   ): Completer[Coding[ATC]] = {
     coding =>
       val catalog = coding.version.flatMap(atcCatalogs.get).getOrElse(atcCatalogs.latest)
