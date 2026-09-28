@@ -19,6 +19,7 @@ import de.dnpm.dip.coding.{
   CodeSystemProviders,
   UnregisteredMedication
 }
+import de.dnpm.dip.coding.atc.ATC
 import de.dnpm.dip.coding.hgvs.HGVS
 import de.dnpm.dip.coding.hgnc.HGNC
 
@@ -35,10 +36,29 @@ trait BaseCompleters
 
 
   implicit val unregisteredCodingCompleter: Completer[Coding[UnregisteredMedication]] =
-    coding => coding.copy(
-      display = coding.display.orElse(Some(coding.code.value))
-    )
+    Coding.completeDisplayWithCode
 
+  // Custom Completer for Coding[ATC] due to discontinuities in ATC code versioning 
+  implicit def atcCodingCompleter(
+    implicit atcCatalogs: CodeSystemProvider[ATC,Id,Applicative[Id]]
+  ): Completer[Coding[ATC]] = {
+    coding =>
+      val catalog = coding.version.flatMap(atcCatalogs.get).getOrElse(atcCatalogs.latest)
+
+      // 1. Attempt to resolve the Coding by code
+      catalog.concept(coding.code)
+        // 2. Else attempt resolution by display/name
+        .orElse(
+           coding.display.map(name => catalog.concepts.filter(_.display == name).toList) 
+             // Only use the result of name-based resolution if unambiguous, i.e. returned exactly 1 concept
+             .collect {
+               case concept :: Nil => concept 
+             }
+        )
+        .map(_.toCoding)
+        // Else return the coding as is
+        .getOrElse(coding)
+  }
 
   implicit def coproductCodingCompleter[
     H: Coding.System,

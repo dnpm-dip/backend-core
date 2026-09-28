@@ -305,53 +305,32 @@ object Coding
   implicit def completeByCodeSystemProvider[S](
     implicit csp: CodeSystemProvider[S,cats.Id,Applicative[cats.Id]]
   ): Completer[Coding[S]] = 
-    Completer.of[Coding[S]](
-      coding => 
-        coding.version
-          .flatMap(csp.get)
-          .orElse(Some(csp.latest))
-          .flatMap(_.concept(coding.code))
-          .map(
-            concept =>
-              coding.copy(
-                display = Some(concept.display),
-                version = concept.version
-              )   
-          )
-          .getOrElse(coding)
-    )
+    coding => completeByCodeSystem(coding.version.flatMap(csp.get).getOrElse(csp.latest))(coding)
+
 
   implicit def completeByCodeSystem[S](
     implicit cs: CodeSystem[S]
   ): Completer[Coding[S]] = 
-    Completer.of[Coding[S]](
-      coding => 
-        cs.concept(coding.code)
-          .map(
-            concept =>
-              coding.copy(
-                display = Some(concept.display),
-                version = concept.version
-              )   
-          )
-          .getOrElse(coding)
-    )
+    coding => 
+      cs.concept(coding.code).map(
+        concept => coding.copy(
+          display = Some(concept.display),
+          version = concept.version
+        )   
+      )
+      .getOrElse(coding)
 
   implicit def completeByValueSet[S](
     implicit vs: ValueSet[S]
   ): Completer[Coding[S]] = 
-    Completer.of[Coding[S]](
-      coding => 
-        vs.coding(coding.code)
-          .map(
-            c =>
-              coding.copy(
-                display = c.display,
-                version = c.version
-              )   
-          )
-          .getOrElse(coding)
-    )
+    coding => 
+      vs.coding(coding.code).map(
+        c => coding.copy(
+          display = c.display,
+          version = c.version
+        )   
+      )
+      .getOrElse(coding)
 
 
   def addCodePrefix[S](prefix: String): Completer[Coding[S]] =
@@ -376,27 +355,6 @@ object Coding
 
   implicit def writesCoding[S]: OWrites[Coding[S]] = 
     Json.writes[Coding[S]]
-
-/*
-  implicit val writesAnyCoding: OWrites[Coding[Any]] = 
-    Json.writes[Coding[Any]]
-
-  implicit def writesCoproductCoding[S <: Coproduct]: OWrites[Coding[S]] =
-    writesAnyCoding.contramap(_.asInstanceOf[Coding[Any]])
-
-  import shapeless.{<:!<}
-
-  implicit def writesCoding[S](
-    implicit notUnion: S <:!< Coproduct
-  ): OWrites[Coding[S]] = 
-    (
-      (JsPath \ "code").write[Code[S]] and
-      (JsPath \ "display").writeNullable[String] and
-      (JsPath \ "version").writeNullable[String]
-    )(
-      coding => (coding.code,coding.display,coding.version)
-    )
-*/
 
 
   implicit def readsEnumCoding[
