@@ -38,7 +38,7 @@ trait BaseCompleters
   implicit val unregisteredCodingCompleter: Completer[Coding[UnregisteredMedication]] =
     Coding.completeDisplayWithCode
 
-  // Custom Completer for Coding[ATC] due to discontinuity in ATC code versioning 
+  // Custom Completer for Coding[ATC] due to discontinuities in ATC code versioning 
   implicit def atcCodingCompleter(
     atcCatalogs: CodeSystemProvider[ATC,Id,Applicative[Id]]
   ): Completer[Coding[ATC]] = {
@@ -48,7 +48,13 @@ trait BaseCompleters
       // 1. Attempt to resolve the Coding by code
       catalog.concept(coding.code)
         // 2. Else attempt resolution by display/name
-        .orElse(coding.display.flatMap(name => catalog.concepts.find(_.display == name)))
+        .orElse(
+           coding.display.map(name => catalog.concepts.filter(_.display == name).toList) 
+             // Only use the result of name-based resolution if unambiguous, i.e. returned exactly 1 concept
+             .collect {
+               case concept :: Nil => concept 
+             }
+        )
         .map(_.toCoding)
         // Else return the coding as is
         .getOrElse(coding)
