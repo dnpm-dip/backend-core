@@ -27,11 +27,9 @@ extends Runnable
 with Logging
 {
 
-  private lazy val failedTries =
-    new AtomicInteger(0)
+  private lazy val failedTries = new AtomicInteger(0)
 
-  private val runnable = 
-    new Runnable { override def run = attempt() }
+  private val runnable = new Runnable { override def run = attempt() }
 
   private def attempt(): Unit = {
     task()
@@ -41,25 +39,21 @@ with Logging
           strategy match {
             case Retry.UntilSucceeded =>
               log.error(s"Task '$name' failed, retrying in $period s", t)
-              executor.schedule(
-                runnable,
-                period.toLong,
-                SECONDS
-              )
+              executor.schedule(runnable,period.toLong,SECONDS)
       
             case Retry.AtMost(n) => 
-              if (failedTries.incrementAndGet <= n){
-                log.error(s"Task '$name' failed, retrying in $period s", t)
-                executor.schedule(
-                  runnable,
-                  period.toLong,
-                  SECONDS
-                )
-              } else
-                log.warn(
-                  s"Task '$name' given up as permanent failure after ${failedTries.get - 1}/$n failed attempts" // Subtract 1 because last check above also increments
-                ) 
-              
+              failedTries.incrementAndGet match {
+
+                case m if m <= n =>
+                  log.error(s"Task '$name' failed, retrying in $period s", t)
+                  executor.schedule(runnable,period.toLong,SECONDS)
+
+                case m =>
+                  log.warn(
+                    s"Task '$name' given up as permanent failure after ${m - 1}/$n failed attempts" // Subtract 1 because last check above also increments
+                  )
+                  failedTries.set(0) // Reset counter 
+              }
           }
           app.unit
       }
@@ -67,11 +61,9 @@ with Logging
     ()
   }
 
-  override def run(): Unit =
-    attempt()
+  override def run(): Unit = attempt()
 
-  def cancel(): Unit =
-    executor.shutdown
+  def cancel(): Unit = executor.shutdown
 
 }
 
