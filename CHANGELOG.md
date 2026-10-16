@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/dnpm-dip/backend-core/compare/v1.3.2...v1.3.3) (2026-10-16)
+
+
+### Bug Fixes
+
+* Added rest of failedTries on stop for permanent failure ([#26](https://github.com/dnpm-dip/backend-core/issues/26)) ([a83c0e4](https://github.com/dnpm-dip/backend-core/commit/a83c0e416fb4dcdafd51f4379872b9dfd8ea81f8))
+
 ## [1.3.2](https://github.com/dnpm-dip/backend-core/compare/v1.3.1...v1.3.2) (2026-06-25)
 
 
