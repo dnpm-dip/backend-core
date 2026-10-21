@@ -11,7 +11,11 @@ import play.api.libs.json.{
   Reads,
   OWrites
 }
-import shapeless.Coproduct
+import shapeless.{
+  Coproduct,
+  CNil,
+  :+:
+}
 import shapeless.ops.coproduct.Inject
 import de.dnpm.dip.coding.Coding
 
@@ -119,6 +123,19 @@ object Reference
     import scala.reflect.ClassTag
 
     def apply[T](implicit t: TypeName[T]) = t
+
+    implicit def coproductTypeName[H,T <: Coproduct](
+      implicit
+      head: TypeName[H],
+      tail: TypeName[T]
+    ): TypeName[H :+: T] =
+      TypeName(
+        if (!tail.value.isBlank) s"${head.value}|${tail.value}"
+        else head.value
+      )
+
+    implicit val cnilTypeName: TypeName[CNil] =
+      TypeName("")
 
     implicit def typeName[T](implicit tag: ClassTag[T]): TypeName[T] =
       TypeName[T](tag.runtimeClass.asInstanceOf[Class[T]].getSimpleName)
